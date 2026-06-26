@@ -1020,7 +1020,7 @@ const practicalLessons = [
       greet: { label: "greet", kind: "variable-wide", x: 18, y: 32 },
       fn: { label: "fn", kind: "object", x: 44, y: 32 },
       ada: { label: '"Ada"', kind: "string", x: 42, y: 66 },
-      name: { label: "name", kind: "variable", x: 62, y: 66 },
+      name: { label: "name", kind: "variable-wide", x: 62, y: 66 },
       hiAda: { label: '"Hi, Ada"', kind: "string", x: 78, y: 46 },
       message: { label: "message", kind: "variable-wide", x: 18, y: 82 },
     },
@@ -1234,7 +1234,7 @@ const practicalLessons = [
       ada: { label: '"Ada"', kind: "string", x: 70, y: 24 },
       grace: { label: '"Grace"', kind: "string", x: 70, y: 44 },
       callback: { label: "fn", kind: "object", x: 42, y: 68 },
-      name: { label: "name", kind: "variable", x: 62, y: 68 },
+      name: { label: "name", kind: "variable-wide", x: 62, y: 68 },
     },
     steps: [
       {
@@ -1466,7 +1466,7 @@ const practicalLessons = [
       five: { label: "5", kind: "value", x: 68, y: 16 },
       ten: { label: "10", kind: "value", x: 68, y: 32 },
       fifteen: { label: "15", kind: "value", x: 68, y: 48 },
-      sum: { label: "sum", kind: "variable", x: 24, y: 70 },
+      sum: { label: "sum", kind: "variable-wide", x: 24, y: 70 },
       zero: { label: "0", kind: "value", x: 46, y: 70 },
       total: { label: "total", kind: "variable-wide", x: 16, y: 88 },
       thirty: { label: "30", kind: "value", x: 68, y: 88 },

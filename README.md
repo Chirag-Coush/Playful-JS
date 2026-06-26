@@ -99,6 +99,16 @@ This checks JavaScript syntax, rebuilds Tailwind CSS, and audits lesson data for
 missing nodes, hidden wire endpoints, invisible active nodes, and likely label
 overflow.
 
+To capture every visual state for a chapter, keep the local server running and
+pass the visible chapter number:
+
+```sh
+npm run screenshots:chapter -- 22
+```
+
+This helps verify state-to-state diagram changes instead of only checking the
+first or final frame.
+
 ## Continue The Project
 
 If this conversation context is unavailable, start with `PROJECT_CONTEXT.md` and

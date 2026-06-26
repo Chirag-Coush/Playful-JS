@@ -3,6 +3,7 @@
     "audit:lessons": "node scripts/audit-lessons.js",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
     "check": "node --check app.js && npm run build:css && npm run audit:lessons",
+    "screenshots:chapter": "node scripts/screenshot-chapter.js",
     "watch:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
     "serve": "python3 -m http.server 8080 --bind 127.0.0.1",
     "serve:alt": "python3 -m http.server 8081 --bind 127.0.0.1"

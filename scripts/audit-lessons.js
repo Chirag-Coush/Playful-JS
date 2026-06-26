@@ -22,7 +22,7 @@ const maxLabelLengthByKind = {
   string: 22,
   object: 10,
   "object-large": 14,
-  variable: 12,
+  variable: 2,
   "variable-wide": 18,
 };
 

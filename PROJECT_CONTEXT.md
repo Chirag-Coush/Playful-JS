@@ -127,6 +127,17 @@ Query params are zero-based:
 - `chapter=0` means the first visible chapter.
 - `step=0` means the first step in that chapter.
 
+To capture every state for a visible chapter number, keep the local server
+running and use:
+
+```sh
+npm run screenshots:chapter -- 22
+```
+
+This writes every step for Chapter 22 to `/private/tmp/playful-js-screenshots`.
+Use this before calling a visual chapter "checked" so state-to-state issues are
+reviewed, not only the first or final frame.
+
 ## Recent Important Fixes
 
 - The beginner-first practical path was added before the conceptual library.
