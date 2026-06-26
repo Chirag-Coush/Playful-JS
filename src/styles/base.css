@@ -1,0 +1,20 @@
+@layer base {
+  body {
+    @apply min-h-screen bg-stone-100 font-sans text-slate-900;
+  }
+
+  p {
+    @apply leading-relaxed text-slate-500;
+  }
+
+  h1,
+  .display-heading,
+  .diagram-node {
+    font-family: "Playpen Sans", "Inter", system-ui, sans-serif;
+  }
+
+  pre,
+  .code-text {
+    font-family: "Roboto Mono", monospace;
+  }
+}

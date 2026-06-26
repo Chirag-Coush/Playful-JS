@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "audit:lessons": "node scripts/audit-lessons.js",
+    "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
+    "check": "node --check app.js && npm run build:css && npm run audit:lessons",
+    "watch:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
+    "serve": "python3 -m http.server 8080 --bind 127.0.0.1",
+    "serve:alt": "python3 -m http.server 8081 --bind 127.0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}

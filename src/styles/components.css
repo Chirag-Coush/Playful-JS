@@ -1,0 +1,242 @@
+@layer components {
+  .app-shell {
+    @apply grid min-h-screen grid-cols-1 gap-4 p-4 lg:grid-cols-3 lg:gap-6 lg:p-6;
+  }
+
+  .panel {
+    @apply rounded-lg border border-slate-200 bg-white shadow-xl;
+  }
+
+  .lesson-panel {
+    @apply flex flex-col gap-5 rounded-lg border border-slate-200 bg-white p-5 shadow-xl lg:p-7;
+  }
+
+  .universe-panel {
+    @apply flex min-w-0 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl lg:col-span-2;
+  }
+
+  .eyebrow {
+    @apply mb-2 text-xs font-bold uppercase tracking-wider text-emerald-700;
+  }
+
+  .chapter-picker {
+    @apply relative w-full;
+  }
+
+  .chapter-trigger {
+    @apply flex w-full items-center justify-between gap-3 rounded-lg border border-slate-300 bg-white px-4 py-3 text-left text-2xl font-bold text-slate-900 shadow-sm transition hover:border-slate-400 focus:border-slate-500 focus:outline-none focus:ring-4 focus:ring-slate-100;
+  }
+
+  .chapter-chevron {
+    @apply size-6 shrink-0 text-slate-500 transition-transform;
+  }
+
+  .chapter-picker.is-open .chapter-chevron {
+    @apply -scale-y-100;
+  }
+
+  .chapter-menu {
+    @apply absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-auto rounded-lg border border-slate-200 bg-white p-2 shadow-xl;
+  }
+
+  .chapter-search-wrap {
+    @apply sticky top-0 z-10 block bg-white pb-2;
+  }
+
+  .chapter-search {
+    @apply w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-4 focus:ring-slate-100;
+  }
+
+  .chapter-group {
+    @apply border-t border-slate-100 py-2 first:border-t-0;
+  }
+
+  .chapter-group-label {
+    @apply px-3 py-2 text-xs font-extrabold uppercase tracking-wider text-slate-500;
+  }
+
+  .chapter-empty {
+    @apply px-3 py-5 text-sm text-slate-500;
+  }
+
+  .chapter-option {
+    @apply flex w-full flex-col rounded-md px-3 py-2 text-left transition hover:bg-slate-100;
+  }
+
+  .chapter-option span {
+    @apply text-xs font-bold uppercase tracking-wider text-slate-400;
+  }
+
+  .chapter-option strong {
+    @apply text-base text-slate-900;
+  }
+
+  .chapter-option.is-active-chapter {
+    @apply bg-slate-100;
+  }
+
+  .chapter-option.is-active-chapter span,
+  .chapter-option.is-active-chapter strong {
+    @apply text-slate-900;
+  }
+
+  .card {
+    @apply rounded-lg border border-slate-200 bg-white p-4;
+  }
+
+  .step-label {
+    @apply mb-2 text-xs font-extrabold uppercase tracking-wider text-orange-600;
+  }
+
+  .code-line {
+    @apply block rounded-md px-2 transition-colors duration-200;
+  }
+
+  .controls {
+    @apply grid grid-cols-4 gap-2 max-sm:grid-cols-3;
+  }
+
+  .control-button {
+    @apply min-h-11 cursor-pointer rounded-lg border border-slate-200 bg-white text-slate-900 transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0;
+  }
+
+  .primary-button {
+    @apply min-h-11 cursor-pointer rounded-lg bg-slate-900 font-extrabold text-white transition hover:-translate-y-px;
+  }
+
+  .quiz-button {
+    @apply min-h-11 cursor-pointer rounded-lg border border-slate-200 bg-white font-mono font-extrabold text-slate-900 transition hover:-translate-y-px;
+  }
+
+  .universe-header {
+    @apply flex items-start justify-between gap-4 px-7 py-6 max-sm:block;
+  }
+
+  .legend {
+    @apply flex flex-wrap justify-end gap-3 text-sm font-bold text-slate-500 max-sm:mt-4 max-sm:justify-start;
+  }
+
+  .legend-item {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .stage-wrap {
+    @apply relative min-h-96 flex-1 bg-stone-50;
+    background-image:
+      linear-gradient(rgb(226 232 240 / 0.7) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(226 232 240 / 0.7) 1px, transparent 1px);
+    background-size: 2rem 2rem;
+  }
+
+  .diagram-node {
+    @apply absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center border-4 border-slate-900 bg-white text-6xl font-bold text-slate-900 shadow-lg transition duration-300;
+    opacity: 1 !important;
+    box-sizing: border-box;
+  }
+
+  .variable-node {
+    @apply size-28 rounded-lg max-sm:size-24 max-sm:text-5xl;
+    background-color: white !important;
+  }
+
+  .variable-wide-node {
+    @apply h-20 min-w-40 rounded-lg px-5 text-3xl max-sm:h-16 max-sm:min-w-32 max-sm:px-4 max-sm:text-2xl;
+    width: fit-content;
+    background-color: white !important;
+  }
+
+  .value-node {
+    @apply size-32 rounded-full max-sm:size-24 max-sm:text-5xl;
+    background-color: white !important;
+  }
+
+  .object-node {
+    @apply size-24 rounded-full bg-slate-800 text-4xl text-white max-sm:size-20 max-sm:text-3xl;
+  }
+
+  .string-node {
+    @apply min-h-16 min-w-40 rounded-full px-5 text-2xl max-sm:min-h-14 max-sm:min-w-32 max-sm:px-4 max-sm:text-xl;
+    width: fit-content;
+    background-color: white !important;
+  }
+
+  .node-text {
+    @apply block max-w-full whitespace-pre text-center leading-none;
+  }
+
+  .object-node .node-text,
+  .value-node .node-text {
+    @apply overflow-hidden text-ellipsis;
+    max-width: 85%;
+  }
+
+  .wire {
+    @apply fill-none stroke-4 opacity-0 transition-opacity duration-200;
+    stroke-linecap: round;
+  }
+
+  .wire-label {
+    @apply fill-slate-700 font-sans text-sm font-bold;
+    dominant-baseline: middle;
+    text-anchor: middle;
+  }
+
+  .wire-label-bg {
+    @apply fill-white stroke-slate-200;
+  }
+
+  .wire-socket {
+    @apply stroke-white stroke-2;
+  }
+
+  .legend-variable-icon {
+    @apply inline-block size-4 rounded border-2 border-slate-900;
+  }
+
+  .legend-object-icon {
+    @apply inline-block size-4 rounded-full bg-slate-800;
+  }
+
+  .legend-property-icon {
+    @apply inline-block h-1 w-7 rounded-full bg-cyan-700;
+  }
+
+  .legend-value-icon {
+    @apply inline-block size-4 rounded-full border-2 border-slate-900;
+  }
+
+  .legend-wire-icon {
+    @apply inline-block h-1 w-7 rounded-full bg-orange-500;
+  }
+
+  .is-active-line {
+    @apply bg-orange-100 text-orange-900;
+  }
+
+  .is-hidden-node {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+
+  .is-active-node {
+    @apply border-orange-500;
+  }
+
+  .is-muted-node {
+    opacity: 1 !important;
+    @apply border-slate-400 text-slate-400;
+  }
+
+  .is-visible {
+    @apply opacity-100;
+  }
+
+  .is-correct-answer {
+    @apply border-emerald-300 bg-emerald-50 text-emerald-700;
+  }
+
+  .is-wrong-answer {
+    @apply border-rose-300 bg-rose-50 text-rose-700;
+  }
+}

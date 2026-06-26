@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playful JS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playpen+Sans:wght@500;600;700&family=Roboto+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./dist/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="lesson-panel" aria-label="JavaScript lesson">
+        <div class="flex items-start justify-between gap-4 max-sm:block">
+          <div class="w-full">
+            <p class="eyebrow">Playful JS</p>
+            <div class="chapter-picker" id="chapter-picker">
+              <button
+                class="chapter-trigger"
+                id="chapter-trigger"
+                type="button"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+              >
+                <span id="chapter-trigger-label"></span>
+                <svg
+                  class="chapter-chevron lucide lucide-chevron-down"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              <div class="chapter-menu hidden" id="chapter-menu" role="listbox" aria-label="Chapters">
+                <label class="chapter-search-wrap">
+                  <span class="sr-only">Search chapters</span>
+                  <input
+                    class="chapter-search"
+                    id="chapter-search"
+                    type="search"
+                    placeholder="Search chapters"
+                    autocomplete="off"
+                  />
+                </label>
+                <div id="chapter-options"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p id="lesson-intro"></p>
+
+        <div class="card" aria-label="Lesson code">
+          <pre class="m-0 whitespace-pre-wrap code-text text-base leading-loose"><code id="lesson-code"></code></pre>
+        </div>
+
+        <div class="card">
+          <p class="step-label" id="step-count">Step 1 of 5</p>
+          <h2 class="mb-1 text-2xl font-bold" id="step-title">Declare x</h2>
+          <p id="step-description">
+            JavaScript creates a variable named x. Think of it as a labeled box
+            that can hold a wire.
+          </p>
+        </div>
+
+        <div class="controls" aria-label="Lesson controls">
+          <button class="control-button" id="prev-step" type="button" aria-label="Previous step">
+            <span aria-hidden="true">&larr;</span>
+          </button>
+          <button class="primary-button" id="play-step" type="button">Play</button>
+          <button class="control-button" id="next-step" type="button" aria-label="Next step">
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+          <button class="control-button max-sm:col-span-full" id="reset-step" type="button">Reset</button>
+        </div>
+
+        <div class="card mt-auto hidden" id="quiz-card">
+          <p class="step-label">Checkpoint</p>
+          <p class="text-slate-900" id="quiz-prompt"></p>
+          <div class="mt-4 grid grid-cols-3 gap-3" id="quiz-options"></div>
+          <p class="mt-3 min-h-6" id="quiz-feedback" role="status"></p>
+        </div>
+      </section>
+
+      <section class="universe-panel" aria-label="JavaScript universe visualization">
+        <div class="universe-header">
+          <div>
+            <p class="eyebrow">JavaScript Universe</p>
+            <h2 class="display-heading text-3xl font-bold leading-tight" id="universe-title"></h2>
+          </div>
+          <div class="legend" id="legend" aria-label="Diagram legend"></div>
+        </div>
+
+        <div class="stage-wrap">
+          <svg class="pointer-events-none absolute inset-0 z-10 h-full w-full" id="wire-layer" aria-hidden="true"></svg>
+          <div class="absolute inset-0 z-20" id="stage"></div>
+          <svg class="pointer-events-none absolute inset-0 z-30 h-full w-full" id="wire-label-layer" aria-hidden="true"></svg>
+          <div class="absolute inset-0 z-30 pointer-events-none" id="note-layer"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
