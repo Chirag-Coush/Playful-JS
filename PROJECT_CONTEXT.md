@@ -23,7 +23,7 @@ Lesson order in `app.js`:
 - `conceptLessons`: mental-model library lessons.
 - `lessons = [...practicalLessons, ...conceptLessons]`.
 
-At this point the project has 88 chapters total.
+At this point the project has 93 chapters total.
 
 ## Non-Negotiable Teaching Rules
 
@@ -153,6 +153,6 @@ reviewed, not only the first or final frame.
 
 Continue improving the beginner practical curriculum so everyday JavaScript features map back to the mental models. The next useful phase is likely:
 
-- expand practical chapters after objects/classes into constructors, inheritance, getters/setters, static helpers, dates, async, DOM, fetch, and project-oriented examples;
+- expand practical chapters after objects/classes into setters, dates, async, DOM, fetch, and project-oriented examples;
 - group/search chapters more intentionally as the list grows;
 - keep screenshot-checking visually dense chapters after each batch.
