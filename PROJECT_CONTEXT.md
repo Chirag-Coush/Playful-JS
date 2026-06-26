@@ -23,7 +23,7 @@ Lesson order in `app.js`:
 - `conceptLessons`: mental-model library lessons.
 - `lessons = [...practicalLessons, ...conceptLessons]`.
 
-At this point the project has 75 chapters total.
+At this point the project has 83 chapters total.
 
 ## Non-Negotiable Teaching Rules
 
@@ -133,6 +133,7 @@ Query params are zero-based:
 - Early practical chapters were audited so they do not skip key evaluation/assignment steps.
 - String chapter labels preserve spaces where that matters.
 - For loops now show each pass and final counter state clearly.
+- Practical functions and array methods were added after arrays: functions, scope, callbacks, forEach, map, filter, reduce, and function expressions/arrows.
 - Event Listeners now show `count` being initialized before listener registration, the callback being stored without running, the browser calling it on click, and `count` moving from `0` to `1`.
 - A reusable lesson audit script was added and wired into `npm run check`.
 
@@ -140,7 +141,6 @@ Query params are zero-based:
 
 Continue improving the beginner practical curriculum so everyday JavaScript features map back to the mental models. The next useful phase is likely:
 
-- expand practical chapters after arrays into functions, callbacks, array methods, objects/classes, async, DOM, fetch, and project-oriented examples;
+- expand practical chapters after functions and array methods into objects, `this`, constructors/classes, async, DOM, fetch, and project-oriented examples;
 - group/search chapters more intentionally as the list grows;
 - keep screenshot-checking visually dense chapters after each batch.
-

@@ -24,7 +24,8 @@ Current learning structure:
 - Decisions and branching: if statements, logical operators, ternary, switch, and strict equality.
 - Strings in real projects: string methods, slicing, and method chaining.
 - Loops and repeated work: for loops.
-- Arrays and lists: arrays, push, and index access.
+- Arrays and lists: arrays, push, index access, forEach, map, filter, and reduce.
+- Functions and reusable logic: functions, scope, callbacks, function expressions, and arrow functions.
 - Mental model library: values, objects, mutation, identity, functions, scope, closures, async, DOM, modules, and modern JavaScript concepts.
 
 ## Run
