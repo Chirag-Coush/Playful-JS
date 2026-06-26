@@ -26,6 +26,7 @@ Current learning structure:
 - Loops and repeated work: for loops.
 - Arrays and lists: arrays, push, index access, forEach, map, filter, and reduce.
 - Functions and reusable logic: functions, scope, callbacks, function expressions, and arrow functions.
+- Objects and app data: objects, nested objects, arrays of objects, `this`, and classes.
 - Mental model library: values, objects, mutation, identity, functions, scope, closures, async, DOM, modules, and modern JavaScript concepts.
 
 ## Run
