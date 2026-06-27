@@ -156,8 +156,20 @@ Continue improving the beginner practical curriculum so everyday JavaScript feat
 - expand practical chapters after objects/classes into time, data, and async foundations;
 - suggested next batch: Dates, `setTimeout`, Asynchronous Code, Promises, and `async` / `await`;
 - after that: Error Handling, JSON, Fetch API, DOM selectors/navigation, changing HTML, events, classList, and small project-style workflows;
+- after browser/app JavaScript, continue only where it supports confidence with React, Next.js, and real projects: ES modules/project structure, browser storage if needed, URL/search params, debugging, testing basics, immutability/state update patterns, and component/data-flow mental models;
 - group/search chapters more intentionally as the list grows;
 - keep screenshot-checking visually dense chapters after each batch.
+
+## Chapter Addition Discipline
+
+Before adding chapters, search existing `practicalLessons` and `conceptLessons`
+for the same topic. Improve, reorder, or clarify existing material when that is
+better than adding a duplicate. Add a new chapter only when it teaches a distinct
+everyday skill or a mental model needed for real projects.
+
+The course is not intended to cover every JavaScript edge case. The goal is that
+someone who completes roughly 80% feels comfortable reading and writing everyday
+JavaScript and has enough mental-model confidence to learn React and Next.js.
 
 ## Continuation Prompt
 

@@ -65,12 +65,14 @@ Next recommended work:
    - what the syntax does,
    - where it appears in real projects.
 4. For every new chapter:
+   - first search existing `practicalLessons` and `conceptLessons` for the topic and decide whether to improve/reorder an existing chapter instead of adding a duplicate,
+   - only add a new chapter if it teaches a distinct everyday skill or a mental model needed for real projects,
    - add lesson data to `practicalLessons` before `conceptLessons`,
    - keep diagrams behaviorally accurate,
    - run `npm run check`,
    - run `npm run screenshots:chapter -- <chapter-number>` for dense chapters,
    - inspect screenshots and fix layout issues before committing.
-5. After the async section, continue with:
+5. After the async section, continue with browser/app JavaScript:
    - Error Handling,
    - JSON,
    - Fetch API,
@@ -79,5 +81,15 @@ Next recommended work:
    - events,
    - classList,
    - small project-style workflows.
+6. After browser/app JavaScript, continue only where it supports confidence with React, Next.js, and real projects:
+   - ES modules and project file structure,
+   - browser storage (`localStorage`, `sessionStorage`) if not already covered well enough,
+   - URL/search params and basic routing mental models,
+   - debugging with console/devtools,
+   - testing pure functions and UI behavior at a beginner level,
+   - immutability and state update patterns as a React bridge,
+   - component/data-flow mental models before creating a separate React track.
+7. Avoid unnecessary chapters. The course is not meant to cover every JavaScript edge case. Aim for the learner to complete 80% and feel confident reading/writing everyday JavaScript and understanding React/Next.js fundamentals.
+8. If a topic already exists in the mental model library, decide whether the practical track needs a shorter applied version. If not, link the idea through copy/sequence rather than duplicating it.
 
 Please continue from the current repository state. Start by checking `git status -sb`, then build the next practical chapter batch.
