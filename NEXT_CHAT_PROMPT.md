@@ -88,6 +88,7 @@ Next recommended work:
    - debugging with console/devtools,
    - testing pure functions and UI behavior at a beginner level,
    - immutability and state update patterns as a React bridge,
+   - TypeScript basics used in real codebases: type annotations, interfaces/types, unions, optional properties, generics at a beginner level, and reading common React/Next.js TypeScript patterns,
    - component/data-flow mental models before creating a separate React track.
 7. Avoid unnecessary chapters. The course is not meant to cover every JavaScript edge case. Aim for the learner to complete 80% and feel confident reading/writing everyday JavaScript and understanding React/Next.js fundamentals.
 8. If a topic already exists in the mental model library, decide whether the practical track needs a shorter applied version. If not, link the idea through copy/sequence rather than duplicating it.
