@@ -153,6 +153,12 @@ reviewed, not only the first or final frame.
 
 Continue improving the beginner practical curriculum so everyday JavaScript features map back to the mental models. The next useful phase is likely:
 
-- expand practical chapters after objects/classes into setters, dates, async, DOM, fetch, and project-oriented examples;
+- expand practical chapters after objects/classes into time, data, and async foundations;
+- suggested next batch: Dates, `setTimeout`, Asynchronous Code, Promises, and `async` / `await`;
+- after that: Error Handling, JSON, Fetch API, DOM selectors/navigation, changing HTML, events, classList, and small project-style workflows;
 - group/search chapters more intentionally as the list grows;
 - keep screenshot-checking visually dense chapters after each batch.
+
+## Continuation Prompt
+
+Use `NEXT_CHAT_PROMPT.md` as the paste-ready prompt when opening a fresh chat window. It includes the project path, current state, non-negotiable rules, validation commands, and next implementation plan.
