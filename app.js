@@ -2347,6 +2347,280 @@ const practicalLessons = [
       wrong: "Not quite. Array sort mutates the array it is called on.",
     },
   },
+  {
+    id: "typescript-annotations",
+    section: "TypeScript bridge",
+    number: "Chapter 61",
+    title: "Type Annotations",
+    universeTitle: "Types are checked before JavaScript runs",
+    intro:
+      "TypeScript adds type notes to JavaScript. The notes help the editor and compiler catch mistakes, but they are not runtime values.",
+    code: ["let count: number = 0;", "count = count + 1;", 'count = "one"; // TypeScript error'],
+    legend: ["variable", "wire", "value"],
+    nodes: {
+      count: { label: "count", kind: "variable-wide", x: 18, y: 38 },
+      zero: { label: "0", kind: "value", x: 54, y: 28 },
+      one: { label: "1", kind: "value", x: 54, y: 54 },
+      textOne: { label: '"one"', kind: "string", x: 74, y: 78 },
+    },
+    steps: [
+      {
+        title: "Create a typed variable",
+        description:
+          "At runtime, count is still a normal variable pointing to 0. The : number annotation is a compile-time check.",
+        line: 0,
+        visible: ["count", "zero"],
+        wires: [
+          { id: "count-zero", from: "count", to: "zero", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["count", "zero"],
+        notes: [{ text: ": number is checked before runtime", x: 58, y: 16 }],
+      },
+      {
+        title: "Number work is allowed",
+        description:
+          "count + 1 reads the old number, creates 1, and moves count to the new number value.",
+        line: 1,
+        visible: ["count", "zero", "one"],
+        wires: [
+          { id: "count-one", from: "count", to: "one", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["count", "one"],
+      },
+      {
+        title: "Wrong type is rejected",
+        description:
+          'TypeScript reports an error before this JavaScript runs because "one" is a string, not a number.',
+        line: 2,
+        visible: ["count", "one", "textOne"],
+        wires: [
+          { id: "count-one", from: "count", to: "one", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["textOne"],
+        notes: [{ text: "No runtime wire moves when compilation stops", x: 52, y: 88 }],
+      },
+    ],
+    quiz: {
+      prompt: "Where does TypeScript use type annotations?",
+      options: ["before runtime", "as object properties", "after the browser paints"],
+      answer: "before runtime",
+      correct: "Correct. TypeScript checks annotations before the JavaScript runs.",
+      wrong: "Not quite. Type annotations are compile-time checks, not runtime values.",
+    },
+  },
+  {
+    id: "typescript-object-types",
+    section: "TypeScript bridge",
+    number: "Chapter 62",
+    title: "Object Types",
+    universeTitle: "Object types describe expected property wires",
+    intro:
+      "Object types and interfaces describe the shape code expects: which properties should exist and what kinds of values they should point to.",
+    code: ["type User = { name: string; admin?: boolean };", 'let user: User = { name: "Ada" };', "user.admin ?? false;"],
+    legend: ["variable", "object", "property", "value"],
+    nodes: {
+      user: { label: "user", kind: "variable-wide", x: 16, y: 38 },
+      userObj: { label: "{ }", kind: "object", x: 44, y: 38 },
+      ada: { label: '"Ada"', kind: "string", x: 72, y: 38 },
+      missing: { label: "undefined", kind: "string", x: 44, y: 70 },
+      falseValue: { label: "false", kind: "string", x: 72, y: 70 },
+    },
+    steps: [
+      {
+        title: "Describe the object shape",
+        description:
+          "The User type is a compile-time description. It does not create a runtime object by itself.",
+        line: 0,
+        visible: [],
+        wires: [],
+        active: [],
+        notes: [{ text: "User expects name; admin is optional", x: 50, y: 42 }],
+      },
+      {
+        title: "Create a matching object",
+        description:
+          'The runtime object has a name property pointing to "Ada". The user variable points to that object.',
+        line: 1,
+        visible: ["user", "userObj", "ada"],
+        wires: [
+          { id: "user-userObj", from: "user", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["user", "userObj", "ada"],
+      },
+      {
+        title: "Optional property may be missing",
+        description:
+          "admin? means the property can be absent. Reading it gives undefined at runtime.",
+        line: 2,
+        visible: ["user", "userObj", "ada", "missing"],
+        wires: [
+          { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["missing"],
+      },
+      {
+        title: "Fallback handles missing data",
+        description:
+          "Because user.admin is undefined, ?? chooses false. The object itself did not gain an admin property.",
+        line: 2,
+        visible: ["userObj", "missing", "falseValue"],
+        wires: [],
+        active: ["falseValue"],
+      },
+    ],
+    quiz: {
+      prompt: "What does admin? mean in this object type?",
+      options: ["the property is optional", "the value must be a string", "the object is a Promise"],
+      answer: "the property is optional",
+      correct: "Correct. The property may be missing, so code should handle undefined.",
+      wrong: "Not quite. The question mark marks an optional property.",
+    },
+  },
+  {
+    id: "typescript-unions",
+    section: "TypeScript bridge",
+    number: "Chapter 63",
+    title: "Union Types",
+    universeTitle: "Unions narrow after checks",
+    intro:
+      "A union type says a value can be one of several shapes. Code narrows the union by checking a property before using shape-specific data.",
+    code: ["type State = { status: 'loading' } | { status: 'success'; name: string };", "if (state.status === 'success') {", "  show(state.name);", "}"],
+    legend: ["variable", "object", "property", "value"],
+    nodes: {
+      state: { label: "state", kind: "variable-wide", x: 14, y: 42 },
+      stateObj: { label: "{ }", kind: "object", x: 40, y: 42 },
+      success: { label: '"success"', kind: "string", x: 70, y: 30 },
+      ada: { label: '"Ada"', kind: "string", x: 70, y: 54 },
+      result: { label: "show()", kind: "variable-wide", x: 40, y: 82 },
+    },
+    steps: [
+      {
+        title: "State points to one shape",
+        description:
+          'At runtime, state points to one object. This object has status "success" and a name property.',
+        line: 0,
+        visible: ["state", "stateObj", "success", "ada"],
+        wires: [
+          { id: "state-stateObj", from: "state", to: "stateObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "stateObj-success", from: "stateObj", to: "success", label: "status", tone: "orange", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "stateObj-ada", from: "stateObj", to: "ada", label: "name", tone: "orange", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+        ],
+        active: ["state", "stateObj"],
+        notes: [{ text: "TypeScript knows State can be loading or success", x: 50, y: 16 }],
+      },
+      {
+        title: "Check the status property",
+        description:
+          'state.status === "success" reads the status property and narrows the type for the if block.',
+        line: 1,
+        visible: ["state", "stateObj", "success", "ada"],
+        wires: [
+          { id: "state-stateObj", from: "state", to: "stateObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "stateObj-success", from: "stateObj", to: "success", label: "status", tone: "orange", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "stateObj-ada", from: "stateObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+        ],
+        active: ["success"],
+      },
+      {
+        title: "Narrowed code can read name",
+        description:
+          "Inside the success branch, TypeScript allows state.name because that shape includes the name property.",
+        line: 2,
+        visible: ["stateObj", "success", "ada", "result"],
+        wires: [
+          { id: "stateObj-success", from: "stateObj", to: "success", label: "status", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "stateObj-ada", from: "stateObj", to: "ada", label: "name", tone: "orange", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "result-ada", from: "result", to: "ada", label: "uses", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
+        ],
+        active: ["result", "ada"],
+      },
+    ],
+    quiz: {
+      prompt: "Why check state.status before reading state.name?",
+      options: ["to narrow the union", "to create a new class", "to stringify the object"],
+      answer: "to narrow the union",
+      correct: "Correct. The check proves which shape you have inside the branch.",
+      wrong: "Not quite. The check narrows the union so shape-specific properties are safe.",
+    },
+  },
+  {
+    id: "typescript-generics",
+    section: "TypeScript bridge",
+    number: "Chapter 64",
+    title: "Generics",
+    universeTitle: "Generics preserve a type relationship",
+    intro:
+      "Generics let a function describe a relationship between inputs and outputs without choosing one exact type up front.",
+    code: ["function first<T>(items: T[]): T {", "  return items[0];", "}", 'let name = first(["Ada", "Grace"]);'],
+    legend: ["variable", "object", "wire", "value"],
+    nodes: {
+      firstVar: { label: "first", kind: "variable-wide", x: 14, y: 32 },
+      firstFn: { label: "fn", kind: "object", x: 42, y: 32 },
+      array: { label: "[ ]", kind: "object", x: 42, y: 62 },
+      ada: { label: '"Ada"', kind: "string", x: 70, y: 54 },
+      grace: { label: '"Grace"', kind: "string", x: 70, y: 70 },
+      name: { label: "name", kind: "variable-wide", x: 14, y: 88 },
+    },
+    steps: [
+      {
+        title: "Generic function is a normal function",
+        description:
+          "first points to a function value. <T> is a TypeScript type parameter, not a runtime value.",
+        line: 0,
+        visible: ["firstVar", "firstFn"],
+        wires: [
+          { id: "firstVar-firstFn", from: "firstVar", to: "firstFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["firstVar", "firstFn"],
+        notes: [{ text: "T exists for the checker, not at runtime", x: 58, y: 18 }],
+      },
+      {
+        title: "Call with a string array",
+        description:
+          'The argument is an array of strings. TypeScript infers T as string for this call.',
+        line: 3,
+        visible: ["firstVar", "firstFn", "array", "ada", "grace"],
+        wires: [
+          { id: "firstVar-firstFn", from: "firstVar", to: "firstFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "array-ada", from: "array", to: "ada", label: "0", tone: "orange", fromAnchor: { side: "right", offset: -10 }, toAnchor: { side: "left" } },
+          { id: "array-grace", from: "array", to: "grace", label: "1", tone: "orange", fromAnchor: { side: "right", offset: 10 }, toAnchor: { side: "left" } },
+        ],
+        active: ["array", "ada", "grace"],
+      },
+      {
+        title: "Return the first item",
+        description:
+          'items[0] returns "Ada". Because T was inferred as string, TypeScript knows the return value is a string.',
+        line: 1,
+        visible: ["array", "ada", "grace"],
+        wires: [
+          { id: "array-ada", from: "array", to: "ada", label: "0", tone: "orange", fromAnchor: { side: "right", offset: -10 }, toAnchor: { side: "left" } },
+          { id: "array-grace", from: "array", to: "grace", label: "1", tone: "slate", fromAnchor: { side: "right", offset: 10 }, toAnchor: { side: "left" } },
+        ],
+        active: ["ada"],
+      },
+      {
+        title: "Store the returned string",
+        description:
+          'name points to "Ada". The generic preserved the relationship between the array item type and the return type.',
+        line: 3,
+        visible: ["name", "ada"],
+        wires: [
+          { id: "name-ada", from: "name", to: "ada", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["name", "ada"],
+      },
+    ],
+    quiz: {
+      prompt: "What does the generic T preserve here?",
+      options: ["input item type to return type", "CSS order", "timer delay"],
+      answer: "input item type to return type",
+      correct: "Correct. The return type follows the array item type for each call.",
+      wrong: "Not quite. T links the input item type with the returned value type.",
+    },
+  },
 ];
 
 const conceptLessons = [

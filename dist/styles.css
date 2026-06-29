@@ -1072,6 +1072,9 @@
       width: calc(var(--spacing) * 56);
     }
   }
+  .floating-note.is-visible {
+    opacity: 100%;
+  }
 }
 @property --tw-rotate-x {
   syntax: "*";

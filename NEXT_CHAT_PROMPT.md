@@ -27,7 +27,7 @@ Important rules:
 
 Current state:
 
-- The app has 93 chapters.
+- The app has 97 chapters.
 - Practical lessons come first in `practicalLessons`.
 - The older conceptual library follows in `conceptLessons`.
 - Recent practical sections already added:
@@ -35,6 +35,7 @@ Current state:
   - functions/scope/callbacks/array methods,
   - objects/nested objects/arrays of objects/`this`/classes,
   - constructors/static methods/getters/inheritance/sorting arrays of objects.
+  - TypeScript bridge: type annotations, object types, union narrowing, and generics.
 
 Useful commands:
 
@@ -54,13 +55,12 @@ npm run screenshots:chapter -- 34 http://127.0.0.1:8080 /private/tmp/playful-js-
 
 Next recommended work:
 
-1. Add practical chapters for the next everyday JavaScript section: time, data, and async foundations.
-2. Suggested Chapter 34-38 plan:
-   - Chapter 34: Dates
-   - Chapter 35: `setTimeout`
-   - Chapter 36: Asynchronous Code
-   - Chapter 37: Promises
-   - Chapter 38: `async` / `await`
+1. Continue after the new practical TypeScript bridge.
+2. Suggested next practical direction:
+   - component/data-flow mental models before a separate React track,
+   - React-style props and state update patterns,
+   - URL/search params and basic routing mental models if needed,
+   - debugging with console/devtools workflows.
 3. Keep the chapter sequence beginner-friendly and practical. Each chapter should answer both:
    - what the syntax does,
    - where it appears in real projects.
@@ -72,24 +72,13 @@ Next recommended work:
    - run `npm run check`,
    - run `npm run screenshots:chapter -- <chapter-number>` for dense chapters,
    - inspect screenshots and fix layout issues before committing.
-5. After the async section, continue with browser/app JavaScript:
-   - Error Handling,
-   - JSON,
-   - Fetch API,
-   - DOM selectors/navigation,
-   - changing HTML,
-   - events,
-   - classList,
-   - small project-style workflows.
-6. After browser/app JavaScript, continue only where it supports confidence with React, Next.js, and real projects:
-   - ES modules and project file structure,
-   - browser storage (`localStorage`, `sessionStorage`) if not already covered well enough,
-   - URL/search params and basic routing mental models,
+5. Browser/app JavaScript, async, storage, testing, production patterns, and the beginner TypeScript bridge are already represented in the practical track or mental-model library. Prefer improving weak existing chapters over adding duplicates.
+6. Continue only where it supports confidence with React, Next.js, and real projects:
+   - component/data-flow mental models before creating a separate React track,
+   - props/state and parent-child data flow,
+   - URL/search params and basic routing mental models if needed,
    - debugging with console/devtools,
-   - testing pure functions and UI behavior at a beginner level,
-   - immutability and state update patterns as a React bridge,
-   - TypeScript basics used in real codebases: type annotations, interfaces/types, unions, optional properties, generics at a beginner level, and reading common React/Next.js TypeScript patterns,
-   - component/data-flow mental models before creating a separate React track.
+   - reading common React/Next.js TypeScript patterns.
 7. Avoid unnecessary chapters. The course is not meant to cover every JavaScript edge case. Aim for the learner to complete 80% and feel confident reading/writing everyday JavaScript and understanding React/Next.js fundamentals.
 8. If a topic already exists in the mental model library, decide whether the practical track needs a shorter applied version. If not, link the idea through copy/sequence rather than duplicating it.
 

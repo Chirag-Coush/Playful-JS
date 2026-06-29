@@ -23,7 +23,7 @@ Lesson order in `app.js`:
 - `conceptLessons`: mental-model library lessons.
 - `lessons = [...practicalLessons, ...conceptLessons]`.
 
-At this point the project has 93 chapters total.
+At this point the project has 97 chapters total.
 
 ## Non-Negotiable Teaching Rules
 
@@ -148,6 +148,8 @@ reviewed, not only the first or final frame.
 - Practical object chapters were added after functions: JavaScript objects, nested objects, arrays of objects, `this`, and classes.
 - Event Listeners now show `count` being initialized before listener registration, the callback being stored without running, the browser calling it on click, and `count` moving from `0` to `1`.
 - A reusable lesson audit script was added and wired into `npm run check`.
+- A practical TypeScript bridge was added after sorting arrays of objects: type annotations, object types, union narrowing, and generics. TypeScript-only ideas are shown as compile-time notes, not runtime values.
+- Floating notes now render correctly through `.floating-note.is-visible`.
 
 ## Near-Term Next Step
 
@@ -156,7 +158,7 @@ Continue improving the beginner practical curriculum so everyday JavaScript feat
 - expand practical chapters after objects/classes into time, data, and async foundations;
 - suggested next batch: Dates, `setTimeout`, Asynchronous Code, Promises, and `async` / `await`;
 - after that: Error Handling, JSON, Fetch API, DOM selectors/navigation, changing HTML, events, classList, and small project-style workflows;
-- after browser/app JavaScript, continue only where it supports confidence with React, Next.js, and real projects: ES modules/project structure, browser storage if needed, URL/search params, debugging, testing basics, immutability/state update patterns, TypeScript basics used in real codebases, and component/data-flow mental models;
+- after browser/app JavaScript and the TypeScript bridge, continue only where it supports confidence with React, Next.js, and real projects: component/data-flow mental models, React-style props/state patterns, URL/search params and basic routing mental models if needed, and debugging/devtools workflows;
 - group/search chapters more intentionally as the list grows;
 - keep screenshot-checking visually dense chapters after each batch.
 

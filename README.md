@@ -1,10 +1,32 @@
 # Playful JS
 
-An interactive visual JavaScript learning playground.
+Playful JS is a visual JavaScript learning playground.
 
-The app now starts with practical JavaScript basics and uses visual mental
-models inside each lesson. The original conceptual chapters are still available
-as a mental model library after the beginner-first chapters.
+I started this because I learn programming concepts better when I can see what
+the code is doing, not just read the syntax. Variables, values, functions,
+objects, DOM nodes, async work, and TypeScript types all become easier for me
+when they are drawn as boxes, values, and wires.
+
+The early inspiration came from Dan Abramov and Maggie Appleton's
+Just JavaScript work. Their course focused on the fundamentals: mental models,
+the JavaScript universe, values and variables, equality, properties, mutation,
+and prototypes.
+
+This project takes that kind of visual mental-model approach and stretches it
+across more of the path I am learning myself: practical JavaScript, TypeScript,
+async code, DOM work, production patterns, and eventually framework-specific
+ideas like React and Next.js structure.
+
+I am not trying to present myself as someone who knows everything about
+JavaScript or React. It is almost the opposite. This is my way of slowing down
+and making the invisible parts visible, especially now that more code is being
+written with AI tools and agent loops. If an AI tool builds something, I still
+want to understand enough to jump in, assess the work, debug it, and know what
+is actually happening.
+
+The app starts with practical JavaScript basics and uses visual mental models
+inside each lesson. The older conceptual chapters are still available as a
+mental model library after the beginner-first chapters.
 
 One early mental model is:
 
@@ -27,6 +49,7 @@ Current learning structure:
 - Arrays and lists: arrays, push, index access, forEach, map, filter, and reduce.
 - Functions and reusable logic: functions, scope, callbacks, function expressions, and arrow functions.
 - Objects and app data: objects, nested objects, arrays of objects, `this`, classes, constructors, static methods, getters, inheritance, and sorting objects.
+- TypeScript bridge: type annotations, object types, union narrowing, and generics.
 - Mental model library: values, objects, mutation, identity, functions, scope, closures, async, DOM, modules, and modern JavaScript concepts.
 
 ## Run
