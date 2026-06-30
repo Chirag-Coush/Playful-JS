@@ -8886,6 +8886,17 @@ function saveProgress() {
   }
 }
 
+function syncProgressUrl() {
+  const params = new URLSearchParams(window.location.search);
+  params.set("chapter", String(state.lessonIndex));
+  params.set("step", String(state.step));
+
+  const nextUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+  if (nextUrl !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+    window.history.replaceState(null, "", nextUrl);
+  }
+}
+
 function currentLesson() {
   return lessons[state.lessonIndex];
 }
@@ -9251,6 +9262,7 @@ function render() {
   const lesson = currentLesson();
   const step = currentStep();
   saveProgress();
+  syncProgressUrl();
   syncSvgViewport();
   renderChapterMenuState();
 
