@@ -8837,14 +8837,16 @@ const legendIconClass = {
   wire: "legend-wire-icon",
 };
 
+const progressStorageKey = "playful-js-session-progress";
+
 function getInitialState() {
   const params = new URLSearchParams(window.location.search);
-  const lessonParam = Number(params.get("chapter"));
-  const stepParam = Number(params.get("step"));
-  const lessonIndex =
-    Number.isInteger(lessonParam) && lessonParam >= 0 && lessonParam < lessons.length
-      ? lessonParam
-      : 0;
+  const hasChapterParam = params.has("chapter");
+  const hasStepParam = params.has("step");
+  const savedProgress = hasChapterParam || hasStepParam ? null : readSavedProgress();
+  const lessonParam = hasChapterParam ? Number(params.get("chapter")) : savedProgress?.lessonIndex;
+  const stepParam = hasStepParam ? Number(params.get("step")) : savedProgress?.step;
+  const lessonIndex = isValidLessonIndex(lessonParam) ? lessonParam : 0;
   const maxStep = lessons[lessonIndex].steps.length - 1;
   const step =
     Number.isInteger(stepParam) && stepParam >= 0 && stepParam <= maxStep
@@ -8852,6 +8854,36 @@ function getInitialState() {
       : 0;
 
   return { lessonIndex, step };
+}
+
+function isValidLessonIndex(index) {
+  return Number.isInteger(index) && index >= 0 && index < lessons.length;
+}
+
+function readSavedProgress() {
+  try {
+    const raw = sessionStorage.getItem(progressStorageKey);
+    if (!raw) return null;
+
+    const progress = JSON.parse(raw);
+    return {
+      lessonIndex: Number(progress.lessonIndex),
+      step: Number(progress.step),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveProgress() {
+  try {
+    sessionStorage.setItem(
+      progressStorageKey,
+      JSON.stringify({ lessonIndex: state.lessonIndex, step: state.step }),
+    );
+  } catch {
+    // Progress saving is optional. The lesson should still work if storage is unavailable.
+  }
 }
 
 function currentLesson() {
@@ -9218,6 +9250,7 @@ function renderNotes(notes = []) {
 function render() {
   const lesson = currentLesson();
   const step = currentStep();
+  saveProgress();
   syncSvgViewport();
   renderChapterMenuState();
 
