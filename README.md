@@ -54,10 +54,11 @@ Current learning structure:
 
 ## Run
 
-From a fresh terminal, go to the project folder first:
+From a fresh terminal, clone the repo and go into the project folder:
 
 ```sh
-cd "/Users/chiragcoushikgar/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/1.Code/Playful-JS"
+git clone https://github.com/Chirag-Coush/Playful-JS.git
+cd Playful-JS
 ```
 
 Install dependencies once. You can skip this if `node_modules` already exists:

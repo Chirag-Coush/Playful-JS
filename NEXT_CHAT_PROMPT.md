@@ -1,9 +1,9 @@
 # Paste This Into The Next Chat
 
-We are working in this project:
+We are working in the local clone of this project:
 
 ```txt
-/Users/chiragcoushikgar/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/1.Code/Playful-JS
+Playful-JS
 ```
 
 The project is **Playful JS**, an interactive visual JavaScript learning app for beginners who learn better through diagrams than videos. The goal is to teach practical JavaScript first, while using accurate visual mental models: variables are boxes, primitive values are circles/pills, objects/functions are object-like values, and wires represent references to values.
