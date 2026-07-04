@@ -9399,7 +9399,7 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  if (event.key === "ArrowLeft") {
+  if (event.key === "ArrowUp") {
     event.preventDefault();
     stopPlayback();
     if (event.shiftKey) {
@@ -9411,7 +9411,7 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  if (event.key === "ArrowRight") {
+  if (event.key === "ArrowDown") {
     event.preventDefault();
     stopPlayback();
     if (event.shiftKey) {
