@@ -6,4 +6,8 @@
   .floating-note.is-visible {
     @apply opacity-100;
   }
+
+  html.dark .floating-note {
+    @apply border-cyan-700 bg-cyan-950 text-cyan-200;
+  }
 }

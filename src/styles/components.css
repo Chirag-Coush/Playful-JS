@@ -15,8 +15,35 @@
     @apply flex min-w-0 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl lg:col-span-2;
   }
 
+  .lesson-header {
+    @apply flex items-center justify-between gap-3;
+  }
+
   .eyebrow {
     @apply mb-2 text-xs font-bold uppercase tracking-wider text-slate-700;
+  }
+
+  .theme-toggle {
+    @apply relative inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-transparent text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 focus:outline-none focus:ring-4 focus:ring-slate-100;
+  }
+
+  .theme-toggle::before {
+    content: "";
+    @apply absolute -left-3 h-6 w-px bg-slate-200;
+  }
+
+  .theme-toggle-icon {
+    @apply relative block size-5 rounded-full border-4 border-slate-950 bg-white;
+  }
+
+  .theme-toggle-icon::before {
+    content: "";
+    @apply absolute inset-0 rounded-full;
+    background: repeating-linear-gradient(
+      135deg,
+      rgb(15 23 42) 0 2px,
+      transparent 2px 5px
+    );
   }
 
   .chapter-picker {
@@ -106,6 +133,10 @@
 
   .quiz-button {
     @apply min-h-11 cursor-pointer rounded-lg border border-slate-200 bg-white font-mono font-extrabold text-slate-900 transition hover:-translate-y-px;
+  }
+
+  .quiz-prompt {
+    @apply text-slate-900;
   }
 
   .universe-header {
@@ -238,5 +269,154 @@
 
   .is-wrong-answer {
     @apply border-rose-300 bg-rose-50 text-rose-700;
+  }
+
+  html.dark .panel,
+  html.dark .lesson-panel,
+  html.dark .universe-panel {
+    @apply border-slate-800 bg-slate-900 shadow-none;
+  }
+
+  html.dark .eyebrow {
+    @apply text-slate-300;
+  }
+
+  html.dark .theme-toggle {
+    @apply text-slate-300 hover:bg-slate-800 hover:text-white focus:ring-slate-700;
+  }
+
+  html.dark .theme-toggle::before {
+    @apply bg-slate-700;
+  }
+
+  html.dark .theme-toggle-icon {
+    @apply border-white bg-slate-950;
+  }
+
+  html.dark .theme-toggle-icon::before {
+    background: repeating-linear-gradient(
+      135deg,
+      white 0 2px,
+      transparent 2px 5px
+    );
+  }
+
+  html.dark .chapter-trigger {
+    @apply border-slate-700 bg-slate-950 text-slate-100 shadow-none hover:border-slate-500 focus:border-slate-400 focus:ring-slate-800;
+  }
+
+  html.dark .chapter-chevron {
+    @apply text-slate-400;
+  }
+
+  html.dark .chapter-menu {
+    @apply border-slate-700 bg-slate-950 shadow-none;
+  }
+
+  html.dark .chapter-search-wrap {
+    @apply bg-slate-950;
+  }
+
+  html.dark .chapter-search {
+    @apply border-slate-700 bg-slate-900 text-slate-100 placeholder:text-slate-500 focus:border-slate-400 focus:ring-slate-800;
+  }
+
+  html.dark .chapter-group {
+    @apply border-slate-800;
+  }
+
+  html.dark .chapter-group-label,
+  html.dark .chapter-empty {
+    @apply text-slate-400;
+  }
+
+  html.dark .chapter-option {
+    @apply hover:bg-slate-800;
+  }
+
+  html.dark .chapter-option span {
+    @apply text-slate-500;
+  }
+
+  html.dark .chapter-option strong,
+  html.dark .chapter-option.is-active-chapter span,
+  html.dark .chapter-option.is-active-chapter strong {
+    @apply text-slate-100;
+  }
+
+  html.dark .chapter-option.is-active-chapter {
+    @apply bg-slate-800;
+  }
+
+  html.dark .card {
+    @apply border-slate-800 bg-slate-950;
+  }
+
+  html.dark .quiz-prompt {
+    @apply text-slate-100;
+  }
+
+  html.dark .control-button {
+    @apply border-slate-700 bg-slate-950 text-slate-200 hover:border-slate-500 hover:text-white;
+  }
+
+  html.dark .primary-button {
+    @apply bg-slate-100 text-slate-900 hover:bg-white hover:text-slate-950;
+  }
+
+  html.dark .quiz-button {
+    @apply border-slate-700 bg-slate-950 text-slate-100 hover:border-slate-500;
+  }
+
+  html.dark .legend {
+    @apply text-slate-400;
+  }
+
+  html.dark .stage-wrap {
+    @apply bg-slate-950;
+    background-image:
+      linear-gradient(rgb(51 65 85 / 0.55) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(51 65 85 / 0.55) 1px, transparent 1px);
+  }
+
+  html.dark .object-node {
+    @apply bg-slate-700 text-white;
+  }
+
+  html.dark .wire-label {
+    @apply fill-slate-200;
+  }
+
+  html.dark .wire-label-bg {
+    @apply fill-slate-900 stroke-slate-700;
+  }
+
+  html.dark .wire-socket {
+    @apply stroke-slate-950;
+  }
+
+  html.dark .legend-variable-icon,
+  html.dark .legend-value-icon {
+    @apply border-slate-200;
+  }
+
+  html.dark .legend-object-icon {
+    @apply bg-slate-200;
+  }
+
+  html.dark .is-active-line {
+    @apply bg-orange-900 text-orange-100;
+  }
+
+  html.dark .is-muted-node {
+    @apply border-slate-500 text-slate-500;
+  }
+
+  html.dark .is-correct-answer {
+    @apply border-emerald-700 bg-emerald-950 text-emerald-300;
+  }
+
+  html.dark .is-wrong-answer {
+    @apply border-rose-700 bg-rose-950 text-rose-300;
   }
 }

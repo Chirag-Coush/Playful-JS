@@ -3,8 +3,20 @@
     @apply min-h-screen bg-stone-100 font-sans text-slate-900;
   }
 
+  html.dark {
+    color-scheme: dark;
+  }
+
+  html.dark body {
+    @apply bg-slate-950 text-slate-100;
+  }
+
   p {
     @apply leading-relaxed text-slate-500;
+  }
+
+  html.dark p {
+    @apply text-slate-400;
   }
 
   h1,

@@ -8809,6 +8809,7 @@ const dom = {
   nextButton: document.querySelector("#next-step"),
   playButton: document.querySelector("#play-step"),
   resetButton: document.querySelector("#reset-step"),
+  themeToggle: document.querySelector("#theme-toggle"),
   quizCard: document.querySelector("#quiz-card"),
   quizPrompt: document.querySelector("#quiz-prompt"),
   quizOptions: document.querySelector("#quiz-options"),
@@ -8838,6 +8839,7 @@ const legendIconClass = {
 };
 
 const progressStorageKey = "playful-js-session-progress";
+const themeStorageKey = "playful-js-theme";
 
 function getInitialState() {
   const params = new URLSearchParams(window.location.search);
@@ -8884,6 +8886,26 @@ function saveProgress() {
   } catch {
     // Progress saving is optional. The lesson should still work if storage is unavailable.
   }
+}
+
+function getTheme() {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem(themeStorageKey, theme);
+  } catch {
+    // Theme saving is optional. The toggle still works for the current page view.
+  }
+}
+
+function setTheme(theme, { persist = true } = {}) {
+  const isDark = theme === "dark";
+  document.documentElement.classList.toggle("dark", isDark);
+  dom.themeToggle.setAttribute("aria-pressed", String(isDark));
+  dom.themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+  if (persist) saveTheme(theme);
 }
 
 function syncProgressUrl() {
@@ -9372,6 +9394,10 @@ dom.resetButton.addEventListener("click", () => {
   goToStep(0);
 });
 
+dom.themeToggle.addEventListener("click", () => {
+  setTheme(getTheme() === "dark" ? "light" : "dark");
+});
+
 dom.chapterTrigger.addEventListener("click", toggleChapterMenu);
 
 dom.chapterSearch.addEventListener("input", () => {
@@ -9427,4 +9453,5 @@ window.addEventListener("resize", render);
 
 renderChapterSelect();
 renderLessonShell();
+setTheme(getTheme(), { persist: false });
 render();

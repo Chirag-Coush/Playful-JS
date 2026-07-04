@@ -10,6 +10,13 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playpen+Sans:wght@500;600;700&family=Roboto+Mono:wght@500;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      try {
+        if (localStorage.getItem("playful-js-theme") === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch {}
+    </script>
     <link rel="stylesheet" href="./dist/styles.css" />
   </head>
   <body>
@@ -17,7 +24,12 @@
       <section class="lesson-panel" aria-label="JavaScript lesson">
         <div class="flex items-start justify-between gap-4 max-sm:block">
           <div class="w-full">
-            <p class="eyebrow">Playful JS</p>
+            <div class="lesson-header">
+              <p class="eyebrow mb-4">Playful JS</p>
+              <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+                <span class="theme-toggle-icon" aria-hidden="true"></span>
+              </button>
+            </div>
             <div class="chapter-picker" id="chapter-picker">
               <button
                 class="chapter-trigger"
@@ -88,7 +100,7 @@
 
         <div class="card mt-auto hidden" id="quiz-card">
           <p class="step-label">Checkpoint</p>
-          <p class="text-slate-900" id="quiz-prompt"></p>
+          <p class="quiz-prompt" id="quiz-prompt"></p>
           <div class="mt-4 grid grid-cols-3 gap-3" id="quiz-options"></div>
           <p class="mt-3 min-h-6" id="quiz-feedback" role="status"></p>
         </div>
