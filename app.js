@@ -8987,11 +8987,7 @@ function renderChapterSelect() {
   dom.chapterOptions.querySelectorAll("[data-lesson-index]").forEach((button) => {
     button.addEventListener("click", () => {
       stopPlayback();
-      state.lessonIndex = Number(button.dataset.lessonIndex);
-      state.step = 0;
-      closeChapterMenu();
-      renderLessonShell();
-      render();
+      goToChapter(Number(button.dataset.lessonIndex));
     });
   });
 }
@@ -9291,6 +9287,7 @@ function render() {
 
   dom.prevButton.disabled = state.step === 0;
   dom.nextButton.disabled = state.step === lesson.steps.length - 1;
+  dom.resetButton.disabled = state.step === 0;
   dom.playButton.textContent = state.isPlaying ? "Pause" : "Play";
 
   if (state.step !== lesson.steps.length - 1) {
@@ -9302,6 +9299,18 @@ function goToStep(step) {
   const maxStep = currentLesson().steps.length - 1;
   state.step = Math.max(0, Math.min(maxStep, step));
   render();
+}
+
+function goToChapter(lessonIndex) {
+  state.lessonIndex = Math.max(0, Math.min(lessons.length - 1, lessonIndex));
+  state.step = 0;
+  closeChapterMenu();
+  renderLessonShell();
+  render();
+}
+
+function isTypingTarget(target) {
+  return ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName) || target?.isContentEditable;
 }
 
 function stopPlayback() {
@@ -9377,6 +9386,8 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (isTypingTarget(event.target)) return;
+
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
     event.preventDefault();
     openChapterMenu();
@@ -9385,6 +9396,30 @@ document.addEventListener("keydown", (event) => {
 
   if (event.key === "Escape") {
     closeChapterMenu();
+    return;
+  }
+
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    stopPlayback();
+    if (event.shiftKey) {
+      goToChapter(state.lessonIndex - 1);
+      return;
+    }
+
+    goToStep(state.step - 1);
+    return;
+  }
+
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    stopPlayback();
+    if (event.shiftKey) {
+      goToChapter(state.lessonIndex + 1);
+      return;
+    }
+
+    goToStep(state.step + 1);
   }
 });
 
