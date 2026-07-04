@@ -16,34 +16,23 @@
   }
 
   .lesson-header {
-    @apply flex items-center justify-between gap-3;
+    @apply mb-4 flex items-center justify-between gap-3;
   }
 
   .eyebrow {
     @apply mb-2 text-xs font-bold uppercase tracking-wider text-slate-700;
   }
 
-  .theme-toggle {
-    @apply relative inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-transparent text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 focus:outline-none focus:ring-4 focus:ring-slate-100;
+  .lesson-header .eyebrow {
+    @apply mb-0;
   }
 
-  .theme-toggle::before {
-    content: "";
-    @apply absolute -left-3 h-6 w-px bg-slate-200;
+  .theme-toggle {
+    @apply inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-transparent text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 focus:outline-none focus:ring-4 focus:ring-slate-100;
   }
 
   .theme-toggle-icon {
-    @apply relative block size-5 rounded-full border-4 border-slate-950 bg-white;
-  }
-
-  .theme-toggle-icon::before {
-    content: "";
-    @apply absolute inset-0 rounded-full;
-    background: repeating-linear-gradient(
-      135deg,
-      rgb(15 23 42) 0 2px,
-      transparent 2px 5px
-    );
+    @apply size-5;
   }
 
   .chapter-picker {
@@ -285,20 +274,8 @@
     @apply text-slate-300 hover:bg-slate-800 hover:text-white focus:ring-slate-700;
   }
 
-  html.dark .theme-toggle::before {
-    @apply bg-slate-700;
-  }
-
   html.dark .theme-toggle-icon {
-    @apply border-white bg-slate-950;
-  }
-
-  html.dark .theme-toggle-icon::before {
-    background: repeating-linear-gradient(
-      135deg,
-      white 0 2px,
-      transparent 2px 5px
-    );
+    @apply text-white;
   }
 
   html.dark .chapter-trigger {

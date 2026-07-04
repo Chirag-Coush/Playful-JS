@@ -274,9 +274,6 @@
   .mb-1 {
     margin-bottom: var(--spacing);
   }
-  .mb-4 {
-    margin-bottom: calc(var(--spacing) * 4);
-  }
   .block {
     display: block;
   }
@@ -470,6 +467,7 @@
     }
   }
   .lesson-header {
+    margin-bottom: calc(var(--spacing) * 4);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -486,8 +484,10 @@
     color: var(--color-slate-700);
     text-transform: uppercase;
   }
+  .lesson-header .eyebrow {
+    margin-bottom: 0;
+  }
   .theme-toggle {
-    position: relative;
     display: inline-flex;
     width: calc(var(--spacing) * 8);
     height: calc(var(--spacing) * 8);
@@ -524,31 +524,9 @@
       outline-style: none;
     }
   }
-  .theme-toggle::before {
-    content: "";
-    position: absolute;
-    left: calc(var(--spacing) * -3);
-    height: calc(var(--spacing) * 6);
-    width: 1px;
-    background-color: var(--color-slate-200);
-  }
   .theme-toggle-icon {
-    position: relative;
-    display: block;
     width: calc(var(--spacing) * 5);
     height: calc(var(--spacing) * 5);
-    border-radius: calc(infinity * 1px);
-    border-style: var(--tw-border-style);
-    border-width: 4px;
-    border-color: var(--color-slate-950);
-    background-color: var(--color-white);
-  }
-  .theme-toggle-icon::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: calc(infinity * 1px);
-    background: repeating-linear-gradient( 135deg, rgb(15 23 42) 0 2px, transparent 2px 5px );
   }
   .chapter-picker {
     position: relative;
@@ -1165,15 +1143,8 @@
       --tw-ring-color: var(--color-slate-700);
     }
   }
-  html.dark .theme-toggle::before {
-    background-color: var(--color-slate-700);
-  }
   html.dark .theme-toggle-icon {
-    border-color: var(--color-white);
-    background-color: var(--color-slate-950);
-  }
-  html.dark .theme-toggle-icon::before {
-    background: repeating-linear-gradient( 135deg, white 0 2px, transparent 2px 5px );
+    color: var(--color-white);
   }
   html.dark .chapter-trigger {
     border-color: var(--color-slate-700);
