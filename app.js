@@ -739,8 +739,8 @@ const practicalLessons = [
     title: "String Slicing",
     universeTitle: "slice copies part of a string",
     intro:
-      "Slicing is useful for initials, previews, file extensions, short IDs, and formatting UI text. For unknown filenames, find the cut point first.",
-    code: ['let filename = "waterfal-image.jpg";', 'let dotIndex = filename.lastIndexOf(".");', "let extension = filename.slice(dotIndex + 1);", "let preview = filename.slice(0, 8);"],
+      "Slicing is useful for initials, file extensions, short IDs, and formatting UI text. For unknown filenames, find the cut point first.",
+    code: ['let filename = "waterfal-image.jpg";', 'let dotIndex = filename.lastIndexOf(".");', "let extension = filename.slice(dotIndex + 1);", "let nameOnly = filename.slice(0, dotIndex);"],
     legend: ["variable", "value", "wire"],
     nodes: {
       filename: { label: "filename", kind: "variable-wide", x: 18, y: 22 },
@@ -749,8 +749,8 @@ const practicalLessons = [
       fourteen: { label: "14", kind: "value", x: 64, y: 42 },
       extension: { label: "extension", kind: "variable-wide", x: 18, y: 62 },
       jpg: { label: '"jpg"', kind: "string", x: 64, y: 62 },
-      preview: { label: "preview", kind: "variable-wide", x: 18, y: 82 },
-      short: { label: '"waterfal"', kind: "string", x: 64, y: 82 },
+      nameOnly: { label: "nameOnly", kind: "variable-wide", x: 18, y: 82 },
+      baseName: { label: '"waterfal-image"', kind: "string", x: 64, y: 82 },
     },
     steps: [
       {
@@ -785,17 +785,17 @@ const practicalLessons = [
         active: ["extension", "jpg"],
       },
       {
-        title: "Slice a range",
-        description: 'slice(0, 8) copies from index 0 up to, but not including, index 8, creating "waterfal".',
+        title: "Slice before the dot",
+        description: 'slice(0, dotIndex) copies from the start up to the dot, creating "waterfal-image". For "Adventure.jpg", it would create "Adventure".',
         line: 3,
-        visible: ["filename", "photo", "dotIndex", "fourteen", "extension", "jpg", "preview", "short"],
+        visible: ["filename", "photo", "dotIndex", "fourteen", "extension", "jpg", "nameOnly", "baseName"],
         wires: [
           { id: "filename-photo", from: "filename", to: "photo", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "dotIndex-fourteen", from: "dotIndex", to: "fourteen", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "extension-jpg", from: "extension", to: "jpg", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "preview-short", from: "preview", to: "short", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "nameOnly-baseName", from: "nameOnly", to: "baseName", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
-        active: ["preview", "short"],
+        active: ["nameOnly", "baseName"],
       },
     ],
     quiz: {
