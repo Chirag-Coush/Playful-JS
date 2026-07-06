@@ -316,9 +316,6 @@
   .gap-4 {
     gap: calc(var(--spacing) * 4);
   }
-  .rounded {
-    border-radius: 0.25rem;
-  }
   .fill-cyan-700 {
     fill: var(--color-cyan-700);
   }
