@@ -2623,7 +2623,7 @@ const practicalLessons = [
     universeTitle: "Generics preserve a type relationship",
     intro:
       "Generics let a function describe a relationship between inputs and outputs without choosing one exact type up front.",
-    code: ["function first<T>(items: T[]): T {", "  return items[0];", "}", 'let name = first(["Ada", "Grace"]);'],
+    code: ["function first<T>(items: T[]): T | undefined {", "  return items[0];", "}", 'let name = first(["Ada", "Grace"]);'],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       firstVar: { label: "first", kind: "variable-wide", x: 14, y: 32 },
@@ -2662,7 +2662,7 @@ const practicalLessons = [
       {
         title: "Return the first item",
         description:
-          'items[0] returns "Ada". Because T was inferred as string, TypeScript knows the return value is a string.',
+          'items[0] returns "Ada" for this array. The return type also includes undefined because another call could pass an empty array.',
         line: 1,
         visible: ["array", "ada", "grace"],
         wires: [
@@ -2674,7 +2674,7 @@ const practicalLessons = [
       {
         title: "Store the returned string",
         description:
-          'name points to "Ada". The generic preserved the relationship between the array item type and the return type.',
+          'name points to "Ada" in this run. The generic preserved the relationship between the array item type and the possible return value.',
         line: 3,
         visible: ["name", "ada"],
         wires: [
@@ -2684,11 +2684,11 @@ const practicalLessons = [
       },
     ],
     quiz: {
-      prompt: "What does the generic T preserve here?",
-      options: ["input item type to return type", "CSS order", "timer delay"],
-      answer: "input item type to return type",
-      correct: "Correct. The return type follows the array item type for each call.",
-      wrong: "Not quite. T links the input item type with the returned value type.",
+      prompt: "Why does first return T | undefined?",
+      options: ["arrays can be empty", "CSS order matters", "timers can pause"],
+      answer: "arrays can be empty",
+      correct: "Correct. items[0] can be undefined when the array has no first item.",
+      wrong: "Not quite. The type must allow the empty-array case.",
     },
   },
 ];
@@ -6182,32 +6182,47 @@ const conceptLessons = [
     universeTitle: "catch handles thrown errors",
     intro:
       "try/catch lets you run code that might fail and then handle the error value in a separate block.",
-    code: ["try {", "  JSON.parse('bad');", "} catch (error) {", '  message = "Invalid JSON";', "}"],
+    code: ['let message = "";', "try {", "  JSON.parse('bad');", "} catch (error) {", '  message = "Invalid JSON";', "}"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       parseFn: { label: "JSON.parse", kind: "variable-wide", x: 18, y: 36 },
       errorValue: { label: "SyntaxError", kind: "string", x: 58, y: 36 },
       error: { label: "error", kind: "variable-wide", x: 18, y: 66 },
       message: { label: "message", kind: "variable-wide", x: 18, y: 84 },
+      empty: { label: '""', kind: "string", x: 62, y: 84 },
       invalid: { label: '"Invalid JSON"', kind: "string", x: 62, y: 84 },
     },
     steps: [
       {
+        title: "Create message",
+        description:
+          'message starts by pointing to an empty string. The catch block can move this wire if parsing fails.',
+        line: 0,
+        visible: ["message", "empty"],
+        wires: [
+          { id: "message-empty", from: "message", to: "empty", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["message", "empty"],
+      },
+      {
         title: "Enter try",
         description:
           "JavaScript starts the try block. Code inside might finish normally or throw an error.",
-        line: 0,
-        visible: ["parseFn"],
-        wires: [],
+        line: 1,
+        visible: ["message", "empty", "parseFn"],
+        wires: [
+          { id: "message-empty", from: "message", to: "empty", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
         active: ["parseFn"],
       },
       {
         title: "JSON.parse throws",
         description:
           "Parsing bad JSON does not return a normal value. It throws a SyntaxError value.",
-        line: 1,
-        visible: ["parseFn", "errorValue"],
+        line: 2,
+        visible: ["message", "empty", "parseFn", "errorValue"],
         wires: [
+          { id: "message-empty", from: "message", to: "empty", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "parse-error", from: "parseFn", to: "errorValue", label: "throws", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["errorValue"],
@@ -6216,9 +6231,10 @@ const conceptLessons = [
         title: "catch receives the error",
         description:
           "The catch block creates an error variable and points it to the thrown error value.",
-        line: 2,
-        visible: ["parseFn", "errorValue", "error"],
+        line: 3,
+        visible: ["message", "empty", "parseFn", "errorValue", "error"],
         wires: [
+          { id: "message-empty", from: "message", to: "empty", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "error-errorValue", from: "error", to: "errorValue", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
         ],
         active: ["error", "errorValue"],
@@ -6226,8 +6242,8 @@ const conceptLessons = [
       {
         title: "Handle the error",
         description:
-          'The catch block can recover by assigning message to "Invalid JSON".',
-        line: 3,
+          'The catch block can recover by reassigning message to "Invalid JSON".',
+        line: 4,
         visible: ["errorValue", "error", "message", "invalid"],
         wires: [
           { id: "error-errorValue", from: "error", to: "errorValue", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
@@ -6250,8 +6266,8 @@ const conceptLessons = [
     title: "DOM Selection",
     universeTitle: "The DOM is an object graph",
     intro:
-      "In the browser, the page is represented by DOM objects. querySelector finds one of those objects.",
-    code: ['let button = document.querySelector("button");', 'button.textContent = "Save";'],
+      "In the browser, the page is represented by DOM objects. querySelector finds one object, or returns null when nothing matches.",
+    code: ['let button = document.querySelector("button");', "if (button) {", '  button.textContent = "Save";', "}"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       documentVar: { label: "document", kind: "variable-wide", x: 16, y: 36 },
@@ -6275,7 +6291,7 @@ const conceptLessons = [
       {
         title: "querySelector finds an element",
         description:
-          "document.querySelector(\"button\") returns a DOM element object. The diagram labels that object as el.",
+          "document.querySelector(\"button\") returns a DOM element object when a matching button exists. If not, it returns null.",
         line: 0,
         visible: ["documentVar", "documentObj", "buttonObj"],
         wires: [
@@ -6287,7 +6303,7 @@ const conceptLessons = [
       {
         title: "button points to the element",
         description:
-          "The button variable points to the DOM object returned by querySelector.",
+          "In this page, button points to the DOM object returned by querySelector, so the if check can run its body.",
         line: 0,
         visible: ["documentVar", "documentObj", "button", "buttonObj"],
         wires: [
@@ -6300,7 +6316,7 @@ const conceptLessons = [
         title: "Change a DOM property",
         description:
           'button.textContent = "Save" mutates the DOM object by moving its textContent property wire.',
-        line: 1,
+        line: 2,
         visible: ["button", "buttonObj", "save"],
         wires: [
           { id: "button-buttonObj", from: "button", to: "buttonObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -6310,11 +6326,11 @@ const conceptLessons = [
       },
     ],
     quiz: {
-      prompt: "What does querySelector return here?",
-      options: ["a DOM object", "text only", "a CSS file"],
-      answer: "a DOM object",
-      correct: "Correct. querySelector returns a DOM element object.",
-      wrong: "Not quite. It returns an object representing an element on the page.",
+      prompt: "What can querySelector return?",
+      options: ["an element or null", "text only", "a CSS file"],
+      answer: "an element or null",
+      correct: "Correct. It returns the first matching element, or null if nothing matches.",
+      wrong: "Not quite. querySelector can return null, so real code should handle that case.",
     },
   },
   {
@@ -6327,9 +6343,11 @@ const conceptLessons = [
     code: [
       'let button = document.querySelector("button");',
       "let count = 0;",
-      "button.addEventListener('click', () => {",
-      "  count = count + 1;",
-      "});",
+      "if (button) {",
+      "  button.addEventListener('click', () => {",
+      "    count = count + 1;",
+      "  });",
+      "}",
     ],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -6345,7 +6363,7 @@ const conceptLessons = [
       {
         title: "button points to a DOM object",
         description:
-          "querySelector returns a DOM element object. button points to that object.",
+          "querySelector returns a DOM element object in this page. If no button matched, button would point to null.",
         line: 0,
         visible: ["button", "buttonObj"],
         wires: [
@@ -6368,8 +6386,8 @@ const conceptLessons = [
       {
         title: "Store a callback for click",
         description:
-          "addEventListener stores the function value with the button for the click event. It does not call the function yet.",
-        line: 2,
+          "The if check makes sure there is an element first. addEventListener then stores the function value with the button for the click event.",
+        line: 3,
         visible: ["button", "buttonObj", "callback", "click", "count", "zero"],
         wires: [
           { id: "button-buttonObj", from: "button", to: "buttonObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -6383,7 +6401,7 @@ const conceptLessons = [
         title: "Click calls the callback",
         description:
           "When the user clicks, the browser calls the stored callback.",
-        line: 3,
+        line: 4,
         visible: ["button", "buttonObj", "callback", "count", "zero"],
         wires: [
           { id: "button-buttonObj", from: "button", to: "buttonObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -6396,7 +6414,7 @@ const conceptLessons = [
         title: "The callback updates count",
         description:
           "Inside the callback, count + 1 creates 1, then count's wire moves from 0 to 1.",
-        line: 3,
+        line: 4,
         visible: ["button", "buttonObj", "callback", "count", "zero", "one"],
         wires: [
           { id: "button-buttonObj", from: "button", to: "buttonObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -6420,8 +6438,8 @@ const conceptLessons = [
     title: "Forms and Inputs",
     universeTitle: "Input values are strings on DOM objects",
     intro:
-      "Form controls are DOM objects too. Reading input.value gives you the current string stored on that element.",
-    code: ['let input = document.querySelector("input");', "let name = input.value;", 'greeting = "Hi, " + name;'],
+      "Form controls are DOM objects too. When an input exists, reading input.value gives you the current string stored on that element.",
+    code: ['let input = document.querySelector("input");', 'let name = input ? input.value : "";', 'let greeting = "Hi, " + name;'],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       input: { label: "input", kind: "variable-wide", x: 15, y: 36 },
@@ -6435,7 +6453,7 @@ const conceptLessons = [
       {
         title: "Find the input element",
         description:
-          "querySelector returns the input DOM object. The input variable points to that object.",
+          "querySelector returns the input DOM object in this page. If no input matched, input would point to null.",
         line: 0,
         visible: ["input", "inputEl"],
         wires: [
@@ -6458,7 +6476,7 @@ const conceptLessons = [
       {
         title: "Store the input value",
         description:
-          "JavaScript evaluates input.value by following the property wire, then name points to the resulting string.",
+          'The ternary checks input first. Because the input exists here, JavaScript reads input.value and name points to "Ada".',
         line: 1,
         visible: ["input", "inputEl", "ada", "name"],
         wires: [
@@ -6968,32 +6986,47 @@ const conceptLessons = [
     universeTitle: "await can throw into catch",
     intro:
       "await unwraps a resolved Promise, but a rejected Promise behaves like a throw at that line. try/catch can handle it.",
-    code: ["try {", "  let user = await fetchUser();", "} catch (error) {", '  status = "Could not load";', "}"],
+    code: ['let status = "loading";', "try {", "  let user = await fetchUser();", "} catch (error) {", '  status = "Could not load";', "}"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       fetchPromise: { label: "P", kind: "object", x: 28, y: 36 },
       rejection: { label: "Error", kind: "string", x: 62, y: 36 },
       error: { label: "error", kind: "variable-wide", x: 28, y: 64 },
-      status: { label: "status", kind: "variable-wide", x: 28, y: 86 },
-      failed: { label: '"Could not load"', kind: "string", x: 66, y: 86 },
+      status: { label: "status", kind: "variable-wide", x: 28, y: 78 },
+      loading: { label: '"loading"', kind: "string", x: 66, y: 78 },
+      failed: { label: '"Could not load"', kind: "string", x: 66, y: 78 },
     },
     steps: [
+      {
+        title: "Create a loading status",
+        description:
+          'status starts by pointing to "loading". If the async work fails, catch can move this wire to an error message.',
+        line: 0,
+        visible: ["status", "loading"],
+        wires: [
+          { id: "status-loading", from: "status", to: "loading", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["status", "loading"],
+      },
       {
         title: "Start inside try",
         description:
           "The risky await runs inside a try block so failures can be handled.",
-        line: 0,
-        visible: ["fetchPromise"],
-        wires: [],
+        line: 1,
+        visible: ["status", "loading", "fetchPromise"],
+        wires: [
+          { id: "status-loading", from: "status", to: "loading", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
         active: ["fetchPromise"],
       },
       {
         title: "The Promise rejects",
         description:
           "If fetchUser rejects, await does not give a normal user value. It throws the rejection reason.",
-        line: 1,
-        visible: ["fetchPromise", "rejection"],
+        line: 2,
+        visible: ["status", "loading", "fetchPromise", "rejection"],
         wires: [
+          { id: "status-loading", from: "status", to: "loading", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "fetchPromise-rejection", from: "fetchPromise", to: "rejection", label: "rejects", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["rejection"],
@@ -7002,9 +7035,10 @@ const conceptLessons = [
         title: "catch receives the reason",
         description:
           "The error parameter points to the rejected error value, just like catch with a normal throw.",
-        line: 2,
-        visible: ["rejection", "error"],
+        line: 3,
+        visible: ["status", "loading", "rejection", "error"],
         wires: [
+          { id: "status-loading", from: "status", to: "loading", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "error-rejection", from: "error", to: "rejection", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
         ],
         active: ["error", "rejection"],
@@ -7012,8 +7046,8 @@ const conceptLessons = [
       {
         title: "Recover with a status value",
         description:
-          'The catch block can set a useful fallback state. status points to "Could not load".',
-        line: 3,
+          'The catch block can set a useful fallback state. status moves from "loading" to "Could not load".',
+        line: 4,
         visible: ["rejection", "error", "status", "failed"],
         wires: [
           { id: "error-rejection", from: "error", to: "rejection", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
@@ -8203,7 +8237,7 @@ const conceptLessons = [
     universeTitle: "Map stores key-value wires",
     intro:
       "Map is useful when keys are not just property names. It can use objects as keys and keeps insertion order.",
-    code: ["let cache = new Map();", 'cache.set(user, "Ada");', "cache.get(user);"],
+    code: ["let cache = new Map();", "let user = {};", 'cache.set(user, "Ada");', "cache.get(user);"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       cache: { label: "cache", kind: "variable-wide", x: 16, y: 34 },
@@ -8240,7 +8274,7 @@ const conceptLessons = [
         title: "Map stores the pair",
         description:
           'cache.set(user, "Ada") stores a key-value relationship inside the Map.',
-        line: 1,
+        line: 2,
         visible: ["mapObj", "userObj", "ada"],
         wires: [
           { id: "mapObj-userObj", from: "mapObj", to: "userObj", label: "key", tone: "cyan", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
@@ -8252,7 +8286,7 @@ const conceptLessons = [
         title: "get reads by same key",
         description:
           "cache.get(user) finds the entry by the same object identity and returns the stored value.",
-        line: 2,
+        line: 3,
         visible: ["mapObj", "userObj", "ada"],
         wires: [
           { id: "mapObj-userObj", from: "mapObj", to: "userObj", label: "key", tone: "cyan", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
