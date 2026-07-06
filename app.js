@@ -9142,6 +9142,7 @@ function openChapterMenu() {
   dom.chapterTrigger.setAttribute("aria-expanded", "true");
   renderChapterSelect();
   renderChapterMenuState();
+  scrollActiveChapterIntoView();
   window.setTimeout(() => dom.chapterSearch.focus(), 0);
 }
 
@@ -9166,6 +9167,18 @@ function renderChapterMenuState() {
     button.classList.toggle("is-active-chapter", isActive);
     button.setAttribute("aria-selected", String(isActive));
   });
+}
+
+function scrollActiveChapterIntoView() {
+  const activeChapter = dom.chapterOptions.querySelector(".is-active-chapter");
+  if (!activeChapter) return;
+
+  const menuRect = dom.chapterMenu.getBoundingClientRect();
+  const activeRect = activeChapter.getBoundingClientRect();
+  const searchSpace = dom.chapterSearch.closest(".chapter-search-wrap")?.offsetHeight || 0;
+  const topPadding = searchSpace + 8;
+
+  dom.chapterMenu.scrollTop += activeRect.top - menuRect.top - topPadding;
 }
 
 function syncSvgViewport() {
