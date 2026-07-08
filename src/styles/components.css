@@ -174,6 +174,11 @@
     @apply size-24 rounded-full bg-slate-800 text-4xl text-white max-sm:size-20 max-sm:text-3xl;
   }
 
+  .object-large-node {
+    @apply h-20 min-w-40 rounded-none bg-white px-5 text-3xl text-slate-900 max-sm:h-16 max-sm:min-w-32 max-sm:px-4 max-sm:text-2xl;
+    width: fit-content;
+  }
+
   .string-node {
     @apply min-h-16 min-w-40 rounded-full px-5 text-2xl max-sm:min-h-14 max-sm:min-w-32 max-sm:px-4 max-sm:text-xl;
     width: fit-content;
@@ -185,6 +190,7 @@
   }
 
   .object-node .node-text,
+  .object-large-node .node-text,
   .value-node .node-text {
     @apply overflow-hidden text-ellipsis;
     max-width: 85%;
@@ -358,6 +364,10 @@
 
   html.dark .object-node {
     @apply bg-slate-700 text-white;
+  }
+
+  html.dark .object-large-node {
+    @apply border-slate-500 bg-white text-slate-900;
   }
 
   html.dark .wire-label {
