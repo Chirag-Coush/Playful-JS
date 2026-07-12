@@ -8956,6 +8956,7 @@ const initialState = getInitialState();
 const state = {
   lessonIndex: initialState.lessonIndex,
   step: initialState.step,
+  mode: "lesson",
   isPlaying: false,
   timer: null,
 };
@@ -8983,11 +8984,18 @@ const dom = {
   playButton: document.querySelector("#play-step"),
   resetButton: document.querySelector("#reset-step"),
   themeToggle: document.querySelector("#theme-toggle"),
+  playgroundToggle: document.querySelector("#playground-toggle"),
+  playgroundPanel: document.querySelector("#playground-panel"),
+  playgroundEditor: document.querySelector("#playground-editor"),
+  playgroundStatus: document.querySelector("#playground-status"),
+  playgroundChips: document.querySelector("#playground-chips"),
   quizCard: document.querySelector("#quiz-card"),
   quizPrompt: document.querySelector("#quiz-prompt"),
   quizOptions: document.querySelector("#quiz-options"),
   quizFeedback: document.querySelector("#quiz-feedback"),
 };
+
+const lessonModeContent = Array.from(document.querySelectorAll(".lesson-mode-content"));
 
 const chapterGroups = [
   { label: "Mental model library: foundations", from: 1, to: 12 },
@@ -9013,6 +9021,60 @@ const legendIconClass = {
 
 const progressStorageKey = "playful-js-session-progress";
 const themeStorageKey = "playful-js-theme";
+const playgroundStorageKey = "playful-js-playground-code";
+const defaultPlaygroundCode = "let score = 0;\nscore = score + 1;";
+const playgroundChipGroups = [
+  {
+    label: "Templates",
+    chips: [
+      { label: "Variable", code: "let score = 0;" },
+      { label: "Object", code: 'let user = { name: "Ada" };' },
+      { label: "Array", code: 'let names = ["Ada", "Grace"];' },
+      { label: "Function", code: "function add(a, b) {\n  return a + b;\n}" },
+      { label: "Call", code: "let total = add(2, 3);" },
+    ],
+  },
+  {
+    label: "Values",
+    chips: [
+      { label: '"text"', code: '"Ada"' },
+      { label: "0", code: "0" },
+      { label: "true", code: "true" },
+      { label: "false", code: "false" },
+    ],
+  },
+  {
+    label: "Containers",
+    chips: [
+      { label: "[]", code: "[]" },
+      { label: "{}", code: "{}" },
+      { label: ".name", code: ".name" },
+      { label: "[0]", code: "[0]" },
+      { label: ";", code: ";" },
+    ],
+  },
+  {
+    label: "Math and checks",
+    chips: [
+      { label: "+", code: " + " },
+      { label: "-", code: " - " },
+      { label: "*", code: " * " },
+      { label: "/", code: " / " },
+      { label: "===", code: " === " },
+      { label: ">=", code: " >= " },
+      { label: "<=", code: " <= " },
+    ],
+  },
+  {
+    label: "Functions",
+    chips: [
+      { label: "function", code: "function name() {\n  return 0;\n}" },
+      { label: "return", code: "return " },
+      { label: "()", code: "()" },
+      { label: "arrow function", code: "const double = (x) => x * 2;" },
+    ],
+  },
+];
 
 function getInitialState() {
   const params = new URLSearchParams(window.location.search);
@@ -9079,6 +9141,47 @@ function setTheme(theme, { persist = true } = {}) {
   dom.themeToggle.setAttribute("aria-pressed", String(isDark));
   dom.themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
   if (persist) saveTheme(theme);
+}
+
+function readSavedPlaygroundCode() {
+  try {
+    return localStorage.getItem(playgroundStorageKey) || defaultPlaygroundCode;
+  } catch {
+    return defaultPlaygroundCode;
+  }
+}
+
+function savePlaygroundCode() {
+  try {
+    localStorage.setItem(playgroundStorageKey, dom.playgroundEditor.value);
+  } catch {
+    // Playground saving is optional. The current session should still work.
+  }
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  stopPlayback({ renderAfterStop: false });
+  closeChapterMenu();
+
+  const isPlayground = mode === "playground";
+  lessonModeContent.forEach((element) => element.classList.toggle("hidden", isPlayground));
+  dom.playgroundPanel.classList.toggle("hidden", !isPlayground);
+  dom.playgroundToggle.setAttribute("aria-pressed", String(isPlayground));
+  dom.playgroundToggle.setAttribute("aria-label", isPlayground ? "Return to lesson mode" : "Open guided playground");
+
+  if (isPlayground) {
+    renderPlayground();
+    dom.playgroundEditor.focus();
+    return;
+  }
+
+  renderLessonShell();
+  render();
+}
+
+function togglePlaygroundMode() {
+  setMode(state.mode === "playground" ? "lesson" : "playground");
 }
 
 function syncProgressUrl() {
@@ -9462,7 +9565,413 @@ function renderNotes(notes = []) {
     .join("");
 }
 
+function renderPlaygroundChips() {
+  dom.playgroundChips.innerHTML = playgroundChipGroups
+    .map(
+      (group) => `
+        <div>
+          <p class="chip-group-label">${escapeHtml(group.label)}</p>
+          <div class="chip-row">
+            ${group.chips
+              .map(
+                (chip) => `
+                  <button class="insert-chip" type="button" data-chip="${escapeHtml(chip.code)}">
+                    ${escapeHtml(chip.label)}
+                  </button>
+                `,
+              )
+              .join("")}
+          </div>
+        </div>
+      `,
+    )
+    .join("");
+
+  dom.playgroundChips.querySelectorAll("[data-chip]").forEach((button) => {
+    button.addEventListener("click", () => insertPlaygroundText(button.dataset.chip));
+  });
+}
+
+function insertPlaygroundText(text) {
+  const editor = dom.playgroundEditor;
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  const before = editor.value.slice(0, start);
+  const after = editor.value.slice(end);
+  const insert = before && !before.endsWith("\n") && !before.endsWith(" ") ? ` ${text}` : text;
+  editor.value = `${before}${insert}${after}`;
+  const nextPosition = before.length + insert.length;
+  editor.focus();
+  editor.setSelectionRange(nextPosition, nextPosition);
+  savePlaygroundCode();
+  renderPlayground();
+}
+
+function makePrimitiveValue(value) {
+  if (typeof value === "number") return { type: "number", label: String(value) };
+  if (typeof value === "boolean") return { type: "boolean", label: String(value) };
+  if (value === undefined) return { type: "undefined", label: "undefined" };
+  return { type: "string", label: `"${value}"` };
+}
+
+function playgroundError(message) {
+  return { error: message, nodes: {}, wires: [], legend: ["variable", "wire", "value"] };
+}
+
+function parsePlayground(code) {
+  const cleanCode = code
+    .replace(/\/\/.*$/gm, "")
+    .trim();
+
+  if (!cleanCode) {
+    return playgroundError("Start with a supported snippet like let score = 0;");
+  }
+
+  const functions = new Map();
+  const functionPattern = /function\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{\s*return\s+([^;]+);?\s*\}/g;
+  const withoutFunctions = cleanCode.replace(functionPattern, (_, name, params, body) => {
+    functions.set(name, {
+      params: params.split(",").map((param) => param.trim()).filter(Boolean),
+      body: body.trim(),
+    });
+    return `let ${name} = __function_${name};`;
+  });
+
+  const statements = withoutFunctions
+    .split(/;\s*|\n+/)
+    .map((statement) => statement.trim())
+    .filter(Boolean);
+  const variables = new Map();
+  const values = [];
+
+  const addValue = (value) => {
+    const id = `v${values.length}`;
+    values.push({ id, ...value });
+    return id;
+  };
+
+  const readVariable = (name) => {
+    if (!variables.has(name)) throw new Error(`${name} has not been created yet.`);
+    return variables.get(name).valueId;
+  };
+
+  const getRawValue = (valueId) => values.find((value) => value.id === valueId)?.raw;
+
+  const evaluateExpression = (expression, locals = new Map()) => {
+    const expr = expression.trim();
+
+    if (/^__function_[A-Za-z_$][\w$]*$/.test(expr)) {
+      return addValue({ type: "function", label: "fn", raw: { kind: "function" } });
+    }
+
+    if (/^"[^"]*"$/.test(expr) || /^'[^']*'$/.test(expr)) {
+      return addValue({ ...makePrimitiveValue(expr.slice(1, -1)), raw: expr.slice(1, -1) });
+    }
+
+    if (/^-?\d+(\.\d+)?$/.test(expr)) {
+      return addValue({ ...makePrimitiveValue(Number(expr)), raw: Number(expr) });
+    }
+
+    if (expr === "true" || expr === "false") {
+      const bool = expr === "true";
+      return addValue({ ...makePrimitiveValue(bool), raw: bool });
+    }
+
+    if (locals.has(expr)) return locals.get(expr);
+
+    const arrayMatch = expr.match(/^\[(.*)\]$/);
+    if (arrayMatch) {
+      const items = splitTopLevel(arrayMatch[1]).filter((item) => item.trim());
+      const itemIds = items.map((item) => evaluateExpression(item, locals));
+      return addValue({ type: "array", label: "[ ]", raw: itemIds.map(getRawValue), props: itemIds.map((id, index) => [String(index), id]) });
+    }
+
+    const objectMatch = expr.match(/^\{(.*)\}$/);
+    if (objectMatch) {
+      const entries = splitTopLevel(objectMatch[1]).filter((item) => item.trim());
+      const props = entries.map((entry) => {
+        const [keyPart, valuePart] = splitObjectEntry(entry);
+        if (!keyPart || !valuePart) throw new Error("Object entries need key: value pairs.");
+        return [keyPart.replace(/^["']|["']$/g, "").trim(), evaluateExpression(valuePart, locals)];
+      });
+      return addValue({ type: "object", label: "{ }", raw: Object.fromEntries(props.map(([key, id]) => [key, getRawValue(id)])), props });
+    }
+
+    const propertyMatch = expr.match(/^([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)$/);
+    if (propertyMatch) {
+      const [, objectName, property] = propertyMatch;
+      const objectValue = values.find((value) => value.id === readVariable(objectName));
+      const target = objectValue?.props?.find(([key]) => key === property)?.[1];
+      if (!target) throw new Error(`${objectName}.${property} is not available in this supported object.`);
+      return target;
+    }
+
+    const indexMatch = expr.match(/^([A-Za-z_$][\w$]*)\[(\d+)\]$/);
+    if (indexMatch) {
+      const [, arrayName, index] = indexMatch;
+      const arrayValue = values.find((value) => value.id === readVariable(arrayName));
+      const target = arrayValue?.props?.find(([key]) => key === index)?.[1];
+      if (!target) throw new Error(`${arrayName}[${index}] is not available in this supported array.`);
+      return target;
+    }
+
+    const callMatch = expr.match(/^([A-Za-z_$][\w$]*)\((.*)\)$/);
+    if (callMatch) {
+      const [, name, argsSource] = callMatch;
+      const fn = functions.get(name);
+      if (!fn) throw new Error(`${name} is not a supported function in this playground.`);
+      const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
+      const nextLocals = new Map();
+      fn.params.forEach((param, index) => nextLocals.set(param, argIds[index]));
+      return evaluateExpression(fn.body, nextLocals);
+    }
+
+    const operatorMatch =
+      findTopLevelOperator(expr, ["===", "!==", ">=", "<=", ">", "<"]) ||
+      findTopLevelOperator(expr, ["+", "-"], { rightToLeft: true }) ||
+      findTopLevelOperator(expr, ["*", "/"], { rightToLeft: true });
+    if (operatorMatch) {
+      const leftId = evaluateExpression(expr.slice(0, operatorMatch.index), locals);
+      const rightId = evaluateExpression(expr.slice(operatorMatch.index + operatorMatch.operator.length), locals);
+      const left = getRawValue(leftId);
+      const right = getRawValue(rightId);
+      const result = evaluateOperation(left, right, operatorMatch.operator);
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    if (/^[A-Za-z_$][\w$]*$/.test(expr)) return readVariable(expr);
+
+    throw new Error(`I can’t visualise "${expr}" yet.`);
+  };
+
+  try {
+    statements.forEach((statement) => {
+      const declaration = statement.match(/^(let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
+      if (declaration) {
+        const [, kind, name, expression] = declaration;
+        const arrowFunction = parseArrowFunction(expression);
+        if (arrowFunction) {
+          functions.set(name, arrowFunction);
+          variables.set(name, { kind, valueId: addValue({ type: "function", label: "=> fn", raw: { kind: "function" } }) });
+          return;
+        }
+
+        variables.set(name, { kind, valueId: evaluateExpression(expression) });
+        return;
+      }
+
+      const assignment = statement.match(/^([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
+      if (assignment) {
+        const [, name, expression] = assignment;
+        if (!variables.has(name)) throw new Error(`${name} must be created with let or const first.`);
+        if (variables.get(name).kind === "const") throw new Error(`${name} is const, so it cannot be reassigned.`);
+        variables.set(name, { ...variables.get(name), valueId: evaluateExpression(expression) });
+        return;
+      }
+
+      throw new Error(`I can’t visualise "${statement}" yet.`);
+    });
+  } catch (error) {
+    return playgroundError(error.message);
+  }
+
+  return buildPlaygroundDiagram(variables, values);
+}
+
+function parseArrowFunction(expression) {
+  const match = expression.trim().match(/^(?:\(([^)]*)\)|([A-Za-z_$][\w$]*))\s*=>\s*(.+)$/);
+  if (!match) return null;
+
+  const params = (match[1] || match[2] || "")
+    .split(",")
+    .map((param) => param.trim())
+    .filter(Boolean);
+  let body = match[3].trim();
+  const blockReturn = body.match(/^\{\s*return\s+([^;]+);?\s*\}$/);
+  if (blockReturn) body = blockReturn[1].trim();
+  if (body.startsWith("{")) throw new Error("Arrow function blocks need an explicit return in this playground.");
+
+  return { params, body };
+}
+
+function splitTopLevel(source) {
+  const parts = [];
+  let current = "";
+  let depth = 0;
+  let quote = "";
+
+  for (const char of source) {
+    if (quote) {
+      current += char;
+      if (char === quote) quote = "";
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      current += char;
+      continue;
+    }
+
+    if (char === "[" || char === "{" || char === "(") depth += 1;
+    if (char === "]" || char === "}" || char === ")") depth -= 1;
+
+    if (char === "," && depth === 0) {
+      parts.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (current.trim()) parts.push(current.trim());
+  return parts;
+}
+
+function splitObjectEntry(entry) {
+  const index = entry.indexOf(":");
+  if (index === -1) return [null, null];
+  return [entry.slice(0, index).trim(), entry.slice(index + 1).trim()];
+}
+
+function findTopLevelOperator(source, operators, { rightToLeft = false } = {}) {
+  let depth = 0;
+  let quote = "";
+  const indexes = Array.from({ length: source.length }, (_, index) => index);
+  if (rightToLeft) indexes.reverse();
+
+  for (const index of indexes) {
+    const char = source[index];
+    if (quote) {
+      if (char === quote) quote = "";
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+
+    if (rightToLeft) {
+      if (char === "]" || char === "}" || char === ")") depth += 1;
+      if (char === "[" || char === "{" || char === "(") depth -= 1;
+    } else {
+      if (char === "[" || char === "{" || char === "(") depth += 1;
+      if (char === "]" || char === "}" || char === ")") depth -= 1;
+    }
+
+    if (depth === 0) {
+      const operator = operators.find((item) => source.slice(index).startsWith(item));
+      if (operator && !(operator === "-" && index === 0)) return { index, operator };
+    }
+  }
+
+  return null;
+}
+
+function evaluateOperation(left, right, operator) {
+  if (operator === "+") return left + right;
+  if (operator === "-") return left - right;
+  if (operator === "*") return left * right;
+  if (operator === "/") return left / right;
+  if (operator === "===") return left === right;
+  if (operator === "!==") return left !== right;
+  if (operator === ">") return left > right;
+  if (operator === "<") return left < right;
+  if (operator === ">=") return left >= right;
+  if (operator === "<=") return left <= right;
+  throw new Error(`${operator} is not supported yet.`);
+}
+
+function buildPlaygroundDiagram(variables, values) {
+  const nodes = {};
+  const wires = [];
+  const valuePositions = new Map();
+  const rows = Array.from(variables.entries()).slice(0, 8);
+
+  rows.forEach(([name, binding], index) => {
+    const y = 18 + index * 10;
+    nodes[`var-${name}`] = { label: name, kind: "variable-wide", x: 16, y };
+    placePlaygroundValue(binding.valueId, 48, y, nodes, wires, values, valuePositions);
+    wires.push({ id: `wire-${name}`, from: `var-${name}`, to: `value-${binding.valueId}`, tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } });
+  });
+
+  return {
+    error: "",
+    nodes,
+    wires,
+    legend: ["variable", "object", "property", "value", "wire"],
+  };
+}
+
+function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions) {
+  if (positions.has(valueId)) return;
+  const value = values.find((item) => item.id === valueId);
+  if (!value) return;
+
+  const kind = value.type === "array" || value.type === "object" || value.type === "function" ? "object" : value.type === "string" || value.type === "boolean" || value.type === "undefined" ? "string" : "value";
+  nodes[`value-${valueId}`] = { label: value.label, kind, x, y };
+  positions.set(valueId, { x, y });
+
+  if (!value.props?.length) return;
+
+  value.props.slice(0, 4).forEach(([property, childId], index) => {
+    const childY = y - 8 + index * 6;
+    placePlaygroundValue(childId, x + 28, childY, nodes, wires, values, positions);
+    wires.push({
+      id: `prop-${valueId}-${property}`,
+      from: `value-${valueId}`,
+      to: `value-${childId}`,
+      label: property,
+      tone: "cyan",
+      fromAnchor: { side: "right", offset: -10 + index * 6 },
+      toAnchor: { side: "left" },
+    });
+  });
+}
+
+function renderPlayground() {
+  savePlaygroundCode();
+  syncSvgViewport();
+  const diagram = parsePlayground(dom.playgroundEditor.value);
+  dom.universeTitle.textContent = "Guided playground visualisation";
+  dom.legend.innerHTML = diagram.legend
+    .map(
+      (item) => `
+        <span class="legend-item">
+          <i class="${legendIconClass[item] || "legend-value-icon"}"></i>
+          ${item}
+        </span>
+      `,
+    )
+    .join("");
+
+  dom.playgroundStatus.textContent = diagram.error || "Visualising the supported code above.";
+  dom.playgroundStatus.classList.toggle("is-error", Boolean(diagram.error));
+  dom.stage.innerHTML = Object.entries(diagram.nodes)
+    .map(([id, node]) => `
+      <div class="diagram-node ${node.kind}-node" data-node-id="${id}">
+        <span class="node-text">${escapeHtml(node.label)}</span>
+      </div>
+    `)
+    .join("");
+
+  Object.entries(diagram.nodes).forEach(([id, node]) => {
+    setNodePosition(getNodeElement(id), node);
+  });
+
+  dom.wireLayer.innerHTML = diagram.wires.map(drawWire).join("");
+  dom.wireLabelLayer.innerHTML = diagram.wires.map(drawWireLabel).join("");
+  renderNotes(diagram.error ? [{ text: diagram.error, x: 52, y: 18 }] : []);
+}
+
 function render() {
+  if (state.mode === "playground") {
+    renderPlayground();
+    return;
+  }
+
   const lesson = currentLesson();
   const step = currentStep();
   saveProgress();
@@ -9521,11 +10030,11 @@ function isTypingTarget(target) {
   return ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName) || target?.isContentEditable;
 }
 
-function stopPlayback() {
+function stopPlayback({ renderAfterStop = true } = {}) {
   state.isPlaying = false;
   window.clearInterval(state.timer);
   state.timer = null;
-  render();
+  if (renderAfterStop) render();
 }
 
 function togglePlayback() {
@@ -9584,6 +10093,13 @@ dom.themeToggle.addEventListener("click", () => {
   setTheme(getTheme() === "dark" ? "light" : "dark");
 });
 
+dom.playgroundToggle.addEventListener("click", togglePlaygroundMode);
+
+dom.playgroundEditor.addEventListener("input", () => {
+  savePlaygroundCode();
+  renderPlayground();
+});
+
 dom.chapterTrigger.addEventListener("click", toggleChapterMenu);
 
 dom.chapterSearch.addEventListener("input", () => {
@@ -9638,6 +10154,8 @@ document.addEventListener("keydown", (event) => {
 window.addEventListener("resize", render);
 
 renderChapterSelect();
+renderPlaygroundChips();
+dom.playgroundEditor.value = readSavedPlaygroundCode();
 renderLessonShell();
 setTheme(getTheme(), { persist: false });
 render();

@@ -26,30 +26,50 @@
           <div class="w-full">
             <div class="lesson-header">
               <p class="eyebrow">Playful JS</p>
-              <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
-                <svg
-                  class="theme-toggle-icon"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
-                  <path d="M12 3l0 18"></path>
-                  <path d="M12 9l4.65 -4.65"></path>
-                  <path d="M12 14.3l7.37 -7.37"></path>
-                  <path d="M12 19.6l8.85 -8.85"></path>
-                </svg>
-              </button>
+              <div class="header-actions">
+                <button class="theme-toggle" id="playground-toggle" type="button" aria-label="Open guided playground" aria-pressed="false">
+                  <svg
+                    class="theme-toggle-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m16 18 6-6-6-6"></path>
+                    <path d="m8 6-6 6 6 6"></path>
+                  </svg>
+                </button>
+                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+                  <svg
+                    class="theme-toggle-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                    <path d="M12 3l0 18"></path>
+                    <path d="M12 9l4.65 -4.65"></path>
+                    <path d="M12 14.3l7.37 -7.37"></path>
+                    <path d="M12 19.6l8.85 -8.85"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
-            <div class="chapter-picker" id="chapter-picker">
+            <div class="chapter-picker lesson-mode-content" id="chapter-picker">
               <button
                 class="chapter-trigger"
                 id="chapter-trigger"
@@ -91,13 +111,13 @@
           </div>
         </div>
 
-        <p id="lesson-intro"></p>
+        <p class="lesson-mode-content" id="lesson-intro"></p>
 
-        <div class="card" aria-label="Lesson code">
+        <div class="card lesson-mode-content" aria-label="Lesson code">
           <pre class="m-0 whitespace-pre-wrap code-text text-base leading-loose"><code id="lesson-code"></code></pre>
         </div>
 
-        <div class="card">
+        <div class="card lesson-mode-content">
           <p class="step-label" id="step-count">Step 1 of 5</p>
           <h2 class="mb-1 text-2xl" id="step-title">Declare x</h2>
           <p id="step-description">
@@ -106,7 +126,7 @@
           </p>
         </div>
 
-        <div class="controls" aria-label="Lesson controls">
+        <div class="controls lesson-mode-content" aria-label="Lesson controls">
           <button class="control-button" id="prev-step" type="button" aria-label="Previous step">
             <span aria-hidden="true">&larr;</span>
           </button>
@@ -117,7 +137,38 @@
           <button class="control-button max-sm:col-span-full" id="reset-step" type="button">Reset</button>
         </div>
 
-        <div class="card mt-auto hidden" id="quiz-card">
+        <div class="card hidden" id="playground-panel">
+          <p class="step-label">Guided Playground</p>
+          <h2 class="mb-2 text-2xl">Type beginner JavaScript</h2>
+          <p class="playground-help">
+            This playground visualises supported patterns only: variables, values, arrays, objects, property reads, simple math, and simple function calls.
+          </p>
+          <label class="mt-4 block">
+            <span class="sr-only">Playground code</span>
+            <textarea
+              class="playground-editor"
+              id="playground-editor"
+              spellcheck="false"
+              autocomplete="off"
+              autocapitalize="off"
+              placeholder="let score = 0;&#10;score = score + 1;"
+            ></textarea>
+          </label>
+          <p class="playground-status" id="playground-status" role="status"></p>
+          <div class="playground-chip-groups" id="playground-chips" aria-label="Insert code snippets"></div>
+          <div class="supported-panel">
+            <div>
+              <p class="supported-title">Supported now</p>
+              <p>variables, reassignment, strings, numbers, booleans, arrays, objects, property/index reads, simple functions</p>
+            </div>
+            <div>
+              <p class="supported-title">Coming later</p>
+              <p>loops, callbacks, classes, async, browser DOM code</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt-auto hidden lesson-mode-content" id="quiz-card">
           <p class="step-label">Checkpoint</p>
           <p class="quiz-prompt" id="quiz-prompt"></p>
           <div class="mt-4 grid grid-cols-3 gap-3" id="quiz-options"></div>
