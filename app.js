@@ -2022,7 +2022,7 @@ const practicalLessons = [
     title: "Classes",
     universeTitle: "A class is a recipe for object instances",
     intro:
-      "Classes are common in app models, UI helpers, data wrappers, and framework code. They create objects with shared behavior.",
+      "Classes are common in app models, UI helpers, data wrappers, and framework code. A class can use a constructor method to set up each new object.",
     code: ["class User {", "  constructor(name) { this.name = name; }", "}", 'let ada = new User("Ada");'],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -2098,10 +2098,10 @@ const practicalLessons = [
     id: "constructors-practical",
     section: "Objects and app data",
     number: "Practical 29",
-    title: "Constructors",
+    title: "Constructor Functions",
     universeTitle: "new makes this point to a fresh object",
     intro:
-      "Constructor functions are the older pattern behind classes. You still see them in older code and browser APIs.",
+      "Constructor functions are the older pattern behind class constructors. You still see them in older code and browser APIs.",
     code: ["function User(name) {", "  this.name = name;", "}", 'let ada = new User("Ada");'],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -2172,7 +2172,7 @@ const practicalLessons = [
     universeTitle: "Static helpers live on the class",
     intro:
       "Static methods are useful for helpers related to a class, such as parsing, formatting, or validation.",
-    code: ["class User {", "  static fromName(name) { return new User(name); }", "}", 'let ada = User.fromName("Ada");'],
+    code: ["class User {", "  constructor(name) { this.name = name; }", "  static fromName(name) { return new User(name); }", "}", 'let ada = User.fromName("Ada");'],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 14, y: 38 },
@@ -2186,7 +2186,7 @@ const practicalLessons = [
       {
         title: "Class has a static property",
         description: "The static method is a property on the class value, not on each user instance.",
-        line: 1,
+        line: 2,
         visible: ["User", "classObj", "fromName"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2197,7 +2197,7 @@ const practicalLessons = [
       {
         title: "Call User.fromName",
         description: 'User.fromName("Ada") follows the static property and calls that function.',
-        line: 3,
+        line: 4,
         visible: ["User", "classObj", "fromName", "adaText"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2207,8 +2207,8 @@ const practicalLessons = [
       },
       {
         title: "Helper returns an instance",
-        description: 'The helper creates a User instance whose name property points to "Ada".',
-        line: 1,
+        description: 'The helper calls new User(name). The constructor creates a User instance whose name property points to "Ada".',
+        line: 2,
         visible: ["User", "classObj", "fromName", "adaText", "instance"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2220,7 +2220,7 @@ const practicalLessons = [
       {
         title: "Store ada",
         description: "ada points to the object returned by the static helper.",
-        line: 3,
+        line: 4,
         visible: ["User", "classObj", "fromName", "adaText", "instance", "ada"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2247,7 +2247,7 @@ const practicalLessons = [
     universeTitle: "Property access can run methods",
     intro:
       "Getters let app code expose a property-like API while still running logic behind the scenes.",
-    code: ["class User {", "  get label() { return this.name.toUpperCase(); }", "}", "let text = user.label;"],
+    code: ["let user = {", '  name: "Ada",', "  get label() { return this.name.toUpperCase(); }", "};", "let text = user.label;"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       user: { label: "user", kind: "variable-wide", x: 14, y: 44 },
@@ -2261,7 +2261,7 @@ const practicalLessons = [
       {
         title: "Object has data and getter",
         description: "The object has a normal name value and a getter function for label.",
-        line: 1,
+        line: 0,
         visible: ["user", "userObj", "ada", "getter"],
         wires: [
           { id: "user-userObj", from: "user", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2273,7 +2273,7 @@ const practicalLessons = [
       {
         title: "Read user.label",
         description: "Reading label runs the getter function. It is not just a plain stored string.",
-        line: 3,
+        line: 4,
         visible: ["user", "userObj", "ada", "getter"],
         wires: [
           { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2285,7 +2285,7 @@ const practicalLessons = [
       {
         title: "Getter returns a value",
         description: 'The getter reads this.name and returns the new string "ADA".',
-        line: 1,
+        line: 2,
         visible: ["user", "userObj", "ada", "getter", "upper"],
         wires: [
           { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2297,7 +2297,7 @@ const practicalLessons = [
       {
         title: "Store text",
         description: 'text points to the returned string "ADA".',
-        line: 3,
+        line: 4,
         visible: ["user", "userObj", "ada", "getter", "upper", "text"],
         wires: [
           { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2324,7 +2324,18 @@ const practicalLessons = [
     universeTitle: "super calls the parent class constructor",
     intro:
       "Inheritance appears in frameworks and libraries. Use it sparingly, but understand what super does when you see it.",
-    code: ["class Admin extends User {", "  constructor(name, level) {", "    super(name); this.level = level;", "  }", "}"],
+    code: [
+      "class User {",
+      "  constructor(name) { this.name = name; }",
+      "}",
+      "class Admin extends User {",
+      "  constructor(name, level) {",
+      "    super(name);",
+      "    this.level = level;",
+      "  }",
+      "}",
+      'let admin = new Admin("Ada", 2);',
+    ],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 14, y: 28 },
@@ -2334,12 +2345,13 @@ const practicalLessons = [
       instance: { label: "{ }", kind: "object", x: 62, y: 72 },
       ada: { label: '"Ada"', kind: "string", x: 84, y: 62 },
       two: { label: "2", kind: "value", x: 84, y: 82 },
+      admin: { label: "admin", kind: "variable-wide", x: 14, y: 84 },
     },
     steps: [
       {
         title: "Admin extends User",
         description: "Admin links to User so it can reuse User's constructor and shared methods.",
-        line: 0,
+        line: 3,
         visible: ["User", "userClass", "Admin", "adminClass"],
         wires: [
           { id: "User-userClass", from: "User", to: "userClass", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2349,9 +2361,21 @@ const practicalLessons = [
         active: ["Admin", "adminClass"],
       },
       {
+        title: "Call new Admin",
+        description: 'new Admin("Ada", 2) creates a fresh Admin instance and prepares the constructor arguments.',
+        line: 9,
+        visible: ["User", "userClass", "Admin", "adminClass", "instance", "ada", "two"],
+        wires: [
+          { id: "User-userClass", from: "User", to: "userClass", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "Admin-adminClass", from: "Admin", to: "adminClass", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adminClass-userClass", from: "adminClass", to: "userClass", label: "extends", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["instance", "ada", "two"],
+      },
+      {
         title: "super(name) runs parent setup",
         description: 'super(name) calls User constructor logic, adding name: "Ada" to the new object.',
-        line: 2,
+        line: 5,
         visible: ["User", "userClass", "Admin", "adminClass", "instance", "ada"],
         wires: [
           { id: "Admin-adminClass", from: "Admin", to: "adminClass", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2363,7 +2387,7 @@ const practicalLessons = [
       {
         title: "Child adds its own property",
         description: "After super, Admin constructor can add its own level property.",
-        line: 2,
+        line: 6,
         visible: ["Admin", "adminClass", "instance", "ada", "two"],
         wires: [
           { id: "Admin-adminClass", from: "Admin", to: "adminClass", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2371,6 +2395,19 @@ const practicalLessons = [
           { id: "instance-two", from: "instance", to: "two", label: "level", tone: "orange", fromAnchor: { side: "right", offset: 10 }, toAnchor: { side: "left" } },
         ],
         active: ["instance", "two"],
+      },
+      {
+        title: "Store admin",
+        description: "After construction finishes, admin points to the new Admin object.",
+        line: 9,
+        visible: ["Admin", "adminClass", "instance", "ada", "two", "admin"],
+        wires: [
+          { id: "Admin-adminClass", from: "Admin", to: "adminClass", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "instance-ada", from: "instance", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -10 }, toAnchor: { side: "left" } },
+          { id: "instance-two", from: "instance", to: "two", label: "level", tone: "slate", fromAnchor: { side: "right", offset: 10 }, toAnchor: { side: "left" } },
+          { id: "admin-instance", from: "admin", to: "instance", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["admin", "instance"],
       },
     ],
     quiz: {
