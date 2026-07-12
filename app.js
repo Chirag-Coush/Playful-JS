@@ -2491,9 +2491,9 @@ const practicalLessons = [
     section: "TypeScript bridge",
     number: "Chapter 61",
     title: "Type Annotations",
-    universeTitle: "Types are checked before JavaScript runs",
+    universeTitle: "Type notes are checked before JavaScript runs",
     intro:
-      "TypeScript adds type notes to JavaScript. The notes help the editor and compiler catch mistakes, but they are not runtime values.",
+      "TypeScript adds notes for tools to check before the program runs. After that check, the browser runs ordinary JavaScript values.",
     code: ["let count: number = 0;", "count = count + 1;", 'count = "one"; // TypeScript error'],
     legend: ["variable", "wire", "value"],
     nodes: {
@@ -2504,21 +2504,21 @@ const practicalLessons = [
     },
     steps: [
       {
-        title: "Create a typed variable",
+        title: "Add a type note",
         description:
-          "At runtime, count is still a normal variable pointing to 0. The : number annotation is a compile-time check.",
+          "The : number part is a note for TypeScript. It means count should point to number values.",
         line: 0,
         visible: ["count", "zero"],
         wires: [
           { id: "count-zero", from: "count", to: "zero", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["count", "zero"],
-        notes: [{ text: ": number is checked before runtime", x: 58, y: 16 }],
+        notes: [{ text: ": number is checked before the program runs", x: 58, y: 16 }],
       },
       {
         title: "Number work is allowed",
         description:
-          "count + 1 reads the old number, creates 1, and moves count to the new number value.",
+          "When the program runs, count is still a normal variable. count + 1 reads the old number and moves count to the new number value.",
         line: 1,
         visible: ["count", "zero", "one"],
         wires: [
@@ -2529,22 +2529,22 @@ const practicalLessons = [
       {
         title: "Wrong type is rejected",
         description:
-          'TypeScript reports an error before this JavaScript runs because "one" is a string, not a number.',
+          'TypeScript reports an error before the program runs because "one" is a string, not a number. This checking moment is often called compile-time.',
         line: 2,
         visible: ["count", "one", "textOne"],
         wires: [
           { id: "count-one", from: "count", to: "one", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["textOne"],
-        notes: [{ text: "No runtime wire moves when compilation stops", x: 52, y: 88 }],
+        notes: [{ text: "runtime means the program is actually running", x: 52, y: 88 }],
       },
     ],
     quiz: {
-      prompt: "Where does TypeScript use type annotations?",
-      options: ["before runtime", "as object properties", "after the browser paints"],
-      answer: "before runtime",
-      correct: "Correct. TypeScript checks annotations before the JavaScript runs.",
-      wrong: "Not quite. Type annotations are compile-time checks, not runtime values.",
+      prompt: "When does TypeScript check : number?",
+      options: ["before the program runs", "as a browser object", "after the page paints"],
+      answer: "before the program runs",
+      correct: "Correct. TypeScript checks the note before JavaScript runs.",
+      wrong: "Not quite. Type annotations are checked before running; they are not runtime values.",
     },
   },
   {
