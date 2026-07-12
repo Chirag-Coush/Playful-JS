@@ -19,9 +19,8 @@ if (!fs.existsSync(chromePath)) {
 }
 
 const source = fs.readFileSync("app.js", "utf8");
-const dataEnd = source.indexOf("const lessons =");
+const dataEnd = source.indexOf("const initialState =");
 const dataSource = `${source.slice(0, dataEnd)}
-const lessons = [...practicalLessons, ...conceptLessons];
 globalThis.lessons = lessons;`;
 
 const sandbox = { console };

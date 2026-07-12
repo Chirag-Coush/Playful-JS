@@ -2,7 +2,7 @@ const fs = require("fs");
 const vm = require("vm");
 
 const source = fs.readFileSync("app.js", "utf8");
-const dataEnd = source.indexOf("const lessons =");
+const dataEnd = source.indexOf("const initialState =");
 
 if (dataEnd === -1) {
   console.error("Could not find lesson data in app.js.");
@@ -10,7 +10,6 @@ if (dataEnd === -1) {
 }
 
 const dataSource = `${source.slice(0, dataEnd)}
-const lessons = [...practicalLessons, ...conceptLessons];
 globalThis.lessons = lessons;`;
 
 const sandbox = { console };

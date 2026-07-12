@@ -6807,16 +6807,15 @@ const conceptLessons = [
     universeTitle: "new creates objects linked to methods",
     intro:
       "A class is a function-like value used with new. Calling new creates an instance object whose prototype links to shared methods.",
-    code: ["class User {", "  greet() { return this.name; }", "}", 'let ada = new User("Ada");'],
+    code: ["class User {", '  greet() { return "Hi"; }', "}", "let user = new User();"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 16, y: 34 },
       classFn: { label: "Cls", kind: "object", x: 42, y: 34 },
       proto: { label: "P", kind: "object", x: 70, y: 34 },
       greet: { label: "greet", kind: "variable-wide", x: 70, y: 56 },
-      adaVar: { label: "ada", kind: "variable-wide", x: 16, y: 82 },
-      adaObj: { label: "{ }", kind: "object", x: 42, y: 82 },
-      adaName: { label: '"Ada"', kind: "string", x: 70, y: 82 },
+      userVar: { label: "user", kind: "variable-wide", x: 16, y: 82 },
+      userObj: { label: "{ }", kind: "object", x: 42, y: 82 },
     },
     steps: [
       {
@@ -6846,30 +6845,29 @@ const conceptLessons = [
       {
         title: "new creates an instance",
         description:
-          "new User creates a new object. ada points to that instance object.",
+          "new User() creates a new object. user points to that instance object.",
         line: 3,
-        visible: ["User", "classFn", "proto", "adaVar", "adaObj"],
+        visible: ["User", "classFn", "proto", "userVar", "userObj"],
         wires: [
           { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "adaVar-adaObj", from: "adaVar", to: "adaObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "adaObj-proto", from: "adaObj", to: "proto", label: "__proto__", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userObj-proto", from: "userObj", to: "proto", label: "__proto__", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
-        active: ["adaVar", "adaObj"],
+        active: ["userVar", "userObj"],
       },
       {
-        title: "Instance stores its own data",
+        title: "Instance reuses shared methods",
         description:
-          'The instance can have its own name property while still sharing greet through the prototype.',
+          "The instance can reach greet through its prototype link. The method is not copied into the object.",
         line: 3,
-        visible: ["proto", "greet", "adaVar", "adaObj", "adaName"],
+        visible: ["proto", "greet", "userVar", "userObj"],
         wires: [
           { id: "proto-greet", from: "proto", to: "greet", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
-          { id: "adaVar-adaObj", from: "adaVar", to: "adaObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "adaObj-proto", from: "adaObj", to: "proto", label: "__proto__", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
-          { id: "adaObj-adaName", from: "adaObj", to: "adaName", label: "name", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userObj-proto", from: "userObj", to: "proto", label: "__proto__", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
-        active: ["adaObj", "adaName"],
+        active: ["userObj", "proto"],
       },
     ],
     quiz: {
@@ -8949,7 +8947,124 @@ const conceptLessons = [
   },
 ];
 
-const lessons = [...practicalLessons, ...conceptLessons];
+const lessonOrder = [
+  "values-and-wires",
+  "variables-and-constants-practical",
+  "arithmetic-operators",
+  "accept-user-input",
+  "type-conversion-practical",
+  "type-conversion",
+  "math-and-random",
+  "strict-equality-practical",
+  "conditionals",
+  "if-statements-practical",
+  "truthy-and-falsy",
+  "logical-operators",
+  "ternary-operator",
+  "switches-practical",
+  "string-methods-practical",
+  "string-slicing-practical",
+  "method-chaining-practical",
+  "loops",
+  "for-loops-practical",
+  "arrays-are-objects",
+  "arrays-practical",
+  "functions-and-parameters",
+  "functions-practical",
+  "scope",
+  "variable-scope-practical",
+  "function-expressions-arrows-practical",
+  "closures",
+  "callbacks",
+  "callbacks-practical",
+  "foreach-practical",
+  "array-map",
+  "map-practical",
+  "filter-practical",
+  "reduce",
+  "reduce-practical",
+  "objects-and-properties",
+  "objects-practical",
+  "mutation-vs-reassignment",
+  "object-identity",
+  "nested-objects-practical",
+  "arrays-of-objects-practical",
+  "methods-and-this",
+  "this-practical",
+  "classes-and-instances",
+  "constructors",
+  "classes-practical",
+  "constructors-practical",
+  "static-methods-practical",
+  "getters-setters-practical",
+  "inheritance",
+  "inheritance-super-practical",
+  "sorting-objects-practical",
+  "typescript-annotations",
+  "typescript-object-types",
+  "typescript-unions",
+  "typescript-generics",
+  "destructuring",
+  "rest-syntax",
+  "spread-syntax",
+  "shallow-copy",
+  "detached-methods",
+  "bind-this",
+  "arrow-functions",
+  "promises",
+  "async-await",
+  "try-catch",
+  "async-errors",
+  "dom-selection",
+  "event-listeners",
+  "forms-and-inputs",
+  "fetch-and-json",
+  "local-storage",
+  "modules",
+  "rendering-from-data",
+  "state-updates",
+  "pure-functions",
+  "side-effects",
+  "derived-state",
+  "debouncing",
+  "abort-controller",
+  "call-stack",
+  "event-loop-tasks",
+  "microtasks",
+  "race-conditions",
+  "testing-functions",
+  "nan",
+  "optional-chaining",
+  "nullish-coalescing",
+  "map-collection",
+  "set-collection",
+  "regular-expressions",
+  "dates",
+  "intl-formatting",
+  "json-parse",
+  "custom-errors",
+  "private-fields",
+  "dynamic-import",
+];
+
+function buildOrderedLessons() {
+  const allLessons = [...practicalLessons, ...conceptLessons];
+  const lessonsById = new Map(allLessons.map((lesson) => [lesson.id, lesson]));
+  const ordered = lessonOrder.map((id) => {
+    const lesson = lessonsById.get(id);
+    if (!lesson) throw new Error(`Missing lesson in lessonOrder: ${id}`);
+    lessonsById.delete(id);
+    return lesson;
+  });
+
+  if (lessonsById.size) {
+    throw new Error(`Missing lessonOrder entries: ${Array.from(lessonsById.keys()).join(", ")}`);
+  }
+
+  return ordered;
+}
+
+const lessons = buildOrderedLessons();
 
 const initialState = getInitialState();
 
@@ -8998,11 +9113,13 @@ const dom = {
 const lessonModeContent = Array.from(document.querySelectorAll(".lesson-mode-content"));
 
 const chapterGroups = [
-  { label: "Mental model library: foundations", from: 1, to: 12 },
-  { label: "Mental model library: objects and functions", from: 13, to: 24 },
-  { label: "Mental model library: browser and apps", from: 25, to: 36 },
-  { label: "Mental model library: production patterns", from: 37, to: 46 },
-  { label: "Mental model library: modern JavaScript", from: 47, to: 60 },
+  { label: "Foundations and decisions", from: 1, to: 14 },
+  { label: "Strings, loops, and lists", from: 15, to: 35 },
+  { label: "Objects, this, and classes", from: 36, to: 52 },
+  { label: "TypeScript bridge", from: 53, to: 56 },
+  { label: "Modern JavaScript patterns", from: 57, to: 73 },
+  { label: "Apps, state, and async work", from: 74, to: 85 },
+  { label: "Production tools and built-ins", from: 86, to: 97 },
 ];
 
 const toneClasses = {
@@ -9216,14 +9333,8 @@ function lessonDisplayNumber(index) {
   return `Chapter ${index + 1}`;
 }
 
-function conceptLessonNumber(lesson) {
-  return Number(lesson.number.replace(/\D/g, ""));
-}
-
-function getLessonGroup(lesson) {
-  if (lesson.section) return lesson.section;
-
-  const number = conceptLessonNumber(lesson);
+function getLessonGroup(_lesson, index) {
+  const number = index + 1;
   return chapterGroups.find((group) => number >= group.from && number <= group.to)?.label || "Additional tracks";
 }
 
@@ -9236,7 +9347,7 @@ function lessonMatchesSearch(lesson, index, query) {
     lesson.title,
     lesson.universeTitle,
     lesson.intro,
-    getLessonGroup(lesson),
+    getLessonGroup(lesson, index),
   ]
     .join(" ")
     .toLowerCase();
@@ -9251,7 +9362,7 @@ function lessonMatchesSearch(lesson, index, query) {
 function renderChapterSelect() {
   const query = dom.chapterSearch.value.trim();
   const matches = lessons
-    .map((lesson, index) => ({ lesson, index, group: getLessonGroup(lesson) }))
+    .map((lesson, index) => ({ lesson, index, group: getLessonGroup(lesson, index) }))
     .filter(({ lesson, index }) => lessonMatchesSearch(lesson, index, query));
   const grouped = matches.reduce((groups, item) => {
     const group = groups.get(item.group) || [];
