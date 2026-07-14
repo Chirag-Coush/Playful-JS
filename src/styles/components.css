@@ -68,7 +68,11 @@
   }
 
   .chapter-search {
-    @apply w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-4 focus:ring-slate-100;
+    @apply w-full rounded-md border border-slate-200 bg-white py-2 pl-3 pr-14 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-4 focus:ring-slate-100;
+  }
+
+  .chapter-search-shortcut {
+    @apply pointer-events-none absolute right-3 top-2 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-xs font-bold text-slate-500;
   }
 
   .chapter-group {
@@ -99,8 +103,14 @@
     @apply bg-slate-100;
   }
 
+  .chapter-option.is-focused-chapter {
+    @apply bg-slate-200;
+  }
+
   .chapter-option.is-active-chapter span,
-  .chapter-option.is-active-chapter strong {
+  .chapter-option.is-active-chapter strong,
+  .chapter-option.is-focused-chapter span,
+  .chapter-option.is-focused-chapter strong {
     @apply text-slate-900;
   }
 
@@ -356,6 +366,10 @@
     @apply border-slate-700 bg-slate-900 text-slate-100 placeholder:text-slate-500 focus:border-slate-400 focus:ring-slate-800;
   }
 
+  html.dark .chapter-search-shortcut {
+    @apply border-slate-700 bg-slate-950 text-slate-400;
+  }
+
   html.dark .chapter-group {
     @apply border-slate-800;
   }
@@ -375,12 +389,18 @@
 
   html.dark .chapter-option strong,
   html.dark .chapter-option.is-active-chapter span,
-  html.dark .chapter-option.is-active-chapter strong {
+  html.dark .chapter-option.is-active-chapter strong,
+  html.dark .chapter-option.is-focused-chapter span,
+  html.dark .chapter-option.is-focused-chapter strong {
     @apply text-slate-100;
   }
 
   html.dark .chapter-option.is-active-chapter {
     @apply bg-slate-800;
+  }
+
+  html.dark .chapter-option.is-focused-chapter {
+    @apply bg-slate-700;
   }
 
   html.dark .card {

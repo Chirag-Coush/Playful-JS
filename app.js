@@ -2769,7 +2769,7 @@ const conceptLessons = [
     title: "Values and Wires",
     universeTitle: "Variables point to values",
     intro:
-      "Watch JavaScript assignments as wires. A variable can point to a value, but it does not point to another variable.",
+      "Start with the core picture used in every chapter: variables are labeled boxes, values are things JavaScript creates, and wires show which value a variable points to.",
     code: ["let x = 10;", "let y = x;", "x = 0;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -9074,6 +9074,7 @@ const state = {
   mode: "lesson",
   isPlaying: false,
   timer: null,
+  focusedChapterIndex: initialState.lessonIndex,
 };
 
 const dom = {
@@ -9359,6 +9360,45 @@ function lessonMatchesSearch(lesson, index, query) {
     .every((part) => searchable.includes(part));
 }
 
+function chapterOptionButtons() {
+  return Array.from(dom.chapterOptions.querySelectorAll("[data-lesson-index]"));
+}
+
+function filteredChapterIndexes() {
+  return chapterOptionButtons().map((button) => Number(button.dataset.lessonIndex));
+}
+
+function setFocusedChapterIndex(nextIndex) {
+  const indexes = filteredChapterIndexes();
+  if (!indexes.length) {
+    state.focusedChapterIndex = -1;
+    renderChapterMenuState();
+    return;
+  }
+
+  state.focusedChapterIndex = indexes.includes(nextIndex) ? nextIndex : indexes[0];
+  renderChapterMenuState();
+  scrollFocusedChapterIntoView();
+}
+
+function moveFocusedChapter(direction) {
+  const indexes = filteredChapterIndexes();
+  if (!indexes.length) return;
+
+  const currentPosition = indexes.indexOf(state.focusedChapterIndex);
+  const safePosition = currentPosition === -1 ? 0 : currentPosition;
+  const nextPosition = (safePosition + direction + indexes.length) % indexes.length;
+  setFocusedChapterIndex(indexes[nextPosition]);
+}
+
+function selectFocusedChapter() {
+  if (!isValidLessonIndex(state.focusedChapterIndex)) return;
+
+  stopPlayback();
+  goToChapter(state.focusedChapterIndex);
+  closeChapterMenu();
+}
+
 function renderChapterSelect() {
   const query = dom.chapterSearch.value.trim();
   const matches = lessons
@@ -9380,7 +9420,7 @@ function renderChapterSelect() {
             ${items
               .map(
                 ({ lesson, index }) => `
-                  <button class="chapter-option" type="button" role="option" data-lesson-index="${index}">
+                  <button class="chapter-option" type="button" role="option" data-lesson-index="${index}" tabindex="-1">
                     <span>${lessonDisplayNumber(index)}</span>
                     <strong>${lesson.title}</strong>
                   </button>
@@ -9397,8 +9437,14 @@ function renderChapterSelect() {
     button.addEventListener("click", () => {
       stopPlayback();
       goToChapter(Number(button.dataset.lessonIndex));
+      closeChapterMenu();
     });
   });
+
+  const filteredIndexes = matches.map(({ index }) => index);
+  state.focusedChapterIndex = filteredIndexes.includes(state.focusedChapterIndex)
+    ? state.focusedChapterIndex
+    : filteredIndexes[0] ?? -1;
 }
 
 function renderLessonShell() {
@@ -9457,9 +9503,10 @@ function openChapterMenu() {
   dom.chapterPicker.classList.add("is-open");
   dom.chapterMenu.classList.remove("hidden");
   dom.chapterTrigger.setAttribute("aria-expanded", "true");
+  state.focusedChapterIndex = state.lessonIndex;
   renderChapterSelect();
   renderChapterMenuState();
-  scrollActiveChapterIntoView();
+  scrollFocusedChapterIntoView();
   window.setTimeout(() => dom.chapterSearch.focus(), 0);
 }
 
@@ -9469,8 +9516,12 @@ function closeChapterMenu() {
   dom.chapterTrigger.setAttribute("aria-expanded", "false");
 }
 
+function isChapterMenuOpen() {
+  return dom.chapterPicker.classList.contains("is-open");
+}
+
 function toggleChapterMenu() {
-  if (dom.chapterPicker.classList.contains("is-open")) {
+  if (isChapterMenuOpen()) {
     closeChapterMenu();
     return;
   }
@@ -9480,22 +9531,32 @@ function toggleChapterMenu() {
 
 function renderChapterMenuState() {
   dom.chapterOptions.querySelectorAll("[data-lesson-index]").forEach((button) => {
-    const isActive = Number(button.dataset.lessonIndex) === state.lessonIndex;
+    const lessonIndex = Number(button.dataset.lessonIndex);
+    const isActive = lessonIndex === state.lessonIndex;
+    const isFocused = lessonIndex === state.focusedChapterIndex;
     button.classList.toggle("is-active-chapter", isActive);
-    button.setAttribute("aria-selected", String(isActive));
+    button.classList.toggle("is-focused-chapter", isFocused);
+    button.setAttribute("aria-selected", String(isFocused));
   });
 }
 
-function scrollActiveChapterIntoView() {
-  const activeChapter = dom.chapterOptions.querySelector(".is-active-chapter");
-  if (!activeChapter) return;
+function scrollFocusedChapterIntoView() {
+  const focusedChapter = dom.chapterOptions.querySelector(".is-focused-chapter");
+  if (!focusedChapter) return;
 
   const menuRect = dom.chapterMenu.getBoundingClientRect();
-  const activeRect = activeChapter.getBoundingClientRect();
+  const focusedRect = focusedChapter.getBoundingClientRect();
   const searchSpace = dom.chapterSearch.closest(".chapter-search-wrap")?.offsetHeight || 0;
   const topPadding = searchSpace + 8;
 
-  dom.chapterMenu.scrollTop += activeRect.top - menuRect.top - topPadding;
+  if (focusedRect.top < menuRect.top + topPadding) {
+    dom.chapterMenu.scrollTop += focusedRect.top - menuRect.top - topPadding;
+    return;
+  }
+
+  if (focusedRect.bottom > menuRect.bottom) {
+    dom.chapterMenu.scrollTop += focusedRect.bottom - menuRect.bottom + 8;
+  }
 }
 
 function syncSvgViewport() {
@@ -10216,6 +10277,33 @@ dom.chapterTrigger.addEventListener("click", toggleChapterMenu);
 dom.chapterSearch.addEventListener("input", () => {
   renderChapterSelect();
   renderChapterMenuState();
+  scrollFocusedChapterIntoView();
+});
+
+dom.chapterSearch.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    moveFocusedChapter(1);
+    return;
+  }
+
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    moveFocusedChapter(-1);
+    return;
+  }
+
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    selectFocusedChapter();
+    return;
+  }
+
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeChapterMenu();
+    dom.chapterTrigger.focus();
+  }
 });
 
 document.addEventListener("click", (event) => {
@@ -10225,13 +10313,13 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (isTypingTarget(event.target)) return;
-
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
     event.preventDefault();
-    openChapterMenu();
+    toggleChapterMenu();
     return;
   }
+
+  if (isTypingTarget(event.target)) return;
 
   if (event.key === "Escape") {
     closeChapterMenu();

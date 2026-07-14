@@ -635,8 +635,9 @@
     border-width: 1px;
     border-color: var(--color-slate-200);
     background-color: var(--color-white);
-    padding-inline: calc(var(--spacing) * 3);
     padding-block: calc(var(--spacing) * 2);
+    padding-right: calc(var(--spacing) * 14);
+    padding-left: calc(var(--spacing) * 3);
     font-size: var(--text-base);
     line-height: var(--tw-leading, var(--text-base--line-height));
     color: var(--color-slate-900);
@@ -658,6 +659,24 @@
     &:focus {
       --tw-ring-color: var(--color-slate-100);
     }
+  }
+  .chapter-search-shortcut {
+    pointer-events: none;
+    position: absolute;
+    top: calc(var(--spacing) * 2);
+    right: calc(var(--spacing) * 3);
+    border-radius: 0.25rem;
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+    border-color: var(--color-slate-200);
+    background-color: var(--color-slate-50);
+    padding-inline: calc(var(--spacing) * 1.5);
+    padding-block: calc(var(--spacing) * 0.5);
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-slate-500);
   }
   .chapter-group {
     border-top-style: var(--tw-border-style);
@@ -723,7 +742,10 @@
   .chapter-option.is-active-chapter {
     background-color: var(--color-slate-100);
   }
-  .chapter-option.is-active-chapter span, .chapter-option.is-active-chapter strong {
+  .chapter-option.is-focused-chapter {
+    background-color: var(--color-slate-200);
+  }
+  .chapter-option.is-active-chapter span, .chapter-option.is-active-chapter strong, .chapter-option.is-focused-chapter span, .chapter-option.is-focused-chapter strong {
     color: var(--color-slate-900);
   }
   .card {
@@ -1363,6 +1385,11 @@
       --tw-ring-color: var(--color-slate-800);
     }
   }
+  html.dark .chapter-search-shortcut {
+    border-color: var(--color-slate-700);
+    background-color: var(--color-slate-950);
+    color: var(--color-slate-400);
+  }
   html.dark .chapter-group {
     border-color: var(--color-slate-800);
   }
@@ -1379,11 +1406,14 @@
   html.dark .chapter-option span {
     color: var(--color-slate-500);
   }
-  html.dark .chapter-option strong, html.dark .chapter-option.is-active-chapter span, html.dark .chapter-option.is-active-chapter strong {
+  html.dark .chapter-option strong, html.dark .chapter-option.is-active-chapter span, html.dark .chapter-option.is-active-chapter strong, html.dark .chapter-option.is-focused-chapter span, html.dark .chapter-option.is-focused-chapter strong {
     color: var(--color-slate-100);
   }
   html.dark .chapter-option.is-active-chapter {
     background-color: var(--color-slate-800);
+  }
+  html.dark .chapter-option.is-focused-chapter {
+    background-color: var(--color-slate-700);
   }
   html.dark .card {
     border-color: var(--color-slate-800);
