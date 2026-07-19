@@ -9099,6 +9099,10 @@ const dom = {
   nextButton: document.querySelector("#next-step"),
   playButton: document.querySelector("#play-step"),
   resetButton: document.querySelector("#reset-step"),
+  helpToggle: document.querySelector("#help-toggle"),
+  helpModal: document.querySelector("#help-modal"),
+  helpClose: document.querySelector("#help-close"),
+  helpDismiss: document.querySelector("#help-dismiss"),
   themeToggle: document.querySelector("#theme-toggle"),
   playgroundToggle: document.querySelector("#playground-toggle"),
   playgroundPanel: document.querySelector("#playground-panel"),
@@ -9140,6 +9144,7 @@ const legendIconClass = {
 const progressStorageKey = "playful-js-session-progress";
 const themeStorageKey = "playful-js-theme";
 const playgroundStorageKey = "playful-js-playground-code";
+const helpDismissedStorageKey = "playful-js-help-dismissed";
 const defaultPlaygroundCode = "let score = 0;\nscore = score + 1;";
 const playgroundChipGroups = [
   {
@@ -9275,6 +9280,37 @@ function savePlaygroundCode() {
   } catch {
     // Playground saving is optional. The current session should still work.
   }
+}
+
+function hasDismissedHelp() {
+  try {
+    return localStorage.getItem(helpDismissedStorageKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function markHelpDismissed() {
+  try {
+    localStorage.setItem(helpDismissedStorageKey, "true");
+  } catch {
+    // The help modal should still close normally if storage is unavailable.
+  }
+}
+
+function isHelpModalOpen() {
+  return !dom.helpModal.classList.contains("hidden");
+}
+
+function openHelpModal() {
+  closeChapterMenu();
+  dom.helpModal.classList.remove("hidden");
+  window.setTimeout(() => dom.helpDismiss.focus(), 0);
+}
+
+function closeHelpModal({ remember = true } = {}) {
+  dom.helpModal.classList.add("hidden");
+  if (remember) markHelpDismissed();
 }
 
 function setMode(mode) {
@@ -10261,6 +10297,24 @@ dom.resetButton.addEventListener("click", () => {
   goToStep(0);
 });
 
+dom.helpToggle.addEventListener("click", () => {
+  openHelpModal();
+});
+
+dom.helpClose.addEventListener("click", () => {
+  closeHelpModal();
+});
+
+dom.helpDismiss.addEventListener("click", () => {
+  closeHelpModal();
+});
+
+dom.helpModal.addEventListener("click", (event) => {
+  if (event.target.hasAttribute("data-help-close")) {
+    closeHelpModal();
+  }
+});
+
 dom.themeToggle.addEventListener("click", () => {
   setTheme(getTheme() === "dark" ? "light" : "dark");
 });
@@ -10313,6 +10367,15 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (isHelpModalOpen()) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeHelpModal();
+      dom.helpToggle.focus();
+    }
+    return;
+  }
+
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
     event.preventDefault();
     toggleChapterMenu();
@@ -10358,3 +10421,7 @@ dom.playgroundEditor.value = readSavedPlaygroundCode();
 renderLessonShell();
 setTheme(getTheme(), { persist: false });
 render();
+
+if (!hasDismissedHelp()) {
+  openHelpModal();
+}

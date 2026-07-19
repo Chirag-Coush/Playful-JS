@@ -27,6 +27,25 @@
             <div class="lesson-header">
               <p class="eyebrow">Playful JS</p>
               <div class="header-actions">
+                <button class="theme-toggle" id="help-toggle" type="button" aria-label="Show help and keyboard shortcuts">
+                  <svg
+                    class="theme-toggle-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <path d="M12 17h.01"></path>
+                  </svg>
+                </button>
                 <button class="theme-toggle" id="playground-toggle" type="button" aria-label="Open guided playground" aria-pressed="false">
                   <svg
                     class="theme-toggle-icon"
@@ -193,6 +212,51 @@
         </div>
       </section>
     </main>
+
+    <div class="help-modal hidden" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+      <div class="help-modal-backdrop" data-help-close></div>
+      <div class="help-modal-card">
+        <div class="help-modal-header">
+          <div>
+            <p class="step-label">Quick start</p>
+            <h2 id="help-modal-title">Learn JavaScript by watching values move</h2>
+          </div>
+          <button class="theme-toggle" id="help-close" type="button" aria-label="Close help">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <p class="help-modal-copy">
+          Playful JS shows JavaScript as boxes, values, objects, and wires. The lessons are ordered so the mental model appears before the practical code that depends on it.
+        </p>
+        <dl class="shortcut-list">
+          <div>
+            <dt><kbd>⌘</kbd><kbd>K</kbd></dt>
+            <dd>Open or close chapter search. Use <kbd>Ctrl</kbd><kbd>K</kbd> on Windows or Linux.</dd>
+          </div>
+          <div>
+            <dt><kbd>↑</kbd> / <kbd>↓</kbd></dt>
+            <dd>Move between lesson steps.</dd>
+          </div>
+          <div>
+            <dt><kbd>Shift</kbd><kbd>↑</kbd> / <kbd>Shift</kbd><kbd>↓</kbd></dt>
+            <dd>Move to the previous or next chapter.</dd>
+          </div>
+          <div>
+            <dt><kbd>↑</kbd> / <kbd>↓</kbd> in search</dt>
+            <dd>Move through filtered chapters.</dd>
+          </div>
+          <div>
+            <dt><kbd>Enter</kbd> / <kbd>Space</kbd></dt>
+            <dd>Select the focused search result.</dd>
+          </div>
+          <div>
+            <dt><kbd>Esc</kbd></dt>
+            <dd>Close search or this help window.</dd>
+          </div>
+        </dl>
+        <button class="primary-button help-modal-action" id="help-dismiss" type="button">Got it</button>
+      </div>
+    </div>
 
     <script src="./app.js"></script>
   </body>

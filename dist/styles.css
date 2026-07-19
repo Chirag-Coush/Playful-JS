@@ -40,6 +40,7 @@
     --color-stone-100: oklch(97% 0.001 106.424);
     --color-white: #fff;
     --spacing: 0.25rem;
+    --container-xl: 36rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
@@ -748,6 +749,128 @@
   .chapter-option.is-active-chapter span, .chapter-option.is-active-chapter strong, .chapter-option.is-focused-chapter span, .chapter-option.is-focused-chapter strong {
     color: var(--color-slate-900);
   }
+  .help-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--spacing) * 4);
+  }
+  .help-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: color-mix(in srgb, oklch(12.9% 0.042 264.695) 45%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-slate-950) 45%, transparent);
+    }
+  }
+  .help-modal-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: var(--container-xl);
+    border-radius: var(--radius-lg);
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+    border-color: var(--color-slate-200);
+    background-color: var(--color-white);
+    padding: calc(var(--spacing) * 5);
+    --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 8px 10px -6px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    @media (width >= 40rem) {
+      padding: calc(var(--spacing) * 6);
+    }
+  }
+  .help-modal-header {
+    margin-bottom: calc(var(--spacing) * 4);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: calc(var(--spacing) * 4);
+  }
+  .help-modal-header h2 {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
+    --tw-leading: var(--leading-tight);
+    line-height: var(--leading-tight);
+    color: var(--color-slate-950);
+  }
+  .help-modal-copy {
+    font-size: var(--text-base);
+    line-height: var(--tw-leading, var(--text-base--line-height));
+    --tw-leading: var(--leading-relaxed);
+    line-height: var(--leading-relaxed);
+    color: var(--color-slate-600);
+  }
+  .shortcut-list {
+    margin-block: calc(var(--spacing) * 5);
+    :where(& > :not(:last-child)) {
+      --tw-divide-y-reverse: 0;
+      border-bottom-style: var(--tw-border-style);
+      border-top-style: var(--tw-border-style);
+      border-top-width: calc(1px * var(--tw-divide-y-reverse));
+      border-bottom-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+    }
+    :where(& > :not(:last-child)) {
+      border-color: var(--color-slate-100);
+    }
+    border-radius: var(--radius-lg);
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+    border-color: var(--color-slate-200);
+  }
+  .shortcut-list div {
+    display: grid;
+    gap: calc(var(--spacing) * 2);
+    padding: calc(var(--spacing) * 3);
+    @media (width >= 40rem) {
+      grid-template-columns: 11rem 1fr;
+    }
+    @media (width >= 40rem) {
+      align-items: center;
+    }
+  }
+  .shortcut-list dt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing);
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-slate-900);
+  }
+  .shortcut-list dd {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-leading: var(--leading-relaxed);
+    line-height: var(--leading-relaxed);
+    color: var(--color-slate-600);
+  }
+  .shortcut-list kbd {
+    display: inline-flex;
+    min-height: calc(var(--spacing) * 7);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+    border-color: var(--color-slate-200);
+    background-color: var(--color-slate-50);
+    padding-inline: calc(var(--spacing) * 2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-slate-700);
+    --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .help-modal-action {
+    width: 100%;
+  }
   .card {
     border-radius: var(--radius-lg);
     border-style: var(--tw-border-style);
@@ -1415,6 +1538,40 @@
   html.dark .chapter-option.is-focused-chapter {
     background-color: var(--color-slate-700);
   }
+  html.dark .help-modal-backdrop {
+    background-color: color-mix(in srgb, oklch(12.9% 0.042 264.695) 70%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-slate-950) 70%, transparent);
+    }
+  }
+  html.dark .help-modal-card {
+    border-color: var(--color-slate-700);
+    background-color: var(--color-slate-900);
+    --tw-shadow: 0 0 #0000;
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  html.dark .help-modal-header h2 {
+    color: var(--color-slate-100);
+  }
+  html.dark .help-modal-copy, html.dark .shortcut-list dd {
+    color: var(--color-slate-300);
+  }
+  html.dark .shortcut-list {
+    :where(& > :not(:last-child)) {
+      border-color: var(--color-slate-800);
+    }
+    border-color: var(--color-slate-700);
+  }
+  html.dark .shortcut-list dt {
+    color: var(--color-slate-100);
+  }
+  html.dark .shortcut-list kbd {
+    border-color: var(--color-slate-700);
+    background-color: var(--color-slate-950);
+    color: var(--color-slate-200);
+    --tw-shadow: 0 0 #0000;
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
   html.dark .card {
     border-color: var(--color-slate-800);
     background-color: var(--color-slate-950);
@@ -1769,6 +1926,11 @@
   inherits: false;
   initial-value: 1;
 }
+@property --tw-divide-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
 @property --tw-duration {
   syntax: "*";
   inherits: false;
@@ -1830,6 +1992,7 @@
       --tw-scale-x: 1;
       --tw-scale-y: 1;
       --tw-scale-z: 1;
+      --tw-divide-y-reverse: 0;
       --tw-duration: initial;
       --tw-translate-x: 0;
       --tw-translate-y: 0;
