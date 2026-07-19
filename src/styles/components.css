@@ -28,11 +28,28 @@
   }
 
   .theme-toggle {
-    @apply inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-transparent text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 focus:outline-none focus:ring-4 focus:ring-slate-100;
+    @apply relative inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-transparent text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 focus:outline-none focus:ring-4 focus:ring-slate-100;
   }
 
   .header-actions {
     @apply flex items-center gap-1;
+  }
+
+  .theme-toggle[data-tooltip]::after {
+    content: attr(data-tooltip);
+    @apply pointer-events-none absolute right-0 top-full z-50 mt-2 whitespace-nowrap rounded-md bg-slate-950 px-2 py-1 text-xs font-bold text-white opacity-0 shadow-lg transition;
+  }
+
+  .theme-toggle[data-tooltip]::before {
+    content: "";
+    @apply pointer-events-none absolute right-3 top-full z-50 mt-1 size-2 rotate-45 bg-slate-950 opacity-0 transition;
+  }
+
+  .theme-toggle[data-tooltip]:hover::after,
+  .theme-toggle[data-tooltip]:hover::before,
+  .theme-toggle[data-tooltip]:focus-visible::after,
+  .theme-toggle[data-tooltip]:focus-visible::before {
+    @apply opacity-100;
   }
 
   .theme-toggle[aria-pressed="true"] {
@@ -392,6 +409,11 @@
 
   html.dark .theme-toggle-icon {
     @apply text-white;
+  }
+
+  html.dark .theme-toggle[data-tooltip]::after,
+  html.dark .theme-toggle[data-tooltip]::before {
+    @apply bg-slate-100 text-slate-950;
   }
 
   html.dark .chapter-trigger {
