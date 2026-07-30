@@ -2769,7 +2769,7 @@ const conceptLessons = [
     title: "Values and Wires",
     universeTitle: "Variables point to values",
     intro:
-      "Start with the core picture used in every chapter: variables are labeled boxes, values are things JavaScript creates, and wires show which value a variable points to.",
+      "Playful JS starts with a small code principle: JavaScript creates values, then variables remember those values for later. The diagrams show variables as labeled boxes and wires as the connection to the value each variable currently points to.",
     code: ["let x = 10;", "let y = x;", "x = 0;"],
     legend: ["variable", "value", "wire"],
     nodes: {
