@@ -6,7 +6,7 @@ This file exists so a new Codex/chat window can continue the project without rel
 
 Playful JS is a visual JavaScript learning app for beginners who learn better through diagrams than videos. It teaches JavaScript by showing variables, values, objects, function calls, DOM nodes, async work, and other concepts as connected visual mental models.
 
-The app should teach practical JavaScript first, then offer a deeper mental-model library.
+The app should teach practical JavaScript with the needed mental models placed where they help, instead of leaving all conceptual material until the end.
 
 ## Current Structure
 
@@ -17,11 +17,11 @@ The app should teach practical JavaScript first, then offer a deeper mental-mode
 - `Instruction.md`: course design rules and visual accuracy constraints.
 - `scripts/audit-lessons.js`: local lesson data audit.
 
-Lesson order in `app.js`:
+Lesson data in `app.js`:
 
 - `practicalLessons`: beginner-first practical lessons.
 - `conceptLessons`: mental-model library lessons.
-- `lessons = [...practicalLessons, ...conceptLessons]`.
+- `lessonOrder`: the visible learning path. This deliberately mixes practical lessons and conceptual lessons when a concept is needed before the next practical topic.
 
 At this point the project has 97 chapters total.
 
@@ -106,6 +106,7 @@ The audit checks lesson data for:
 - undefined active nodes,
 - active nodes that are not visible,
 - wires whose endpoints are missing or hidden,
+- duplicate visible chapter titles,
 - likely label overflow for node shapes.
 
 ## Screenshot Verification
@@ -140,7 +141,7 @@ reviewed, not only the first or final frame.
 
 ## Recent Important Fixes
 
-- The beginner-first practical path was added before the conceptual library.
+- The visible lesson path now uses explicit `lessonOrder` so mental-model chapters can appear before the practical topics that depend on them.
 - Early practical chapters were audited so they do not skip key evaluation/assignment steps.
 - String chapter labels preserve spaces where that matters.
 - For loops now show each pass and final counter state clearly.
@@ -164,10 +165,12 @@ Continue improving the beginner practical curriculum so everyday JavaScript feat
 
 ## Chapter Addition Discipline
 
-Before adding chapters, search existing `practicalLessons` and `conceptLessons`
-for the same topic. Improve, reorder, or clarify existing material when that is
-better than adding a duplicate. Add a new chapter only when it teaches a distinct
-everyday skill or a mental model needed for real projects.
+Before adding chapters, search existing `practicalLessons`, `conceptLessons`, and
+the visible `lessonOrder` for the same topic. Check for duplicate titles and for
+chapters that teach the same underlying concept with only different wording. Improve,
+rename, reorder, merge, or clarify existing material when that is better than adding
+a duplicate. Add a new chapter only when it teaches a distinct everyday skill or a
+mental model needed for real projects.
 
 The course is not intended to cover every JavaScript edge case. The goal is that
 someone who completes roughly 80% feels comfortable reading and writing everyday

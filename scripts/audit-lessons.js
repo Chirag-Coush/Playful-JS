@@ -27,12 +27,25 @@ const maxLabelLengthByKind = {
 
 const problems = [];
 const warnings = [];
+const seenTitles = new Map();
 
 function location(lessonIndex, lesson, stepIndex) {
   return `Chapter ${lessonIndex + 1} (${lesson.title}), step ${stepIndex + 1}`;
 }
 
 sandbox.lessons.forEach((lesson, lessonIndex) => {
+  const normalizedTitle = String(lesson.title || "").trim().toLowerCase();
+  if (!normalizedTitle) {
+    problems.push(`Chapter ${lessonIndex + 1}: lesson needs a visible title.`);
+  } else if (seenTitles.has(normalizedTitle)) {
+    const firstIndex = seenTitles.get(normalizedTitle);
+    problems.push(
+      `Chapter ${lessonIndex + 1} (${lesson.title}) duplicates the visible title from Chapter ${firstIndex + 1}.`
+    );
+  } else {
+    seenTitles.set(normalizedTitle, lessonIndex);
+  }
+
   const nodeIds = new Set(Object.keys(lesson.nodes || {}));
 
   Object.entries(lesson.nodes || {}).forEach(([id, node]) => {

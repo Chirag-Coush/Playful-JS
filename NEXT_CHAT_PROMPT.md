@@ -28,8 +28,8 @@ Important rules:
 Current state:
 
 - The app has 97 chapters.
-- Practical lessons come first in `practicalLessons`.
-- The older conceptual library follows in `conceptLessons`.
+- Lesson data is split between `practicalLessons` and `conceptLessons`, but the visible course path is controlled by explicit `lessonOrder`.
+- Mental-model chapters are now interleaved where beginners need them before the next practical topic.
 - Recent practical sections already added:
   - basics, decisions, strings, loops, arrays,
   - functions/scope/callbacks/array methods,
@@ -46,6 +46,7 @@ npm run screenshots:chapter -- 22
 ```
 
 `npm run check` runs JavaScript syntax validation, Tailwind build, and lesson data audit.
+The lesson audit catches missing/hidden diagram nodes, hidden wire endpoints, duplicate visible chapter titles, and likely label overflow.
 
 For visual checks, keep the local server running and capture every state for new/dense chapters, for example:
 
@@ -65,9 +66,11 @@ Next recommended work:
    - what the syntax does,
    - where it appears in real projects.
 4. For every new chapter:
-   - first search existing `practicalLessons` and `conceptLessons` for the topic and decide whether to improve/reorder an existing chapter instead of adding a duplicate,
+   - first search existing `practicalLessons`, `conceptLessons`, and visible `lessonOrder` for the topic,
+   - check for duplicate chapter titles and chapters that teach the same concept with different examples,
+   - decide whether to improve, rename, reorder, or merge an existing chapter instead of adding a duplicate,
    - only add a new chapter if it teaches a distinct everyday skill or a mental model needed for real projects,
-   - add lesson data to `practicalLessons` before `conceptLessons`,
+   - add lesson data to the section that matches the lesson type, then place it deliberately in `lessonOrder`,
    - keep diagrams behaviorally accurate,
    - run `npm run check`,
    - run `npm run screenshots:chapter -- <chapter-number>` for dense chapters,

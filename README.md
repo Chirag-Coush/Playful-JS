@@ -24,9 +24,9 @@ written with AI tools and agent loops. If an AI tool builds something, I still
 want to jump in, assess the work, debug it, and know what
 is actually happening.
 
-The app starts with practical JavaScript basics and uses visual mental models
-inside each lesson. The older conceptual chapters are still available as a
-mental model library after the beginner-first chapters.
+The app starts with the core visual model, then moves through practical
+JavaScript topics. Mental-model chapters are mixed into the path when they help
+the next practical topic make more sense.
 
 One early mental model is:
 
@@ -40,8 +40,9 @@ Variables are shown as labeled boxes, primitive values are shown as floating
 values, and assignment is shown as a wire that can move from one value to
 another.
 
-Current learning structure:
+Current learning path:
 
+- Core model: values, variables, wires, assignment, object identity, and mutation.
 - Everyday JavaScript basics: variables, constants, arithmetic, input, conversion, Math, and random numbers.
 - Decisions and branching: if statements, logical operators, ternary, switch, and strict equality.
 - Strings in real projects: string methods, slicing, and method chaining.
@@ -50,7 +51,7 @@ Current learning structure:
 - Functions and reusable logic: functions, scope, callbacks, function expressions, and arrow functions.
 - Objects and app data: objects, nested objects, arrays of objects, `this`, classes, constructors, static methods, getters, inheritance, and sorting objects.
 - TypeScript bridge: type annotations, object types, union narrowing, and generics.
-- Mental model library: values, objects, mutation, identity, functions, scope, closures, async, DOM, modules, and modern JavaScript concepts.
+- Browser, async, and production patterns: DOM selection, events, forms, fetch, localStorage, modules, state updates, promises, queues, errors, JSON, dates, and dynamic imports.
 
 ## Run
 

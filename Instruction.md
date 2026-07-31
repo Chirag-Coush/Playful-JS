@@ -7,3 +7,5 @@ Playful JS course design notes
 - Keep visual conventions consistent across chapters: variables are boxes, primitive values are circles/pills, objects/functions are object-like values, and wires represent references to values.
 - Visible variable boxes and primitive value nodes must use a full white background, never opacity-based dimming. Hidden future-step nodes should be fully hidden, not ghosted.
 - Every chapter should be understandable to a beginner learning JavaScript for the first time, while still being accurate enough not to create misconceptions.
+- Visible chapter titles should be unique. If two nearby chapters teach the same underlying idea, rename, repurpose, merge, or reorder them so each chapter has a clear reason to exist.
+- Before adding a chapter, search both practical and concept lessons for duplicate topics. Add a chapter only when it teaches a distinct everyday skill or a necessary mental model.
