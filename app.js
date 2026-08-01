@@ -9264,6 +9264,8 @@ const playgroundChipGroups = [
       { label: "{}", code: "{}" },
       { label: ".name", code: ".name" },
       { label: "[0]", code: "[0]" },
+      { label: ".push()", code: '.push("Ada")' },
+      { label: ".length", code: ".length" },
       { label: ";", code: ";" },
     ],
   },
@@ -9405,6 +9407,7 @@ function closeHelpModal({ remember = true } = {}) {
 }
 
 function setMode(mode) {
+  const wasPlayground = state.mode === "playground";
   state.mode = mode;
   stopPlayback({ renderAfterStop: false });
   closeChapterMenu();
@@ -9416,6 +9419,10 @@ function setMode(mode) {
   dom.playgroundToggle.setAttribute("aria-label", isPlayground ? "Return to lesson mode" : "Open guided playground");
 
   if (isPlayground) {
+    if (!wasPlayground) {
+      dom.playgroundEditor.value = currentLesson().code.join("\n");
+      savePlaygroundCode();
+    }
     renderPlayground();
     dom.playgroundEditor.focus();
     return;
@@ -9955,6 +9962,27 @@ function parsePlayground(code) {
   };
 
   const getRawValue = (valueId) => values.find((value) => value.id === valueId)?.raw;
+  const getValue = (valueId) => values.find((value) => value.id === valueId);
+
+  const setArrayProps = (arrayValue, itemIds) => {
+    const lengthId = addValue({ ...makePrimitiveValue(itemIds.length), raw: itemIds.length });
+    arrayValue.props = [
+      ...itemIds.map((id, index) => [String(index), id]),
+      ["length", lengthId],
+    ];
+  };
+
+  const pushArrayItems = (arrayName, argsSource, locals) => {
+    const arrayValue = getValue(readVariable(arrayName));
+    if (arrayValue?.type !== "array") throw new Error(`${arrayName}.push() needs ${arrayName} to point to an array.`);
+
+    const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
+    const itemIds = arrayValue.props?.filter(([key]) => /^\d+$/.test(key)).map(([, id]) => id) || [];
+    itemIds.push(...argIds);
+    arrayValue.raw = itemIds.map(getRawValue);
+    setArrayProps(arrayValue, itemIds);
+    return arrayValue.props.find(([key]) => key === "length")?.[1];
+  };
 
   const evaluateExpression = (expression, locals = new Map()) => {
     const expr = expression.trim();
@@ -9982,7 +10010,9 @@ function parsePlayground(code) {
     if (arrayMatch) {
       const items = splitTopLevel(arrayMatch[1]).filter((item) => item.trim());
       const itemIds = items.map((item) => evaluateExpression(item, locals));
-      return addValue({ type: "array", label: "[ ]", raw: itemIds.map(getRawValue), props: itemIds.map((id, index) => [String(index), id]) });
+      const arrayId = addValue({ type: "array", label: "[ ]", raw: itemIds.map(getRawValue), props: [] });
+      setArrayProps(getValue(arrayId), itemIds);
+      return arrayId;
     }
 
     const objectMatch = expr.match(/^\{(.*)\}$/);
@@ -10012,6 +10042,12 @@ function parsePlayground(code) {
       const target = arrayValue?.props?.find(([key]) => key === index)?.[1];
       if (!target) throw new Error(`${arrayName}[${index}] is not available in this supported array.`);
       return target;
+    }
+
+    const pushMatch = expr.match(/^([A-Za-z_$][\w$]*)\.push\((.*)\)$/);
+    if (pushMatch) {
+      const [, arrayName, argsSource] = pushMatch;
+      return pushArrayItems(arrayName, argsSource, locals);
     }
 
     const callMatch = expr.match(/^([A-Za-z_$][\w$]*)\((.*)\)$/);
@@ -10065,6 +10101,13 @@ function parsePlayground(code) {
         if (!variables.has(name)) throw new Error(`${name} must be created with let or const first.`);
         if (variables.get(name).kind === "const") throw new Error(`${name} is const, so it cannot be reassigned.`);
         variables.set(name, { ...variables.get(name), valueId: evaluateExpression(expression) });
+        return;
+      }
+
+      const pushStatement = statement.match(/^([A-Za-z_$][\w$]*)\.push\((.*)\)$/);
+      if (pushStatement) {
+        const [, arrayName, argsSource] = pushStatement;
+        pushArrayItems(arrayName, argsSource, new Map());
         return;
       }
 
