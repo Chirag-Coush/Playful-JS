@@ -10466,9 +10466,9 @@ function buildPlaygroundDiagram(variables, values) {
   const rows = Array.from(variables.entries()).slice(0, 8);
 
   rows.forEach(([name, binding], index) => {
-    const y = 18 + index * 10;
+    const y = 24 + index * 24;
     nodes[`var-${name}`] = { label: name, kind: "variable-wide", x: 16, y };
-    placePlaygroundValue(binding.valueId, 48, y, nodes, wires, values, valuePositions);
+    placePlaygroundValue(binding.valueId, 50, y, nodes, wires, values, valuePositions);
     wires.push({ id: `wire-${name}`, from: `var-${name}`, to: `value-${binding.valueId}`, tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } });
   });
 
@@ -10478,6 +10478,10 @@ function buildPlaygroundDiagram(variables, values) {
     wires,
     legend: ["variable", "object", "property", "value", "wire"],
   };
+}
+
+function clampPlaygroundPosition(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
 
 function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions) {
@@ -10491,16 +10495,21 @@ function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions) {
 
   if (!value.props?.length) return;
 
-  value.props.slice(0, 4).forEach(([property, childId], index) => {
-    const childY = y - 8 + index * 6;
-    placePlaygroundValue(childId, x + 28, childY, nodes, wires, values, positions);
+  const visibleProps = value.props.slice(0, 6);
+  const childSpacing = value.type === "array" ? 16 : 14;
+  const firstChildY = y - ((visibleProps.length - 1) * childSpacing) / 2;
+
+  visibleProps.forEach(([property, childId], index) => {
+    const childY = clampPlaygroundPosition(firstChildY + index * childSpacing, 12, 88);
+    const offset = clampPlaygroundPosition(childY - y, -26, 26);
+    placePlaygroundValue(childId, x + 36, childY, nodes, wires, values, positions);
     wires.push({
       id: `prop-${valueId}-${property}`,
       from: `value-${valueId}`,
       to: `value-${childId}`,
       label: property,
       tone: "cyan",
-      fromAnchor: { side: "right", offset: -10 + index * 6 },
+      fromAnchor: { side: "right", offset },
       toAnchor: { side: "left" },
     });
   });

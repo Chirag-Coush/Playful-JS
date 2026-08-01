@@ -36,6 +36,19 @@ const snippets = [
     name: "multiple push arguments",
     code: 'let cart = [];\ncart.push("Book", "Pen");\nlet itemCount = cart.length;',
     expectedLabels: ['"Book"', '"Pen"', "2", "itemCount"],
+    minVerticalGaps: [
+      ['"Book"', '"Pen"', 12],
+      ['"Pen"', "2", 12],
+    ],
+  },
+  {
+    name: "multiple push arguments with longer second item",
+    code: 'let cart = [];\ncart.push("Book", "paper");\nlet itemCount = cart.length;',
+    expectedLabels: ['"Book"', '"paper"', "2", "itemCount"],
+    minVerticalGaps: [
+      ['"Book"', '"paper"', 12],
+      ['"paper"', "2", 12],
+    ],
   },
   {
     name: "push return value",
@@ -57,6 +70,17 @@ snippets.forEach((snippet) => {
   snippet.expectedLabels.forEach((label) => {
     if (!labels.includes(label)) {
       problems.push(`${snippet.name}: expected label ${label} in playground diagram.`);
+    }
+  });
+
+  (snippet.minVerticalGaps || []).forEach(([firstLabel, secondLabel, minGap]) => {
+    const first = Object.values(diagram.nodes).find((node) => node.label === firstLabel);
+    const second = Object.values(diagram.nodes).find((node) => node.label === secondLabel);
+    if (!first || !second) return;
+
+    const gap = Math.abs(first.y - second.y);
+    if (gap < minGap) {
+      problems.push(`${snippet.name}: expected at least ${minGap} layout units between ${firstLabel} and ${secondLabel}, got ${gap}.`);
     }
   });
 });
