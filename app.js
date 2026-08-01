@@ -773,8 +773,8 @@ const practicalLessons = [
         active: ["name", "raw"],
       },
       {
-        title: "Trim spaces",
-        description: 'trim() removes only the outer spaces, so clean points to "Ada Lovelace". It does not mutate name.',
+        title: "Trim returns a new string",
+        description: 'trim() reads the original string and returns a cleaned string value. name still points to "  Ada Lovelace  "; clean points to "Ada Lovelace".',
         line: 1,
         visible: ["name", "raw", "clean", "cleanValue"],
         wires: [
@@ -782,6 +782,7 @@ const practicalLessons = [
           { id: "clean-cleanValue", from: "clean", to: "cleanValue", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["clean", "cleanValue"],
+        notes: [{ text: "Strings do not mutate; methods return values.", x: 58, y: 42 }],
       },
       {
         title: "Check for text",
@@ -801,7 +802,7 @@ const practicalLessons = [
       options: ["no", "yes", "only sometimes"],
       answer: "no",
       correct: "Correct. Strings are primitive values; trim creates a new string.",
-      wrong: "Not quite. String methods like trim return a new string value.",
+      wrong: "Not quite. trim returns a cleaned string value and leaves the original string alone.",
     },
   },
   {
