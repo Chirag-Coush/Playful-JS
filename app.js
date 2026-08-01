@@ -9943,10 +9943,7 @@ function parsePlayground(code) {
     return `let ${name} = __function_${name};`;
   });
 
-  const statements = withoutFunctions
-    .split(/;\s*|\n+/)
-    .map((statement) => statement.trim())
-    .filter(Boolean);
+  const statements = splitStatements(withoutFunctions);
   const variables = new Map();
   const values = [];
 
@@ -10004,7 +10001,41 @@ function parsePlayground(code) {
       return addValue({ ...makePrimitiveValue(bool), raw: bool });
     }
 
+    if (expr === "null") {
+      return addValue({ type: "string", label: "null", raw: null });
+    }
+
+    if (expr === "undefined") {
+      return addValue({ ...makePrimitiveValue(undefined), raw: undefined });
+    }
+
     if (locals.has(expr)) return locals.get(expr);
+
+    const ternaryMatch = findTopLevelTernary(expr);
+    if (ternaryMatch) {
+      const conditionId = evaluateExpression(expr.slice(0, ternaryMatch.questionIndex), locals);
+      const chosen = getRawValue(conditionId)
+        ? expr.slice(ternaryMatch.questionIndex + 1, ternaryMatch.colonIndex)
+        : expr.slice(ternaryMatch.colonIndex + 1);
+      return evaluateExpression(chosen, locals);
+    }
+
+    const logicalOr = findTopLevelOperator(expr, ["||"]);
+    if (logicalOr) {
+      const leftId = evaluateExpression(expr.slice(0, logicalOr.index), locals);
+      return getRawValue(leftId) ? leftId : evaluateExpression(expr.slice(logicalOr.index + 2), locals);
+    }
+
+    const logicalAnd = findTopLevelOperator(expr, ["&&"]);
+    if (logicalAnd) {
+      const leftId = evaluateExpression(expr.slice(0, logicalAnd.index), locals);
+      return getRawValue(leftId) ? evaluateExpression(expr.slice(logicalAnd.index + 2), locals) : leftId;
+    }
+
+    if (expr.startsWith("!")) {
+      const valueId = evaluateExpression(expr.slice(1), locals);
+      return addValue({ ...makePrimitiveValue(!getRawValue(valueId)), raw: !getRawValue(valueId) });
+    }
 
     const arrayMatch = expr.match(/^\[(.*)\]$/);
     if (arrayMatch) {
@@ -10026,13 +10057,70 @@ function parsePlayground(code) {
       return addValue({ type: "object", label: "{ }", raw: Object.fromEntries(props.map(([key, id]) => [key, getRawValue(id)])), props });
     }
 
-    const propertyMatch = expr.match(/^([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)$/);
-    if (propertyMatch) {
-      const [, objectName, property] = propertyMatch;
-      const objectValue = values.find((value) => value.id === readVariable(objectName));
-      const target = objectValue?.props?.find(([key]) => key === property)?.[1];
-      if (!target) throw new Error(`${objectName}.${property} is not available in this supported object.`);
-      return target;
+    if (/^prompt\((.*)\)$/.test(expr)) {
+      return addValue({ ...makePrimitiveValue("42"), raw: "42" });
+    }
+
+    const numberMatch = expr.match(/^Number\((.*)\)$/);
+    if (numberMatch) {
+      const valueId = evaluateExpression(numberMatch[1], locals);
+      const result = Number(getRawValue(valueId));
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    const stringMatch = expr.match(/^String\((.*)\)$/);
+    if (stringMatch) {
+      const valueId = evaluateExpression(stringMatch[1], locals);
+      const result = String(getRawValue(valueId));
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    if (expr === "Math.random()") {
+      return addValue({ ...makePrimitiveValue(0.7), raw: 0.7 });
+    }
+
+    const mathMatch = expr.match(/^Math\.(floor|ceil)\((.*)\)$/);
+    if (mathMatch) {
+      const [, method, source] = mathMatch;
+      const valueId = evaluateExpression(source, locals);
+      const result = Math[method](getRawValue(valueId));
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    const stringMethodMatch = expr.match(/^(.+)\.(trim|toLowerCase)\(\)$/);
+    if (stringMethodMatch) {
+      const [, source, method] = stringMethodMatch;
+      const valueId = evaluateExpression(source, locals);
+      const result = String(getRawValue(valueId))[method]();
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    const includesMatch = expr.match(/^(.+)\.includes\((.*)\)$/);
+    if (includesMatch) {
+      const [, source, needleSource] = includesMatch;
+      const valueId = evaluateExpression(source, locals);
+      const needleId = evaluateExpression(needleSource, locals);
+      const result = String(getRawValue(valueId)).includes(String(getRawValue(needleId)));
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    const lastIndexMatch = expr.match(/^(.+)\.lastIndexOf\((.*)\)$/);
+    if (lastIndexMatch) {
+      const [, source, needleSource] = lastIndexMatch;
+      const valueId = evaluateExpression(source, locals);
+      const needleId = evaluateExpression(needleSource, locals);
+      const result = String(getRawValue(valueId)).lastIndexOf(String(getRawValue(needleId)));
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    const sliceMatch = expr.match(/^(.+)\.slice\((.*)\)$/);
+    if (sliceMatch) {
+      const [, source, argsSource] = sliceMatch;
+      const valueId = evaluateExpression(source, locals);
+      const argIds = splitTopLevel(argsSource).map((arg) => evaluateExpression(arg, locals));
+      const args = argIds.map(getRawValue);
+      const result = String(getRawValue(valueId)).slice(...args);
+      return addValue({ ...makePrimitiveValue(result), raw: result });
     }
 
     const indexMatch = expr.match(/^([A-Za-z_$][\w$]*)\[(\d+)\]$/);
@@ -10048,6 +10136,19 @@ function parsePlayground(code) {
     if (pushMatch) {
       const [, arrayName, argsSource] = pushMatch;
       return pushArrayItems(arrayName, argsSource, locals);
+    }
+
+    const propertyMatch = expr.match(/^([A-Za-z_$][\w$]*)(\.[A-Za-z_$][\w$]*)+$/);
+    if (propertyMatch) {
+      const [objectName, ...properties] = expr.split(".");
+      let currentId = readVariable(objectName);
+      properties.forEach((property) => {
+        const objectValue = getValue(currentId);
+        const target = objectValue?.props?.find(([key]) => key === property)?.[1];
+        if (!target) throw new Error(`${objectName}.${properties.join(".")} is not available in this supported object.`);
+        currentId = target;
+      });
+      return currentId;
     }
 
     const callMatch = expr.match(/^([A-Za-z_$][\w$]*)\((.*)\)$/);
@@ -10080,7 +10181,7 @@ function parsePlayground(code) {
   };
 
   try {
-    statements.forEach((statement) => {
+    const executeStatement = (statement, locals = new Map()) => {
       const declaration = statement.match(/^(let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
       if (declaration) {
         const [, kind, name, expression] = declaration;
@@ -10092,6 +10193,65 @@ function parsePlayground(code) {
         }
 
         variables.set(name, { kind, valueId: evaluateExpression(expression) });
+        return;
+      }
+
+      const ifStatement = statement.match(/^if\s*\((.*)\)\s*\{([\s\S]*)\}$/);
+      if (ifStatement) {
+        const [, conditionSource, body] = ifStatement;
+        if (getRawValue(evaluateExpression(conditionSource, locals))) {
+          splitStatements(body).forEach((child) => executeStatement(child, locals));
+        }
+        return;
+      }
+
+      const switchStatement = statement.match(/^switch\s*\((.*)\)\s*\{([\s\S]*)\}$/);
+      if (switchStatement) {
+        const [, source, body] = switchStatement;
+        const value = getRawValue(evaluateExpression(source, locals));
+        const casePattern = /case\s+([^:]+):\s*([\s\S]*?)(?=case\s+|default\s*:|$)/g;
+        let match;
+        while ((match = casePattern.exec(body))) {
+          const caseValue = getRawValue(evaluateExpression(match[1], locals));
+          if (caseValue === value) {
+            splitStatements(match[2].replace(/\bbreak\b/g, "")).forEach((child) => executeStatement(child, locals));
+            return;
+          }
+        }
+        return;
+      }
+
+      const whileStatement = statement.match(/^while\s*\((.*)\)\s*\{([\s\S]*)\}$/);
+      if (whileStatement) {
+        const [, conditionSource, body] = whileStatement;
+        let guard = 0;
+        while (getRawValue(evaluateExpression(conditionSource, locals))) {
+          splitStatements(body).forEach((child) => executeStatement(child, locals));
+          guard += 1;
+          if (guard > 20) throw new Error("This playground stops loops after 20 passes.");
+        }
+        return;
+      }
+
+      const forStatement = statement.match(/^for\s*\((.*);(.*);(.*)\)\s*\{([\s\S]*)\}$/);
+      if (forStatement) {
+        const [, init, conditionSource, update, body] = forStatement;
+        executeStatement(init.trim(), locals);
+        let guard = 0;
+        while (getRawValue(evaluateExpression(conditionSource, locals))) {
+          splitStatements(body).forEach((child) => executeStatement(child, locals));
+          executeStatement(update.trim(), locals);
+          guard += 1;
+          if (guard > 20) throw new Error("This playground stops loops after 20 passes.");
+        }
+        return;
+      }
+
+      const increment = statement.match(/^([A-Za-z_$][\w$]*)\+\+$/);
+      if (increment) {
+        const [, name] = increment;
+        const value = Number(getRawValue(readVariable(name))) + 1;
+        variables.set(name, { ...variables.get(name), valueId: addValue({ ...makePrimitiveValue(value), raw: value }) });
         return;
       }
 
@@ -10111,8 +10271,10 @@ function parsePlayground(code) {
         return;
       }
 
-      throw new Error(`I can’t visualise "${statement}" yet.`);
-    });
+      evaluateExpression(statement, locals);
+    };
+
+    statements.forEach((statement) => executeStatement(statement));
   } catch (error) {
     return playgroundError(error.message);
   }
@@ -10171,10 +10333,81 @@ function splitTopLevel(source) {
   return parts;
 }
 
+function splitStatements(source) {
+  const statements = [];
+  let current = "";
+  let depth = 0;
+  let quote = "";
+
+  for (let index = 0; index < source.length; index += 1) {
+    const char = source[index];
+
+    if (quote) {
+      current += char;
+      if (char === quote && source[index - 1] !== "\\") quote = "";
+      continue;
+    }
+
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      current += char;
+      continue;
+    }
+
+    if (char === "{" || char === "[" || char === "(") depth += 1;
+    if (char === "}" || char === "]" || char === ")") depth -= 1;
+
+    if ((char === ";" || char === "\n") && depth === 0) {
+      if (current.trim()) statements.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (current.trim()) statements.push(current.trim());
+  return statements;
+}
+
 function splitObjectEntry(entry) {
   const index = entry.indexOf(":");
   if (index === -1) return [null, null];
   return [entry.slice(0, index).trim(), entry.slice(index + 1).trim()];
+}
+
+function findTopLevelTernary(source) {
+  let depth = 0;
+  let quote = "";
+  let questionIndex = -1;
+
+  for (let index = 0; index < source.length; index += 1) {
+    const char = source[index];
+
+    if (quote) {
+      if (char === quote && source[index - 1] !== "\\") quote = "";
+      continue;
+    }
+
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+
+    if (char === "[" || char === "{" || char === "(") depth += 1;
+    if (char === "]" || char === "}" || char === ")") depth -= 1;
+
+    if (depth === 0 && char === "?") {
+      questionIndex = index;
+      continue;
+    }
+
+    if (depth === 0 && char === ":" && questionIndex !== -1) {
+      return { questionIndex, colonIndex: index };
+    }
+  }
+
+  return null;
 }
 
 function findTopLevelOperator(source, operators, { rightToLeft = false } = {}) {

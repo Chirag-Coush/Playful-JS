@@ -2,10 +2,11 @@ const fs = require("fs");
 const vm = require("vm");
 
 const source = fs.readFileSync("app.js", "utf8");
+const dataEnd = source.indexOf("const initialState =");
 const parserStart = source.indexOf("function makePrimitiveValue");
 const parserEnd = source.indexOf("function renderPlayground()", parserStart);
 
-if (parserStart === -1 || parserEnd === -1) {
+if (dataEnd === -1 || parserStart === -1 || parserEnd === -1) {
   console.error("Could not find playground parser in app.js.");
   process.exit(1);
 }
@@ -13,12 +14,19 @@ if (parserStart === -1 || parserEnd === -1) {
 const sandbox = { console };
 vm.createContext(sandbox);
 vm.runInContext(
-  `${source.slice(parserStart, parserEnd)}
+  `${source.slice(0, dataEnd)}
+${source.slice(parserStart, parserEnd)}
+globalThis.lessons = lessons;
 globalThis.parsePlayground = parsePlayground;`,
   sandbox,
 );
 
 const snippets = [
+  ...sandbox.lessons.slice(0, 21).map((lesson, index) => ({
+    name: `Chapter ${index + 1}: ${lesson.title}`,
+    code: lesson.code.join("\n"),
+    expectedLabels: [],
+  })),
   {
     name: "chapter 21 array push and length",
     code: 'let cart = [];\ncart.push("Book");\nlet itemCount = cart.length;',
