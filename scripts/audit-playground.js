@@ -57,6 +57,11 @@ const snippets = [
     expectedLabels: ['"Book"', '"Pen"', "2", "itemCount"],
   },
   {
+    name: "function expression call returns value",
+    code: "const add = function(a, b) { return a + b; };\nlet result = add(3, 4);",
+    expectedLabels: ["add", "fn", "result", "7"],
+  },
+  {
     name: "block scoped variable is not visible outside",
     code: "let outside = 1;\n{\n  let inside = 2;\n}\ninside;",
     expectedLabels: ["outside", "1"],

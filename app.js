@@ -1695,21 +1695,27 @@ const practicalLessons = [
     universeTitle: "Different function syntax can still create function values",
     intro:
       "Production code uses declarations, function expressions, and arrow functions. They look different, but all create function values.",
-    code: ["function double(number) { return number * 2; }", "const add = function(a, b) { return a + b; };", "const multiply = (a, b) => a * b;", "let result = multiply(3, 4);"],
+    code: ["function double(number) { return number * 2; }", "const add = function(a, b) { return a + b; };", "const multiply = (a, b) => a * b;", "let doubled = double(4);", "let added = add(3, 4);", "let multiplied = multiply(3, 4);"],
     legend: ["variable", "object", "value", "wire"],
     nodes: {
-      double: { label: "double", kind: "variable-wide", x: 16, y: 22 },
-      doubleFn: { label: "fn", kind: "object", x: 42, y: 22 },
-      add: { label: "add", kind: "variable-wide", x: 16, y: 42 },
-      addFn: { label: "fn", kind: "object", x: 42, y: 42 },
-      multiply: { label: "multiply", kind: "variable-wide", x: 16, y: 62 },
-      multiplyFn: { label: "fn", kind: "object", x: 42, y: 62 },
-      aParam: { label: "a", kind: "variable-wide", x: 50, y: 78 },
-      bParam: { label: "b", kind: "variable-wide", x: 50, y: 92 },
+      double: { label: "double", kind: "variable-wide", x: 16, y: 18 },
+      doubleFn: { label: "fn", kind: "object", x: 42, y: 18 },
+      add: { label: "add", kind: "variable-wide", x: 16, y: 36 },
+      addFn: { label: "fn", kind: "object", x: 42, y: 36 },
+      multiply: { label: "multiply", kind: "variable-wide", x: 16, y: 54 },
+      multiplyFn: { label: "fn", kind: "object", x: 42, y: 54 },
+      numberParam: { label: "number", kind: "variable-wide", x: 52, y: 78 },
+      aParam: { label: "a", kind: "variable-wide", x: 52, y: 78 },
+      bParam: { label: "b", kind: "variable-wide", x: 52, y: 92 },
       three: { label: "3", kind: "value", x: 72, y: 78 },
       four: { label: "4", kind: "value", x: 72, y: 92 },
-      twelve: { label: "12", kind: "value", x: 84, y: 68 },
-      result: { label: "result", kind: "variable-wide", x: 16, y: 86 },
+      fourSolo: { label: "4", kind: "value", x: 72, y: 78 },
+      eight: { label: "8", kind: "value", x: 88, y: 68 },
+      seven: { label: "7", kind: "value", x: 88, y: 80 },
+      twelve: { label: "12", kind: "value", x: 88, y: 92 },
+      doubled: { label: "doubled", kind: "variable-wide", x: 16, y: 68 },
+      added: { label: "added", kind: "variable-wide", x: 16, y: 80 },
+      multiplied: { label: "multiplied", kind: "variable-wide", x: 16, y: 92 },
     },
     steps: [
       {
@@ -1744,45 +1750,90 @@ const practicalLessons = [
         active: ["multiply", "multiplyFn"],
       },
       {
-        title: "Create call parameters",
-        description: "multiply(3, 4) evaluates the function and the arguments. Inside the call, a points to 3 and b points to 4.",
+        title: "Call the declaration",
+        description: "double(4) calls the declared function. Inside the call, number points to 4, then return creates 8.",
         line: 3,
-        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "aParam", "bParam", "three", "four"],
+        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "numberParam", "fourSolo", "eight"],
+        wires: [
+          { id: "double-doubleFn", from: "double", to: "doubleFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "add-addFn", from: "add", to: "addFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "multiply-multiplyFn", from: "multiply", to: "multiplyFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "numberParam-fourSolo", from: "numberParam", to: "fourSolo", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["numberParam", "fourSolo", "eight"],
+      },
+      {
+        title: "Store declaration result",
+        description: "After double returns, doubled points to 8.",
+        line: 3,
+        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "doubled", "eight"],
+        wires: [
+          { id: "double-doubleFn", from: "double", to: "doubleFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "add-addFn", from: "add", to: "addFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "multiply-multiplyFn", from: "multiply", to: "multiplyFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "doubled-eight", from: "doubled", to: "eight", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["doubled", "eight"],
+      },
+      {
+        title: "Call the function expression",
+        description: "add(3, 4) calls the function value stored in add. a points to 3, b points to 4, then return creates 7.",
+        line: 4,
+        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "doubled", "eight", "aParam", "bParam", "three", "four", "seven"],
+        wires: [
+          { id: "double-doubleFn", from: "double", to: "doubleFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "add-addFn", from: "add", to: "addFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "multiply-multiplyFn", from: "multiply", to: "multiplyFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "doubled-eight", from: "doubled", to: "eight", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "aParam-three", from: "aParam", to: "three", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "bParam-four", from: "bParam", to: "four", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["aParam", "bParam", "three", "four", "seven"],
+      },
+      {
+        title: "Store expression result",
+        description: "After add returns, added points to 7.",
+        line: 4,
+        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "doubled", "eight", "added", "seven"],
+        wires: [
+          { id: "double-doubleFn", from: "double", to: "doubleFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "add-addFn", from: "add", to: "addFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "multiply-multiplyFn", from: "multiply", to: "multiplyFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "doubled-eight", from: "doubled", to: "eight", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "added-seven", from: "added", to: "seven", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["added", "seven"],
+      },
+      {
+        title: "Call the arrow function",
+        description: "multiply(3, 4) calls the arrow function. The parameters point to 3 and 4, then the expression body returns 12.",
+        line: 5,
+        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "doubled", "eight", "added", "seven", "aParam", "bParam", "three", "four", "twelve"],
         wires: [
           { id: "double-doubleFn", from: "double", to: "doubleFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "add-addFn", from: "add", to: "addFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "multiply-multiplyFn", from: "multiply", to: "multiplyFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "doubled-eight", from: "doubled", to: "eight", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "added-seven", from: "added", to: "seven", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "aParam-three", from: "aParam", to: "three", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "bParam-four", from: "bParam", to: "four", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
-        active: ["aParam", "bParam", "three", "four"],
+        active: ["aParam", "bParam", "three", "four", "twelve"],
       },
       {
-        title: "Return the value",
-        description: "The arrow body a * b reads 3 and 4, multiplies them, and returns the new value 12.",
-        line: 3,
-        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "aParam", "bParam", "three", "four", "twelve"],
+        title: "Store arrow result",
+        description: "After multiply returns, multiplied points to 12. All three syntaxes created callable function values.",
+        line: 5,
+        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "doubled", "eight", "added", "seven", "multiplied", "twelve"],
         wires: [
           { id: "double-doubleFn", from: "double", to: "doubleFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "add-addFn", from: "add", to: "addFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "multiply-multiplyFn", from: "multiply", to: "multiplyFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "aParam-three", from: "aParam", to: "three", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "bParam-four", from: "bParam", to: "four", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "doubled-eight", from: "doubled", to: "eight", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "added-seven", from: "added", to: "seven", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "multiplied-twelve", from: "multiplied", to: "twelve", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
-        active: ["twelve"],
-      },
-      {
-        title: "Store result",
-        description: "After the call returns, result points to the returned value 12.",
-        line: 3,
-        visible: ["double", "doubleFn", "add", "addFn", "multiply", "multiplyFn", "result", "twelve"],
-        wires: [
-          { id: "double-doubleFn", from: "double", to: "doubleFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "add-addFn", from: "add", to: "addFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "multiply-multiplyFn", from: "multiply", to: "multiplyFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "result-twelve", from: "result", to: "twelve", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-        ],
-        active: ["result", "twelve"],
+        active: ["multiplied", "twelve"],
       },
     ],
     quiz: {
@@ -10334,10 +10385,11 @@ function parsePlayground(code) {
       const functionDeclaration = statement.match(/^function\s+([A-Za-z_$][\w$]*)(?:<[^>]+>)?\s*\(([^)]*)\)\s*(?::\s*[^{]+)?\{([\s\S]*)\}$/);
       if (functionDeclaration) {
         const [, name, params, body] = functionDeclaration;
+        const returnOnly = body.trim().match(/^return\s+([\s\S]+?);?$/);
         functions.set(name, {
           params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
-          body: body.trim(),
-          bodyKind: "statements",
+          body: returnOnly ? returnOnly[1].trim() : body.trim(),
+          bodyKind: returnOnly ? "expression" : "statements",
         });
         setBinding(locals || variables, name, "function", addValue({ type: "function", label: "fn", raw: { kind: "function" } }));
         return;
@@ -10357,6 +10409,19 @@ function parsePlayground(code) {
         if (arrowFunction) {
           functions.set(name, arrowFunction);
           setBinding(locals || variables, name, kind, addValue({ type: "function", label: "=> fn", raw: { kind: "function" } }));
+          return;
+        }
+
+        const functionExpression = expression.match(/^function\s*(?:[A-Za-z_$][\w$]*)?\s*\(([^)]*)\)\s*\{([\s\S]*)\}$/);
+        if (functionExpression) {
+          const [, params, body] = functionExpression;
+          const returnOnly = body.trim().match(/^return\s+([\s\S]+?);?$/);
+          functions.set(name, {
+            params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
+            body: returnOnly ? returnOnly[1].trim() : body.trim(),
+            bodyKind: returnOnly ? "expression" : "statements",
+          });
+          setBinding(locals || variables, name, kind, addValue({ type: "function", label: "fn", raw: { kind: "function" } }));
           return;
         }
 
