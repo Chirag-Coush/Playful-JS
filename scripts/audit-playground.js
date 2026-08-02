@@ -62,6 +62,12 @@ const snippets = [
     expectedLabels: ["add", "fn", "result", "7"],
   },
   {
+    name: "multiple function calls stay in view",
+    code: "function double(number) { return number * 2; }\nconst add = function(a, b) { return a + b; };\nconst multiply = (a, b) => a * b;\nlet doubled = double(4);\nlet added = add(3, 4);\nlet multiplied = multiply(3, 4);",
+    expectedLabels: ["double", "add", "multiply", "doubled", "added", "multiplied", "8", "7", "12"],
+    visibleBounds: { minY: 8, maxY: 92 },
+  },
+  {
     name: "block scoped variable is not visible outside",
     code: "let outside = 1;\n{\n  let inside = 2;\n}\ninside;",
     expectedLabels: ["outside", "1"],
@@ -107,6 +113,13 @@ snippets.forEach((snippet) => {
       problems.push(`${snippet.name}: expected at least ${minGap} layout units between ${firstLabel} and ${secondLabel}, got ${gap}.`);
     }
   });
+
+  if (snippet.visibleBounds) {
+    const outsideBounds = Object.values(diagram.nodes).filter((node) => node.y < snippet.visibleBounds.minY || node.y > snippet.visibleBounds.maxY);
+    if (outsideBounds.length) {
+      problems.push(`${snippet.name}: nodes outside vertical canvas bounds: ${outsideBounds.map((node) => `${node.label} at ${node.y}`).join(", ")}.`);
+    }
+  }
 });
 
 if (problems.length) {

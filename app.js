@@ -10736,9 +10736,12 @@ function buildPlaygroundDiagram(variables, values) {
   const wires = [];
   const valuePositions = new Map();
   const rows = Array.from(variables.entries()).slice(0, 8);
+  const firstRowY = rows.length > 4 ? 12 : 24;
+  const lastRowY = rows.length > 4 ? 88 : Math.min(76, firstRowY + (rows.length - 1) * 24);
+  const rowGap = rows.length > 1 ? (lastRowY - firstRowY) / (rows.length - 1) : 0;
 
   rows.forEach(([name, binding], index) => {
-    const y = 24 + index * 24;
+    const y = firstRowY + index * rowGap;
     nodes[`var-${name}`] = { label: name, kind: "variable-wide", x: 16, y };
     placePlaygroundValue(binding.valueId, 50, y, nodes, wires, values, valuePositions);
     wires.push({ id: `wire-${name}`, from: `var-${name}`, to: `value-${binding.valueId}`, tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } });
