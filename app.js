@@ -72,7 +72,7 @@ const practicalLessons = [
     title: "Arithmetic Operators",
     universeTitle: "Arithmetic updates counters, scores, and positions",
     intro:
-      "Addition always does the same JavaScript work: read numbers, create a new number, then store it. The meaning changes because one number represents clicks, another represents points, and another represents a screen position.",
+      "Addition always does the same JavaScript work: read numbers, create a new number, then store it. In app code, the meaning changes because one number represents clicks, another represents points, and another represents a screen position.",
     code: ["let clickCount = 0;", "let score = 10;", "let playerX = 40;", "clickCount = clickCount + 1;", "score = score + 5;", "playerX = playerX + 20;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -204,7 +204,7 @@ const practicalLessons = [
     title: "Accept User Input",
     universeTitle: "User input usually arrives as a string",
     intro:
-      "Browser input and prompt values usually arrive as strings, even when the user types digits.",
+      "User input usually reaches JavaScript as text. Forms, prompts, search boxes, and URL fields can look numeric to a person while still being string values in code.",
     code: ['let input = prompt("Age?");', "let age = Number(input);", "let nextAge = age + 1;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -274,7 +274,7 @@ const practicalLessons = [
     title: "Type Conversion",
     universeTitle: "Conversion changes the kind of value you work with",
     intro:
-      "Conversion is common when data comes from forms, URLs, APIs, or localStorage.",
+      "Conversion means creating a new value in the type you actually need. It is common when numbers arrive from forms, URLs, APIs, or localStorage as strings.",
     code: ['let countText = "3";', "let count = Number(countText);", "let label = String(count);"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -492,7 +492,7 @@ const practicalLessons = [
     title: "Logical Operators",
     universeTitle: "Logical operators combine questions",
     intro:
-      "Use &&, ||, and ! when one decision depends on more than one boolean fact.",
+      "Logical operators combine or flip decisions. Real code uses &&, ||, and ! for permissions, filters, form errors, and fallback values.",
     code: ["let loggedIn = true;", "let isAdmin = false;", "let canEdit = loggedIn && isAdmin;", "let canView = loggedIn || isAdmin;", "let blocked = !loggedIn;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -602,7 +602,7 @@ const practicalLessons = [
     title: "Ternary Operator",
     universeTitle: "A ternary chooses one of two values",
     intro:
-      'The ternary operator is a compact way to choose one value. Read it as: condition ? value when true : value when false.',
+      'A ternary chooses one of two values in one expression. It is useful for labels, CSS classes, status text, and small UI choices: condition ? value when true : value when false.',
     code: ["let count = 0;", 'let label = count === 0 ? "Empty" : "Ready";'],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -669,7 +669,7 @@ const practicalLessons = [
     title: "Switches",
     universeTitle: "switch matches one case value",
     intro:
-      "switch is useful when one value can map to several possible actions or labels.",
+      "switch compares one value against several cases. It is useful for status labels, keyboard shortcuts, route names, and simple command handling.",
     code: ['let role = "editor";', 'let access = "none";', "switch (role) {", '  case "admin": access = "all"; break;', '  case "editor": access = "write"; break;', "}"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -940,7 +940,7 @@ const practicalLessons = [
     title: "Strict Equality",
     universeTitle: "=== compares value and type",
     intro:
-      "Use strict equality in real projects so JavaScript does not silently convert values during comparison.",
+      "Strict equality compares without surprise type conversion. Real projects use it for checks like selected IDs, feature flags, form values, and API status values.",
     code: ['let input = "5";', "let count = 5;", "let same = input === count;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -2077,7 +2077,7 @@ const practicalLessons = [
     title: "What is this?",
     universeTitle: "this points to the object receiving the method call",
     intro:
-      "In object methods, this is useful when behavior needs to read or change data on the same object.",
+      "this lets a method read or change data on the object that received the call. It shows up in profile objects, class instances, UI components, and browser APIs.",
     code: ['let user = { name: "Ada", greet() { return this.name; } };', "let result = user.greet();"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -2380,7 +2380,7 @@ const practicalLessons = [
     title: "Getters",
     universeTitle: "Property access can run methods",
     intro:
-      "Getters let app code expose a property-like API while still running logic behind the scenes.",
+      "A getter lets code read something like a property while JavaScript runs a function behind the scenes. It is useful for formatted labels, computed totals, and class APIs.",
     code: ["let user = {", '  name: "Ada",', "  get label() { return this.name.toUpperCase(); }", "};", "let text = user.label;"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -2627,7 +2627,7 @@ const practicalLessons = [
     title: "Type Annotations",
     universeTitle: "Type notes are checked before JavaScript runs",
     intro:
-      "TypeScript adds notes for tools to check before the program runs. After that check, the browser runs ordinary JavaScript values.",
+      "TypeScript type annotations are notes for tools before JavaScript runs. They help catch mistakes in variables, function inputs, props, and API data, but they are not runtime values.",
     code: ["let count: number = 0;", "count = count + 1;", 'count = "one"; // TypeScript error'],
     legend: ["variable", "wire", "value"],
     nodes: {
@@ -2825,7 +2825,7 @@ const practicalLessons = [
     title: "Generics",
     universeTitle: "Generics preserve a type relationship",
     intro:
-      "Generics let a function describe a relationship between inputs and outputs without choosing one exact type up front.",
+      "Generics let a function describe the relationship between input and output without choosing one exact type up front. They show up in reusable helpers, API wrappers, React hooks, and collections.",
     code: ["function first<T>(items: T[]): T | undefined {", "  return items[0];", "}", 'let name = first(["Ada", "Grace"]);'],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -3033,7 +3033,7 @@ const conceptLessons = [
     title: "Objects and Properties",
     universeTitle: "Objects hold property wires",
     intro:
-      "An object is a value too, but it can contain named property wires that point to other values.",
+      "An object is a value that contains named property wires. Real apps use objects for users, products, settings, API records, and anything with several related facts.",
     code: [
       "let sherlock = {",
       '  surname: "Holmes",',
@@ -3371,7 +3371,7 @@ const conceptLessons = [
     title: "Object Identity",
     universeTitle: "Same shape does not mean same object",
     intro:
-      "Objects are compared by identity. Two empty objects can look identical but still be two different values.",
+      "Objects are compared by identity, not by matching contents. This matters when checking selected items, cached records, React dependencies, and whether two variables point to the same object.",
     code: ["let a = {};", "let b = {};", "let c = a;", "a === b;", "a === c;"],
     legend: ["variable", "object", "value", "wire"],
     nodes: {
@@ -3547,7 +3547,7 @@ const conceptLessons = [
     title: "Arrays Are Objects",
     universeTitle: "Array indexes are property names",
     intro:
-      "Arrays are object-like values for ordered lists. Their indexes behave like property names that point to values.",
+      "Arrays are object-like values for ordered lists. Their indexes behave like property names, which matters when code reads cart items, rows, messages, or search results.",
     code: ['let todos = ["Learn", "Build"];', 'todos.push("Share");', "todos[1];"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -3699,7 +3699,7 @@ const conceptLessons = [
     title: "Functions and Parameters",
     universeTitle: "Calling a function creates local wires",
     intro:
-      "Functions are values. Calling one creates a temporary workspace where parameters point to argument values.",
+      "Functions are values you can call to reuse work. Calling one creates a temporary workspace where parameters point to argument values, like app code sending a price into a calculator function.",
     code: ["function double(n) {", "  return n * 2;", "}", "let result = double(5);"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -3858,7 +3858,7 @@ const conceptLessons = [
     title: "Scope",
     universeTitle: "Some wires live in smaller rooms",
     intro:
-      "Scope decides where a variable can be used. A block can create local wires that disappear outside the block.",
+      "Scope decides where a variable can be used. Blocks keep helper values local, which is useful in validation, loops, and temporary calculations that should not leak into the rest of the code.",
     code: ["let outside = 1;", "{", "  let inside = 2;", "}", "inside;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -4204,7 +4204,7 @@ const conceptLessons = [
     title: "Conditionals",
     universeTitle: "if statements choose a path",
     intro:
-      "An if statement evaluates a condition. If the result is true, JavaScript runs the block. If it is false, the block is skipped.",
+      "An if statement lets JavaScript choose whether to run a block. You see it in form validation, access checks, loading states, and showing different UI messages.",
     code: ["let score = 72;", 'let message = "Try again";', "if (score >= 50) {", '  message = "Ready";', "}"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -4326,7 +4326,7 @@ const conceptLessons = [
     title: "Loops",
     universeTitle: "Loops repeat a check and an update",
     intro:
-      "A while loop is the basic loop picture: check a condition before each pass, run the body when it is true, then stop when it becomes false.",
+      "A while loop repeats while a condition stays true. It is useful for retrying work, stepping through unknown input, or running until a limit is reached.",
     code: ["let count = 0;", "while (count < 3) {", "  count = count + 1;", "}"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -4442,7 +4442,7 @@ const conceptLessons = [
     title: "Truthy and Falsy",
     universeTitle: "Some values decide control flow",
     intro:
-      "JavaScript often asks whether a value behaves like true or false. This is common when choosing defaults.",
+      "JavaScript often checks whether a value behaves like true or false. This shows up when choosing default text, hiding empty sections, or checking whether input exists.",
     code: ['let name = "";', 'let fallback = "Guest";', "let displayName = name || fallback;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -4575,7 +4575,7 @@ const conceptLessons = [
     title: "Destructuring",
     universeTitle: "Destructuring creates new wires",
     intro:
-      "Destructuring is a shortcut for reading properties from an object and assigning their values to new variables.",
+      "Destructuring is a shortcut for reading properties from an object into new variables. It is common with function options, React props, API records, and configuration objects.",
     code: ["let point = { x: 3, y: 4 };", "let { x } = point;"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -4754,7 +4754,7 @@ const conceptLessons = [
     title: "Rest Syntax",
     universeTitle: "Rest collects leftover values",
     intro:
-      "Rest syntax gathers the values that were not picked individually and puts them into a new array.",
+      "Rest syntax gathers leftover values into a new array. It is useful for flexible function arguments, splitting the first item from the rest, and passing unknown extra data along.",
     code: ['let items = ["A", "B", "C"];', "let [first, ...rest] = items;"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -4998,7 +4998,7 @@ const conceptLessons = [
     title: "Spread Syntax",
     universeTitle: "Spread copies entries into a new array",
     intro:
-      "Spread syntax expands an iterable. In an array literal, it creates a new array and copies entries into it.",
+      "Spread syntax expands values into a new place. It is common when copying arrays, adding items without mutation, merging props, or passing lists of arguments.",
     code: ['let items = ["A", "B"];', "let copy = [...items];"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -5454,7 +5454,7 @@ const conceptLessons = [
     title: "Methods and this",
     universeTitle: "Method calls provide this",
     intro:
-      "A method is a function value stored on an object. Calling it through the object gives the function a this value.",
+      "A method is a function value stored on an object. Calling it through the object gives the function a this value, which is common in models, UI helpers, and older framework code.",
     code: [
       "let user = {",
       '  name: "Ada",',
@@ -5702,7 +5702,7 @@ const conceptLessons = [
     title: "Detached Methods",
     universeTitle: "this depends on the call",
     intro:
-      "Copying a method into another variable copies only the function value. It does not remember the object it came from.",
+      "Copying a method into another variable copies only the function value. This matters in event handlers, callbacks, and class code because the function may no longer know which object this should be.",
     code: [
       '"use strict";',
       "let user = {",
@@ -6130,7 +6130,7 @@ const conceptLessons = [
     title: "Passing Functions",
     universeTitle: "Callbacks are functions passed as values",
     intro:
-      "Before events and timers, the key idea is simple: a callback is a function value passed into another function.",
+      "A callback is a function value passed into another function for later use. This is the idea behind button clicks, timers, array methods, and async code.",
     code: [
       "function run(callback) {",
       "  callback();",
@@ -6213,7 +6213,7 @@ const conceptLessons = [
     title: "Array map",
     universeTitle: "map creates a new array from returns",
     intro:
-      "map calls a callback for each item and collects each returned value into a new array.",
+      "map calls a callback for each item and collects each returned value into a new array. It is common when turning API data into labels, cards, list rows, or calculated prices.",
     code: ["let numbers = [1, 2];", "let doubled = numbers.map(n => n * 2);"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -6297,7 +6297,7 @@ const conceptLessons = [
     title: "Promises",
     universeTitle: "Promises hold future results",
     intro:
-      "A Promise is an object that represents a value you do not have yet. then registers a callback for the future result.",
+      "A Promise is an object that represents a value you do not have yet. It shows up in fetch calls, timers, file work, and APIs where then registers a callback for the future result.",
     code: [
       "let promise = fetchUser();",
       "promise.then(user => user.name);",
@@ -6376,7 +6376,7 @@ const conceptLessons = [
     title: "async and await",
     universeTitle: "await pauses for a Promise result",
     intro:
-      "async functions always return a Promise. Inside them, await pauses the function until another Promise resolves.",
+      "async functions always return a Promise. They are common in fetch, saving forms, loading settings, and other app code where await pauses the function until another Promise resolves.",
     code: [
       "async function loadName() {",
       "  let user = await fetchUser();",
@@ -6955,7 +6955,7 @@ const conceptLessons = [
     title: "Modules",
     universeTitle: "Modules share exported values",
     intro:
-      "Modules let one file export a value and another file import a live binding to that exported value.",
+      "Modules let one file export a value and another file import a live binding to it. Real projects use modules to share helpers, components, config, and data without putting everything in one file.",
     code: ["// counter.js", "export let count = 0;", "// app.js", 'import { count } from "./counter.js";'],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -7028,7 +7028,7 @@ const conceptLessons = [
     title: "Classes and Instances",
     universeTitle: "new creates objects linked to methods",
     intro:
-      "A class is a function-like value used with new. Calling new creates an instance object whose prototype links to shared methods.",
+      "A class is a function-like value used with new to create objects with shared behavior. You see classes in data models, browser APIs, UI helpers, and framework internals.",
     code: ["class User {", '  greet() { return "Hi"; }', "}", "let user = new User();"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -7106,7 +7106,7 @@ const conceptLessons = [
     title: "Constructors",
     universeTitle: "constructor fills a new object",
     intro:
-      "When you call a class with new, JavaScript creates a fresh object, binds this to it inside the constructor, and then returns that object.",
+      "A constructor sets up each new object. When code uses new for a user, date, error, or helper object, JavaScript creates the object, binds this to it, then returns it.",
     code: ["class User {", "  constructor(name) {", "    this.name = name;", "  }", "}", 'let ada = new User("Ada");'],
     legend: ["variable", "object", "property", "value"],
     nodes: {
@@ -7194,7 +7194,7 @@ const conceptLessons = [
     title: "Inheritance",
     universeTitle: "extends links prototypes",
     intro:
-      "Inheritance lets one class reuse behavior from another. JavaScript does this by linking prototype objects.",
+      "Inheritance lets one class reuse behavior from another by linking prototype objects. It appears in older libraries, framework internals, custom errors, and browser-style APIs.",
     code: ["class Admin extends User {", "  deletePost(post) {", "    post.remove();", "  }", "}", "let sam = new Admin();"],
     legend: ["variable", "object", "property", "wire"],
     nodes: {
@@ -7274,7 +7274,7 @@ const conceptLessons = [
     title: "Async Errors",
     universeTitle: "await can throw into catch",
     intro:
-      "await unwraps a resolved Promise, but a rejected Promise behaves like a throw at that line. try/catch can handle it.",
+      "await unwraps a resolved Promise, but a rejected Promise behaves like a throw at that line. This matters in fetch, saving data, login flows, and any async app code that can fail.",
     code: ['let status = "loading";', "try {", "  let user = await fetchUser();", "} catch (error) {", '  status = "Could not load";', "}"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -7896,7 +7896,7 @@ const conceptLessons = [
     title: "Call Stack",
     universeTitle: "Function calls stack on top of each other",
     intro:
-      "The call stack is how JavaScript remembers where it is. Each function call adds a frame; returning removes that frame.",
+      "The call stack is how JavaScript remembers where it is while functions call other functions. It explains stack traces, nested helpers, debugging, and why returning takes code back to the caller.",
     code: ["function double(n) { return n * 2; }", "function total(x) {", "  return double(x) + 1;", "}", "total(5);"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -7975,7 +7975,7 @@ const conceptLessons = [
     title: "Event Loop Tasks",
     universeTitle: "Timers run after the current stack is empty",
     intro:
-      "setTimeout does not pause the current function. It schedules a callback task that runs later, after the current call stack finishes.",
+      "setTimeout does not pause the current function. Browser code uses it for timers, delayed UI work, and retries by scheduling a callback task that runs after the current call stack finishes.",
     code: ['console.log("A");', 'setTimeout(() => console.log("B"), 0);', 'console.log("C");'],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -8281,7 +8281,7 @@ const conceptLessons = [
     title: "Implicit Coercion",
     universeTitle: "JavaScript sometimes converts values for you",
     intro:
-      "After explicit conversion, it helps to know the trap: some operators convert values automatically. That can turn number work into text work if you do not convert first.",
+      "Implicit coercion is the trap after explicit conversion: some operators convert values automatically. In form, URL, and API code, that can turn number work into text work if you do not convert first.",
     code: ['let input = "42";', "let surprise = input + 8;", "let total = Number(input) + 8;"],
     legend: ["variable", "wire", "value"],
     nodes: {

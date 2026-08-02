@@ -28,6 +28,7 @@ const maxLabelLengthByKind = {
 const problems = [];
 const warnings = [];
 const seenTitles = new Map();
+const practicalIntroPattern = /\b(real|project|projects|app|apps|code|browser|UI|form|forms|API|APIs|React|DOM|timer|timers|button|buttons|search|data|useful|common|shows up|used|when)\b/i;
 
 function location(lessonIndex, lesson, stepIndex) {
   return `Chapter ${lessonIndex + 1} (${lesson.title}), step ${stepIndex + 1}`;
@@ -35,6 +36,14 @@ function location(lessonIndex, lesson, stepIndex) {
 
 sandbox.lessons.forEach((lesson, lessonIndex) => {
   const normalizedTitle = String(lesson.title || "").trim().toLowerCase();
+  const intro = String(lesson.intro || "").trim();
+
+  if (!intro) {
+    problems.push(`Chapter ${lessonIndex + 1} (${lesson.title}): lesson needs intro text.`);
+  } else if (!practicalIntroPattern.test(intro)) {
+    problems.push(`Chapter ${lessonIndex + 1} (${lesson.title}): intro should include a practical use or real-world context.`);
+  }
+
   if (!normalizedTitle) {
     problems.push(`Chapter ${lessonIndex + 1}: lesson needs a visible title.`);
   } else if (seenTitles.has(normalizedTitle)) {
