@@ -3983,15 +3983,18 @@ const conceptLessons = [
     title: "Closures",
     universeTitle: "Functions can carry an outer room",
     intro:
-      "A closure happens when a function keeps access to variables from the place where it was created.",
-    code: ["function makeCounter() {", "  let count = 0;", "  return function next() {", "    count = count + 1;", "  };", "}"],
+      "A closure is useful when code needs to remember private state between calls, like a button click counter, a timer, or a saved setting. The inner function keeps access to variables from the room where it was created.",
+    code: ["function makeCounter() {", "  let count = 0;", "  return function next() {", "    count = count + 1;", "    return count;", "  };", "}", "let next = makeCounter();", "let current = next();"],
     legend: ["variable", "object", "value", "wire"],
     nodes: {
-      makeCounter: { label: "makeCounter", kind: "variable-wide", x: 18, y: 30 },
-      makerFn: { label: "fn", kind: "object", x: 42, y: 30 },
-      count: { label: "count", kind: "variable-wide", x: 38, y: 64 },
-      zero: { label: "0", kind: "value", x: 62, y: 64 },
-      nextFn: { label: "fn", kind: "object", x: 78, y: 46 },
+      makeCounter: { label: "makeCounter", kind: "variable-wide", x: 14, y: 18 },
+      makerFn: { label: "fn", kind: "object", x: 38, y: 18 },
+      next: { label: "next", kind: "variable-wide", x: 14, y: 48 },
+      nextFn: { label: "fn", kind: "object", x: 38, y: 48 },
+      count: { label: "count", kind: "variable-wide", x: 54, y: 64 },
+      zero: { label: "0", kind: "value", x: 78, y: 56 },
+      one: { label: "1", kind: "value", x: 78, y: 74 },
+      current: { label: "current", kind: "variable-wide", x: 32, y: 84 },
     },
     steps: [
       {
@@ -4013,10 +4016,10 @@ const conceptLessons = [
         active: ["makeCounter", "makerFn"],
       },
       {
-        title: "Calling creates count",
+        title: "Call makeCounter",
         description:
-          "When makeCounter runs, it creates a local variable count and points it to 0.",
-        line: 1,
+          "makeCounter() starts running. Inside that call, JavaScript creates a local count variable and points it to 0.",
+        line: 7,
         visible: ["makeCounter", "makerFn", "count", "zero"],
         wires: [
           {
@@ -4039,17 +4042,25 @@ const conceptLessons = [
         active: ["count", "zero"],
       },
       {
-        title: "Return an inner function",
+        title: "Return next",
         description:
-          "The returned next function was created in the same room as count.",
+          "makeCounter returns the inner next function. The outer call finishes here, but next still remembers count.",
         line: 2,
-        visible: ["makeCounter", "makerFn", "count", "zero", "nextFn"],
+        visible: ["makeCounter", "makerFn", "next", "nextFn", "count", "zero"],
         wires: [
           {
             id: "makeCounter-makerFn",
             from: "makeCounter",
             to: "makerFn",
             tone: "slate",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "next-nextFn",
+            from: "next",
+            to: "nextFn",
+            tone: "orange",
             fromAnchor: { side: "right" },
             toAnchor: { side: "left" },
           },
@@ -4074,12 +4085,20 @@ const conceptLessons = [
         active: ["nextFn", "count"],
       },
       {
-        title: "The room stays alive",
+        title: "Call next later",
         description:
-          "Even after makeCounter finishes, next can still reach count. That remembered access is the closure.",
-        line: 3,
-        visible: ["count", "zero", "nextFn"],
+          "next() is called after makeCounter has finished. Because of the closure, next can still read count as 0.",
+        line: 8,
+        visible: ["next", "nextFn", "count", "zero"],
         wires: [
+          {
+            id: "next-nextFn",
+            from: "next",
+            to: "nextFn",
+            tone: "orange",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
           {
             id: "count-zero",
             from: "count",
@@ -4099,7 +4118,76 @@ const conceptLessons = [
           },
         ],
         active: ["nextFn", "count"],
-        notes: [{ text: "Closures power event handlers, callbacks, and React hooks.", x: 50, y: 84 }],
+      },
+      {
+        title: "Move count to 1",
+        description:
+          "count = count + 1 reads the old 0, creates a new 1, then moves the count wire from 0 to 1.",
+        line: 3,
+        visible: ["next", "nextFn", "count", "zero", "one"],
+        wires: [
+          {
+            id: "next-nextFn",
+            from: "next",
+            to: "nextFn",
+            tone: "slate",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "count-one",
+            from: "count",
+            to: "one",
+            tone: "orange",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "next-count",
+            from: "nextFn",
+            to: "count",
+            label: "closure",
+            tone: "cyan",
+            fromAnchor: { side: "left" },
+            toAnchor: { side: "right", offset: 12 },
+          },
+        ],
+        active: ["count", "one"],
+      },
+      {
+        title: "Store returned value",
+        description:
+          "next returns 1, so current points to 1. If next() is called again, the same count variable would move to 2.",
+        line: 4,
+        visible: ["next", "nextFn", "count", "one", "current"],
+        wires: [
+          {
+            id: "next-nextFn",
+            from: "next",
+            to: "nextFn",
+            tone: "slate",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "count-one",
+            from: "count",
+            to: "one",
+            tone: "slate",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "current-one",
+            from: "current",
+            to: "one",
+            tone: "orange",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left", offset: 12 },
+          },
+        ],
+        active: ["current", "one"],
+        notes: [{ text: "Useful for counters, event handlers, timers, and React hooks.", x: 50, y: 22 }],
       },
     ],
     quiz: {
