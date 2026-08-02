@@ -9953,13 +9953,18 @@ function parsePlayground(code) {
     return id;
   };
 
-  const readVariable = (name) => {
+  const readVariable = (name, locals = new Map()) => {
+    if (locals?.has(name)) {
+      const binding = locals.get(name);
+      return typeof binding === "string" ? binding : binding.valueId;
+    }
     if (!variables.has(name)) throw new Error(`${name} has not been created yet.`);
     return variables.get(name).valueId;
   };
 
   const getRawValue = (valueId) => values.find((value) => value.id === valueId)?.raw;
   const getValue = (valueId) => values.find((value) => value.id === valueId);
+  const setBinding = (target, name, kind, valueId) => target.set(name, { kind, valueId });
 
   const setArrayProps = (arrayValue, itemIds) => {
     const lengthId = addValue({ ...makePrimitiveValue(itemIds.length), raw: itemIds.length });
@@ -9970,7 +9975,7 @@ function parsePlayground(code) {
   };
 
   const pushArrayItems = (arrayName, argsSource, locals) => {
-    const arrayValue = getValue(readVariable(arrayName));
+    const arrayValue = getValue(readVariable(arrayName, locals));
     if (arrayValue?.type !== "array") throw new Error(`${arrayName}.push() needs ${arrayName} to point to an array.`);
 
     const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
@@ -10009,7 +10014,7 @@ function parsePlayground(code) {
       return addValue({ ...makePrimitiveValue(undefined), raw: undefined });
     }
 
-    if (locals.has(expr)) return locals.get(expr);
+    if (locals.has(expr)) return readVariable(expr, locals);
 
     const ternaryMatch = findTopLevelTernary(expr);
     if (ternaryMatch) {
@@ -10126,7 +10131,7 @@ function parsePlayground(code) {
     const indexMatch = expr.match(/^([A-Za-z_$][\w$]*)\[(\d+)\]$/);
     if (indexMatch) {
       const [, arrayName, index] = indexMatch;
-      const arrayValue = values.find((value) => value.id === readVariable(arrayName));
+      const arrayValue = values.find((value) => value.id === readVariable(arrayName, locals));
       const target = arrayValue?.props?.find(([key]) => key === index)?.[1];
       if (!target) throw new Error(`${arrayName}[${index}] is not available in this supported array.`);
       return target;
@@ -10141,7 +10146,7 @@ function parsePlayground(code) {
     const propertyMatch = expr.match(/^([A-Za-z_$][\w$]*)(\.[A-Za-z_$][\w$]*)+$/);
     if (propertyMatch) {
       const [objectName, ...properties] = expr.split(".");
-      let currentId = readVariable(objectName);
+      let currentId = readVariable(objectName, locals);
       properties.forEach((property) => {
         const objectValue = getValue(currentId);
         const target = objectValue?.props?.find(([key]) => key === property)?.[1];
@@ -10175,31 +10180,38 @@ function parsePlayground(code) {
       return addValue({ ...makePrimitiveValue(result), raw: result });
     }
 
-    if (/^[A-Za-z_$][\w$]*$/.test(expr)) return readVariable(expr);
+    if (/^[A-Za-z_$][\w$]*$/.test(expr)) return readVariable(expr, locals);
 
     throw new Error(`I can’t visualise "${expr}" yet.`);
   };
 
   try {
-    const executeStatement = (statement, locals = new Map()) => {
+    const executeStatement = (statement, locals = null) => {
       const declaration = statement.match(/^(let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
       if (declaration) {
         const [, kind, name, expression] = declaration;
         const arrowFunction = parseArrowFunction(expression);
         if (arrowFunction) {
           functions.set(name, arrowFunction);
-          variables.set(name, { kind, valueId: addValue({ type: "function", label: "=> fn", raw: { kind: "function" } }) });
+          setBinding(locals || variables, name, kind, addValue({ type: "function", label: "=> fn", raw: { kind: "function" } }));
           return;
         }
 
-        variables.set(name, { kind, valueId: evaluateExpression(expression) });
+        setBinding(locals || variables, name, kind, evaluateExpression(expression, locals || new Map()));
+        return;
+      }
+
+      const blockStatement = statement.match(/^\{([\s\S]*)\}$/);
+      if (blockStatement) {
+        const blockScope = new Map();
+        splitStatements(blockStatement[1]).forEach((child) => executeStatement(child, blockScope));
         return;
       }
 
       const ifStatement = statement.match(/^if\s*\((.*)\)\s*\{([\s\S]*)\}$/);
       if (ifStatement) {
         const [, conditionSource, body] = ifStatement;
-        if (getRawValue(evaluateExpression(conditionSource, locals))) {
+        if (getRawValue(evaluateExpression(conditionSource, locals || new Map()))) {
           splitStatements(body).forEach((child) => executeStatement(child, locals));
         }
         return;
@@ -10208,11 +10220,11 @@ function parsePlayground(code) {
       const switchStatement = statement.match(/^switch\s*\((.*)\)\s*\{([\s\S]*)\}$/);
       if (switchStatement) {
         const [, source, body] = switchStatement;
-        const value = getRawValue(evaluateExpression(source, locals));
+        const value = getRawValue(evaluateExpression(source, locals || new Map()));
         const casePattern = /case\s+([^:]+):\s*([\s\S]*?)(?=case\s+|default\s*:|$)/g;
         let match;
         while ((match = casePattern.exec(body))) {
-          const caseValue = getRawValue(evaluateExpression(match[1], locals));
+          const caseValue = getRawValue(evaluateExpression(match[1], locals || new Map()));
           if (caseValue === value) {
             splitStatements(match[2].replace(/\bbreak\b/g, "")).forEach((child) => executeStatement(child, locals));
             return;
@@ -10225,7 +10237,7 @@ function parsePlayground(code) {
       if (whileStatement) {
         const [, conditionSource, body] = whileStatement;
         let guard = 0;
-        while (getRawValue(evaluateExpression(conditionSource, locals))) {
+        while (getRawValue(evaluateExpression(conditionSource, locals || new Map()))) {
           splitStatements(body).forEach((child) => executeStatement(child, locals));
           guard += 1;
           if (guard > 20) throw new Error("This playground stops loops after 20 passes.");
@@ -10238,7 +10250,7 @@ function parsePlayground(code) {
         const [, init, conditionSource, update, body] = forStatement;
         executeStatement(init.trim(), locals);
         let guard = 0;
-        while (getRawValue(evaluateExpression(conditionSource, locals))) {
+        while (getRawValue(evaluateExpression(conditionSource, locals || new Map()))) {
           splitStatements(body).forEach((child) => executeStatement(child, locals));
           executeStatement(update.trim(), locals);
           guard += 1;
@@ -10250,32 +10262,43 @@ function parsePlayground(code) {
       const increment = statement.match(/^([A-Za-z_$][\w$]*)\+\+$/);
       if (increment) {
         const [, name] = increment;
-        const value = Number(getRawValue(readVariable(name))) + 1;
-        variables.set(name, { ...variables.get(name), valueId: addValue({ ...makePrimitiveValue(value), raw: value }) });
+        const target = locals?.has(name) ? locals : variables;
+        if (!target.has(name)) throw new Error(`${name} has not been created yet.`);
+        const binding = target.get(name);
+        const value = Number(getRawValue(readVariable(name, locals || new Map()))) + 1;
+        setBinding(target, name, typeof binding === "string" ? "let" : binding.kind, addValue({ ...makePrimitiveValue(value), raw: value }));
         return;
       }
 
       const assignment = statement.match(/^([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
       if (assignment) {
         const [, name, expression] = assignment;
-        if (!variables.has(name)) throw new Error(`${name} must be created with let or const first.`);
-        if (variables.get(name).kind === "const") throw new Error(`${name} is const, so it cannot be reassigned.`);
-        variables.set(name, { ...variables.get(name), valueId: evaluateExpression(expression) });
+        const target = locals?.has(name) ? locals : variables;
+        if (!target.has(name)) throw new Error(`${name} must be created with let or const first.`);
+        const binding = target.get(name);
+        const kind = typeof binding === "string" ? "let" : binding.kind;
+        if (kind === "const") throw new Error(`${name} is const, so it cannot be reassigned.`);
+        setBinding(target, name, kind, evaluateExpression(expression, locals || new Map()));
         return;
       }
 
       const pushStatement = statement.match(/^([A-Za-z_$][\w$]*)\.push\((.*)\)$/);
       if (pushStatement) {
         const [, arrayName, argsSource] = pushStatement;
-        pushArrayItems(arrayName, argsSource, new Map());
+        pushArrayItems(arrayName, argsSource, locals || new Map());
         return;
       }
 
-      evaluateExpression(statement, locals);
+      evaluateExpression(statement, locals || new Map());
     };
 
     statements.forEach((statement) => executeStatement(statement));
   } catch (error) {
+    if (variables.size && /has not been created yet|must be created with let or const first/.test(error.message)) {
+      const diagram = buildPlaygroundDiagram(variables, values);
+      return { ...diagram, error: error.message };
+    }
+
     return playgroundError(error.message);
   }
 

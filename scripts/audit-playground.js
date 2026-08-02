@@ -55,13 +55,25 @@ const snippets = [
     code: 'let cart = ["Book"];\nlet itemCount = cart.push("Pen");',
     expectedLabels: ['"Book"', '"Pen"', "2", "itemCount"],
   },
+  {
+    name: "block scoped variable is not visible outside",
+    code: "let outside = 1;\n{\n  let inside = 2;\n}\ninside;",
+    expectedLabels: ["outside", "1"],
+    missingLabels: ["inside", "2"],
+    expectedError: "inside has not been created yet.",
+  },
 ];
 
 const problems = [];
 
 snippets.forEach((snippet) => {
   const diagram = sandbox.parsePlayground(snippet.code);
-  if (diagram.error) {
+  if (snippet.expectedError) {
+    if (diagram.error !== snippet.expectedError) {
+      problems.push(`${snippet.name}: expected error "${snippet.expectedError}", got "${diagram.error}".`);
+      return;
+    }
+  } else if (diagram.error) {
     problems.push(`${snippet.name}: ${diagram.error}`);
     return;
   }
@@ -70,6 +82,12 @@ snippets.forEach((snippet) => {
   snippet.expectedLabels.forEach((label) => {
     if (!labels.includes(label)) {
       problems.push(`${snippet.name}: expected label ${label} in playground diagram.`);
+    }
+  });
+
+  (snippet.missingLabels || []).forEach((label) => {
+    if (labels.includes(label)) {
+      problems.push(`${snippet.name}: did not expect label ${label} in playground diagram.`);
     }
   });
 
