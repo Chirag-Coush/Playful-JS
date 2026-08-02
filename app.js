@@ -9937,7 +9937,7 @@ function parsePlayground(code) {
   const functionPattern = /function\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{\s*return\s+([^;]+);?\s*\}/g;
   const withoutFunctions = cleanCode.replace(functionPattern, (_, name, params, body) => {
     functions.set(name, {
-      params: params.split(",").map((param) => param.trim()).filter(Boolean),
+      params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
       body: body.trim(),
     });
     return `let ${name} = __function_${name};`;
@@ -9965,6 +9965,11 @@ function parsePlayground(code) {
   const getRawValue = (valueId) => values.find((value) => value.id === valueId)?.raw;
   const getValue = (valueId) => values.find((value) => value.id === valueId);
   const setBinding = (target, name, kind, valueId) => target.set(name, { kind, valueId });
+  const makePlaceholderValue = (expr) => {
+    const label = expr.length > 24 ? `${expr.slice(0, 21)}...` : expr;
+    return addValue({ type: "string", label, raw: undefined });
+  };
+  let executeStatement;
 
   const setArrayProps = (arrayValue, itemIds) => {
     const lengthId = addValue({ ...makePrimitiveValue(itemIds.length), raw: itemIds.length });
@@ -9990,6 +9995,11 @@ function parsePlayground(code) {
     const expr = expression.trim();
 
     if (/^__function_[A-Za-z_$][\w$]*$/.test(expr)) {
+      return addValue({ type: "function", label: "fn", raw: { kind: "function" } });
+    }
+
+    const functionExpression = expr.match(/^function\s*(?:[A-Za-z_$][\w$]*)?\s*\(([^)]*)\)\s*\{([\s\S]*)\}$/);
+    if (functionExpression) {
       return addValue({ type: "function", label: "fn", raw: { kind: "function" } });
     }
 
@@ -10042,22 +10052,36 @@ function parsePlayground(code) {
       return addValue({ ...makePrimitiveValue(!getRawValue(valueId)), raw: !getRawValue(valueId) });
     }
 
-    const arrayMatch = expr.match(/^\[(.*)\]$/);
+    const arrayMatch = expr.match(/^\[([\s\S]*)\]$/);
     if (arrayMatch) {
       const items = splitTopLevel(arrayMatch[1]).filter((item) => item.trim());
-      const itemIds = items.map((item) => evaluateExpression(item, locals));
+      const itemIds = items.flatMap((item) => {
+        if (item.trim().startsWith("...")) {
+          const spreadValue = getValue(evaluateExpression(item.trim().slice(3), locals));
+          return spreadValue?.props?.filter(([key]) => /^\d+$/.test(key)).map(([, id]) => id) || [];
+        }
+        return [evaluateExpression(item, locals)];
+      });
       const arrayId = addValue({ type: "array", label: "[ ]", raw: itemIds.map(getRawValue), props: [] });
       setArrayProps(getValue(arrayId), itemIds);
       return arrayId;
     }
 
-    const objectMatch = expr.match(/^\{(.*)\}$/);
+    const objectMatch = expr.match(/^\{([\s\S]*)\}$/);
     if (objectMatch) {
       const entries = splitTopLevel(objectMatch[1]).filter((item) => item.trim());
-      const props = entries.map((entry) => {
+      const props = entries.flatMap((entry) => {
+        if (entry.trim().startsWith("...")) {
+          const spreadValue = getValue(evaluateExpression(entry.trim().slice(3), locals));
+          return spreadValue?.props || [];
+        }
+
+        const method = entry.match(/^(?:get\s+)?([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{[\s\S]*\}$/);
+        if (method) return [[method[1], addValue({ type: "function", label: method[0].startsWith("get ") ? "get" : "fn", raw: { kind: "function" } })]];
+
         const [keyPart, valuePart] = splitObjectEntry(entry);
         if (!keyPart || !valuePart) throw new Error("Object entries need key: value pairs.");
-        return [keyPart.replace(/^["']|["']$/g, "").trim(), evaluateExpression(valuePart, locals)];
+        return [[keyPart.replace(/^["']|["']$/g, "").trim(), evaluateExpression(valuePart, locals)]];
       });
       return addValue({ type: "object", label: "{ }", raw: Object.fromEntries(props.map(([key, id]) => [key, getRawValue(id)])), props });
     }
@@ -10100,6 +10124,35 @@ function parsePlayground(code) {
       return addValue({ ...makePrimitiveValue(result), raw: result });
     }
 
+    const upperCaseMatch = expr.match(/^(.+)\.toUpperCase\(\)$/);
+    if (upperCaseMatch) {
+      const valueId = evaluateExpression(upperCaseMatch[1], locals);
+      const result = String(getRawValue(valueId)).toUpperCase();
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    const numberIsNaNMatch = expr.match(/^Number\.isNaN\((.*)\)$/);
+    if (numberIsNaNMatch) {
+      const valueId = evaluateExpression(numberIsNaNMatch[1], locals);
+      const result = Number.isNaN(getRawValue(valueId));
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
+    const jsonParseMatch = expr.match(/^JSON\.parse\((.*)\)$/);
+    if (jsonParseMatch) {
+      const valueId = evaluateExpression(jsonParseMatch[1], locals);
+      const result = JSON.parse(String(getRawValue(valueId)));
+      const props = Object.entries(result).map(([key, value]) => [key, addValue({ ...makePrimitiveValue(value), raw: value })]);
+      return addValue({ type: "object", label: "{ }", raw: result, props });
+    }
+
+    const jsonStringifyMatch = expr.match(/^JSON\.stringify\((.*)\)$/);
+    if (jsonStringifyMatch) {
+      const valueId = evaluateExpression(jsonStringifyMatch[1], locals);
+      const result = JSON.stringify(getRawValue(valueId));
+      return addValue({ ...makePrimitiveValue(result), raw: result });
+    }
+
     const includesMatch = expr.match(/^(.+)\.includes\((.*)\)$/);
     if (includesMatch) {
       const [, source, needleSource] = includesMatch;
@@ -10128,6 +10181,64 @@ function parsePlayground(code) {
       return addValue({ ...makePrimitiveValue(result), raw: result });
     }
 
+    const arrayMethodMatch = expr.match(/^([A-Za-z_$][\w$]*)\.(map|filter|reduce|forEach|sort)\(([\s\S]*)\)$/);
+    if (arrayMethodMatch) {
+      const [, arrayName, method, argsSource] = arrayMethodMatch;
+      const arrayValue = getValue(readVariable(arrayName, locals));
+      if (arrayValue?.type !== "array") return makePlaceholderValue(expr);
+      const itemIds = arrayValue.props?.filter(([key]) => /^\d+$/.test(key)).map(([, id]) => id) || [];
+      const args = splitTopLevel(argsSource);
+      const callback = parseArrowFunction(args[0] || "");
+
+      if (method === "forEach") {
+        return addValue({ ...makePrimitiveValue(undefined), raw: undefined });
+      }
+
+      if (method === "map" && callback) {
+        const resultIds = itemIds.map((itemId) => {
+          const nextLocals = new Map(locals);
+          setBinding(nextLocals, callback.params[0] || "item", "param", itemId);
+          return callback.bodyKind === "statements" ? addValue({ ...makePrimitiveValue(undefined), raw: undefined }) : evaluateExpression(callback.body, nextLocals);
+        });
+        const arrayId = addValue({ type: "array", label: "[ ]", raw: resultIds.map(getRawValue), props: [] });
+        setArrayProps(getValue(arrayId), resultIds);
+        return arrayId;
+      }
+
+      if (method === "filter" && callback) {
+        const resultIds = itemIds.filter((itemId) => {
+          const nextLocals = new Map(locals);
+          setBinding(nextLocals, callback.params[0] || "item", "param", itemId);
+          return Boolean(getRawValue(evaluateExpression(callback.body, nextLocals)));
+        });
+        const arrayId = addValue({ type: "array", label: "[ ]", raw: resultIds.map(getRawValue), props: [] });
+        setArrayProps(getValue(arrayId), resultIds);
+        return arrayId;
+      }
+
+      if (method === "reduce" && callback) {
+        const initialId = args[1] ? evaluateExpression(args[1], locals) : itemIds.shift();
+        const resultId = itemIds.reduce((accId, itemId) => {
+          const nextLocals = new Map(locals);
+          setBinding(nextLocals, callback.params[0] || "acc", "param", accId);
+          setBinding(nextLocals, callback.params[1] || "item", "param", itemId);
+          return evaluateExpression(callback.body, nextLocals);
+        }, initialId);
+        return resultId;
+      }
+
+      if (method === "sort" && callback) {
+        const sortedIds = [...itemIds].sort((leftId, rightId) => {
+          const nextLocals = new Map(locals);
+          setBinding(nextLocals, callback.params[0] || "a", "param", leftId);
+          setBinding(nextLocals, callback.params[1] || "b", "param", rightId);
+          return Number(getRawValue(evaluateExpression(callback.body, nextLocals)));
+        });
+        setArrayProps(arrayValue, sortedIds);
+        return readVariable(arrayName, locals);
+      }
+    }
+
     const indexMatch = expr.match(/^([A-Za-z_$][\w$]*)\[(\d+)\]$/);
     if (indexMatch) {
       const [, arrayName, index] = indexMatch;
@@ -10146,11 +10257,19 @@ function parsePlayground(code) {
     const propertyMatch = expr.match(/^([A-Za-z_$][\w$]*)(\.[A-Za-z_$][\w$]*)+$/);
     if (propertyMatch) {
       const [objectName, ...properties] = expr.split(".");
-      let currentId = readVariable(objectName, locals);
+      let currentId;
+      try {
+        currentId = readVariable(objectName, locals);
+      } catch {
+        return makePlaceholderValue(expr);
+      }
       properties.forEach((property) => {
         const objectValue = getValue(currentId);
         const target = objectValue?.props?.find(([key]) => key === property)?.[1];
-        if (!target) throw new Error(`${objectName}.${properties.join(".")} is not available in this supported object.`);
+        if (!target) {
+          currentId = makePlaceholderValue(expr);
+          return;
+        }
         currentId = target;
       });
       return currentId;
@@ -10160,10 +10279,15 @@ function parsePlayground(code) {
     if (callMatch) {
       const [, name, argsSource] = callMatch;
       const fn = functions.get(name);
-      if (!fn) throw new Error(`${name} is not a supported function in this playground.`);
+      if (!fn) return makePlaceholderValue(expr);
       const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
       const nextLocals = new Map();
-      fn.params.forEach((param, index) => nextLocals.set(param, argIds[index]));
+      fn.params.forEach((param, index) => setBinding(nextLocals, param, "param", argIds[index]));
+      if (fn.bodyKind === "statements") {
+        splitStatements(fn.body).forEach((child) => executeStatement(child, nextLocals));
+        return addValue({ ...makePrimitiveValue(undefined), raw: undefined });
+      }
+
       return evaluateExpression(fn.body, nextLocals);
     }
 
@@ -10182,12 +10306,33 @@ function parsePlayground(code) {
 
     if (/^[A-Za-z_$][\w$]*$/.test(expr)) return readVariable(expr, locals);
 
-    throw new Error(`I can’t visualise "${expr}" yet.`);
+    return makePlaceholderValue(expr);
   };
 
   try {
-    const executeStatement = (statement, locals = null) => {
-      const declaration = statement.match(/^(let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
+    executeStatement = (statement, locals = null) => {
+      if (/^(type|interface|import|export)\b/.test(statement)) return;
+
+      const functionDeclaration = statement.match(/^function\s+([A-Za-z_$][\w$]*)(?:<[^>]+>)?\s*\(([^)]*)\)\s*(?::\s*[^{]+)?\{([\s\S]*)\}$/);
+      if (functionDeclaration) {
+        const [, name, params, body] = functionDeclaration;
+        functions.set(name, {
+          params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
+          body: body.trim(),
+          bodyKind: "statements",
+        });
+        setBinding(locals || variables, name, "function", addValue({ type: "function", label: "fn", raw: { kind: "function" } }));
+        return;
+      }
+
+      const emptyDeclaration = statement.match(/^(let|const)\s+([A-Za-z_$][\w$]*)(?::\s*[^=]+)?$/);
+      if (emptyDeclaration) {
+        const [, kind, name] = emptyDeclaration;
+        setBinding(locals || variables, name, kind, addValue({ ...makePrimitiveValue(undefined), raw: undefined }));
+        return;
+      }
+
+      const declaration = statement.match(/^(let|const)\s+([A-Za-z_$][\w$]*)(?::\s*[^=]+)?\s*=\s*([\s\S]+)$/);
       if (declaration) {
         const [, kind, name, expression] = declaration;
         const arrowFunction = parseArrowFunction(expression);
@@ -10270,6 +10415,23 @@ function parsePlayground(code) {
         return;
       }
 
+      const propertyAssignment = statement.match(/^([A-Za-z_$][\w$]*(?:\.[A-Za-z_$#][\w$#]*)*)\.([A-Za-z_$#][\w$#]*)\s*=\s*([\s\S]+)$/);
+      if (propertyAssignment) {
+        const [, source, property, expression] = propertyAssignment;
+        const objectId = evaluateExpression(source, locals || new Map());
+        const objectValue = getValue(objectId);
+        if (!objectValue?.props) return;
+        const valueId = evaluateExpression(expression, locals || new Map());
+        const existingIndex = objectValue.props.findIndex(([key]) => key === property);
+        if (existingIndex === -1) {
+          objectValue.props.push([property, valueId]);
+        } else {
+          objectValue.props[existingIndex] = [property, valueId];
+        }
+        if (objectValue.raw && typeof objectValue.raw === "object") objectValue.raw[property] = getRawValue(valueId);
+        return;
+      }
+
       const assignment = statement.match(/^([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
       if (assignment) {
         const [, name, expression] = assignment;
@@ -10306,14 +10468,18 @@ function parsePlayground(code) {
 }
 
 function parseArrowFunction(expression) {
-  const match = expression.trim().match(/^(?:\(([^)]*)\)|([A-Za-z_$][\w$]*))\s*=>\s*(.+)$/);
+  const match = expression.trim().match(/^(?:\(([^)]*)\)|([A-Za-z_$][\w$]*))\s*=>\s*([\s\S]+)$/);
   if (!match) return null;
 
   const params = (match[1] || match[2] || "")
     .split(",")
-    .map((param) => param.trim())
+    .map((param) => param.trim().replace(/:.+$/, ""))
     .filter(Boolean);
   let body = match[3].trim();
+  if (body.startsWith("{") && body.endsWith("}")) {
+    return { params, body: body.slice(1, -1).trim(), bodyKind: "statements" };
+  }
+
   const blockReturn = body.match(/^\{\s*return\s+([^;]+);?\s*\}$/);
   if (blockReturn) body = blockReturn[1].trim();
   if (body.startsWith("{")) throw new Error("Arrow function blocks need an explicit return in this playground.");

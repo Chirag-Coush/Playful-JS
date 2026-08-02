@@ -22,10 +22,11 @@ globalThis.parsePlayground = parsePlayground;`,
 );
 
 const snippets = [
-  ...sandbox.lessons.slice(0, 21).map((lesson, index) => ({
+  ...sandbox.lessons.map((lesson, index) => ({
     name: `Chapter ${index + 1}: ${lesson.title}`,
     code: lesson.code.join("\n"),
     expectedLabels: [],
+    expectedError: lesson.id === "scope" ? "inside has not been created yet." : "",
   })),
   {
     name: "chapter 21 array push and length",
