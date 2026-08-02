@@ -99,6 +99,16 @@ sandbox.lessons.forEach((lesson, lessonIndex) => {
       });
     });
   });
+
+  if (["functions-and-parameters", "callbacks"].includes(lesson.id)) {
+    ["function name", "parameter", "argument"].forEach((term) => {
+      if (!intro.toLowerCase().includes(term)) {
+        problems.push(
+          `Chapter ${lessonIndex + 1} (${lesson.title}): intro should distinguish the ${term}.`
+        );
+      }
+    });
+  }
 });
 
 warnings.forEach((warning) => console.warn(`Warning: ${warning}`));

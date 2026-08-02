@@ -3699,7 +3699,7 @@ const conceptLessons = [
     title: "Functions and Parameters",
     universeTitle: "Calling a function creates local wires",
     intro:
-      "Functions are values you can call to reuse work. Calling one creates a temporary workspace where parameters point to argument values, like app code sending a price into a calculator function.",
+      "Functions are values you can call to reuse work. In function double(n), double is the function name and n is a parameter. In double(5), 5 is the argument passed into that parameter, like app code sending a price into a calculator function.",
     code: ["function double(n) {", "  return n * 2;", "}", "let result = double(5);"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -3714,7 +3714,7 @@ const conceptLessons = [
       {
         title: "Create the function value",
         description:
-          "A function declaration creates a function value. The name double points to that value.",
+          "A function declaration creates a function value and binds the function name double to it. double is not an argument; it is the name used to find and call this function.",
         line: 0,
         visible: ["doubleName", "functionValue"],
         wires: [
@@ -3750,7 +3750,7 @@ const conceptLessons = [
       {
         title: "Call double with 5",
         description:
-          "Before assignment can finish, JavaScript must evaluate double(5). It finds the function value and the argument value 5.",
+          "In the call double(5), JavaScript uses the name double to find the function value. It then evaluates 5, the argument supplied by the caller.",
         line: 3,
         visible: ["doubleName", "functionValue", "result", "five"],
         wires: [
@@ -6130,7 +6130,7 @@ const conceptLessons = [
     title: "Passing Functions",
     universeTitle: "Callbacks are functions passed as values",
     intro:
-      "A callback is a function value passed into another function for later use. This is the idea behind button clicks, timers, array methods, and async code.",
+      "A callback is a function value passed into another function for later use. In function run(callback), run is the function name and callback is a parameter. In run(logReady), logReady is a function name whose value becomes the argument. This is the idea behind button clicks, timers, array methods, and async code.",
     code: [
       "function run(callback) {",
       "  callback();",
@@ -6151,7 +6151,7 @@ const conceptLessons = [
       {
         title: "Create two functions",
         description:
-          "run and logReady are variables pointing to function values.",
+          "The declarations create two function values. The function names run and logReady are each bound to their function value, which is why both names appear in variable-style boxes.",
         line: 0,
         visible: ["run", "runFn", "logReady", "callbackFn"],
         wires: [
@@ -6161,9 +6161,9 @@ const conceptLessons = [
         active: ["runFn", "callbackFn"],
       },
       {
-        title: "Pass logReady into run",
+        title: "Use logReady as the argument",
         description:
-          "run(logReady) evaluates logReady to its function value, then passes that value as an argument.",
+          "In run(logReady), JavaScript uses run to find the function to call. It evaluates logReady, then passes the resulting function value as the argument.",
         line: 4,
         visible: ["run", "runFn", "logReady", "callbackFn"],
         wires: [
@@ -6175,7 +6175,7 @@ const conceptLessons = [
       {
         title: "callback points to the function",
         description:
-          "Inside run, the parameter callback points to the same function value as logReady.",
+          "Inside the run call, JavaScript creates the local parameter callback. It points to the function value received as the argument, which is the same value named logReady outside the call.",
         line: 0,
         visible: ["run", "runFn", "logReady", "callbackFn", "callback"],
         wires: [
