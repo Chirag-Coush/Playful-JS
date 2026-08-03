@@ -1669,8 +1669,12 @@ const practicalLessons = [
         title: "First callback call: 0 + 5",
         description: "reduce calls the callback with sum pointing to 0 and price pointing to 5. The callback returns 5.",
         line: 2,
-        visible: ["callback", "sum", "price", "zero", "five"],
+        visible: ["cart", "array", "five", "ten", "fifteen", "callback", "sum", "price", "zero"],
         wires: [
+          { id: "cart-array", from: "cart", to: "array", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "array-five", from: "array", to: "five", label: "0", tone: "slate", fromAnchor: { side: "right", offset: -16 }, toAnchor: { side: "left" } },
+          { id: "array-ten", from: "array", to: "ten", label: "1", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "array-fifteen", from: "array", to: "fifteen", label: "2", tone: "slate", fromAnchor: { side: "right", offset: 16 }, toAnchor: { side: "left" } },
           { id: "sum-zero", from: "sum", to: "zero", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "price-five", from: "price", to: "five", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
           { id: "callback-five", from: "callback", to: "five", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: -12 } },
@@ -1681,8 +1685,12 @@ const practicalLessons = [
         title: "Second callback call: 5 + 10",
         description: "The returned 5 becomes the next sum. price now points to 10, so the callback returns 15.",
         line: 2,
-        visible: ["callback", "sum", "price", "five", "ten", "fifteen"],
+        visible: ["cart", "array", "five", "ten", "fifteen", "callback", "sum", "price"],
         wires: [
+          { id: "cart-array", from: "cart", to: "array", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "array-five", from: "array", to: "five", label: "0", tone: "slate", fromAnchor: { side: "right", offset: -16 }, toAnchor: { side: "left" } },
+          { id: "array-ten", from: "array", to: "ten", label: "1", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "array-fifteen", from: "array", to: "fifteen", label: "2", tone: "slate", fromAnchor: { side: "right", offset: 16 }, toAnchor: { side: "left" } },
           { id: "sum-five", from: "sum", to: "five", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 14 } },
           { id: "price-ten", from: "price", to: "ten", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
           { id: "callback-fifteen", from: "callback", to: "fifteen", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: -12 } },
@@ -1693,8 +1701,12 @@ const practicalLessons = [
         title: "Third callback call: 15 + 15",
         description: "The returned 15 becomes sum. price points to the last item, also 15. The callback returns 30.",
         line: 2,
-        visible: ["callback", "sum", "price", "fifteen", "thirty"],
+        visible: ["cart", "array", "five", "ten", "fifteen", "callback", "sum", "price", "thirty"],
         wires: [
+          { id: "cart-array", from: "cart", to: "array", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "array-five", from: "array", to: "five", label: "0", tone: "slate", fromAnchor: { side: "right", offset: -16 }, toAnchor: { side: "left" } },
+          { id: "array-ten", from: "array", to: "ten", label: "1", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "array-fifteen", from: "array", to: "fifteen", label: "2", tone: "slate", fromAnchor: { side: "right", offset: 16 }, toAnchor: { side: "left" } },
           { id: "sum-fifteen", from: "sum", to: "fifteen", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 12 } },
           { id: "price-fifteen", from: "price", to: "fifteen", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 18 } },
           { id: "callback-thirty", from: "callback", to: "thirty", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -11007,8 +11019,17 @@ function render() {
   const step = currentStep();
   saveProgress();
   syncProgressUrl();
-  syncSvgViewport();
   renderChapterMenuState();
+
+  const isFinalStep = state.step === lesson.steps.length - 1;
+  dom.quizCard.classList.toggle("hidden", !isFinalStep);
+  dom.quizCard.classList.toggle("block", isFinalStep);
+  dom.prevButton.disabled = state.step === 0;
+  dom.nextButton.disabled = isFinalStep;
+
+  // The quiz changes the lesson column height. Measure the canvas only after
+  // that layout is final so percentage-positioned nodes and SVG wires agree.
+  syncSvgViewport();
 
   dom.stepCount.textContent = `Step ${state.step + 1} of ${lesson.steps.length}`;
   dom.stepTitle.textContent = step.title;
@@ -11030,13 +11051,7 @@ function render() {
   dom.wireLabelLayer.innerHTML = step.wires.map(drawWireLabel).join("");
   renderNotes(step.notes);
 
-  dom.quizCard.classList.toggle("hidden", state.step !== lesson.steps.length - 1);
-  dom.quizCard.classList.toggle("block", state.step === lesson.steps.length - 1);
-
-  dom.prevButton.disabled = state.step === 0;
-  dom.nextButton.disabled = state.step === lesson.steps.length - 1;
-
-  if (state.step !== lesson.steps.length - 1) {
+  if (!isFinalStep) {
     resetQuiz();
   }
 }
