@@ -10083,17 +10083,7 @@ function parsePlayground(code) {
     return playgroundError("Start with a supported snippet like let score = 0;");
   }
 
-  const functions = new Map();
-  const functionPattern = /function\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{\s*return\s+([^;]+);?\s*\}/g;
-  const withoutFunctions = cleanCode.replace(functionPattern, (_, name, params, body) => {
-    functions.set(name, {
-      params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
-      body: body.trim(),
-    });
-    return `let ${name} = __function_${name};`;
-  });
-
-  const statements = splitStatements(withoutFunctions);
+  const statements = splitStatements(cleanCode);
   const variables = new Map();
   const values = [];
 
@@ -10103,9 +10093,23 @@ function parsePlayground(code) {
     return id;
   };
 
-  const readVariable = (name, locals = new Map()) => {
-    if (locals?.has(name)) {
-      const binding = locals.get(name);
+  const createScope = (parent = null) => {
+    const scope = new Map();
+    scope.parent = parent;
+    return scope;
+  };
+  const findBindingScope = (scope, name) => {
+    let current = scope;
+    while (current) {
+      if (current.has(name)) return current;
+      current = current.parent;
+    }
+    return null;
+  };
+  const readVariable = (name, locals = null) => {
+    const localScope = findBindingScope(locals, name);
+    if (localScope) {
+      const binding = localScope.get(name);
       return typeof binding === "string" ? binding : binding.valueId;
     }
     if (!variables.has(name)) throw new Error(`${name} has not been created yet.`);
@@ -10120,6 +10124,25 @@ function parsePlayground(code) {
     return addValue({ type: "string", label, raw: undefined });
   };
   let executeStatement;
+
+  const makeFunctionValue = (definition, label = "fn") =>
+    addValue({ type: "function", label, raw: { kind: "function", definition } });
+
+  const syncClosureProps = (value, definition) => {
+    if (!definition?.closure) return;
+    const props = [];
+    let scope = definition.closure;
+    const seen = new Set();
+    while (scope) {
+      scope.forEach((binding, name) => {
+        if (seen.has(name) || binding.kind === "function") return;
+        seen.add(name);
+        props.push([`remembers ${name}`, binding.valueId]);
+      });
+      scope = scope.parent;
+    }
+    value.props = props;
+  };
 
   const setArrayProps = (arrayValue, itemIds) => {
     const lengthId = addValue({ ...makePrimitiveValue(itemIds.length), raw: itemIds.length });
@@ -10144,13 +10167,19 @@ function parsePlayground(code) {
   const evaluateExpression = (expression, locals = new Map()) => {
     const expr = expression.trim();
 
-    if (/^__function_[A-Za-z_$][\w$]*$/.test(expr)) {
-      return addValue({ type: "function", label: "fn", raw: { kind: "function" } });
-    }
-
     const functionExpression = expr.match(/^function\s*(?:[A-Za-z_$][\w$]*)?\s*\(([^)]*)\)\s*\{([\s\S]*)\}$/);
     if (functionExpression) {
-      return addValue({ type: "function", label: "fn", raw: { kind: "function" } });
+      const [, params, body] = functionExpression;
+      const returnOnly = body.trim().match(/^return\s+([\s\S]+?);?$/);
+      const definition = {
+        params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
+        body: returnOnly ? returnOnly[1].trim() : body.trim(),
+        bodyKind: returnOnly ? "expression" : "statements",
+        closure: locals,
+      };
+      const valueId = makeFunctionValue(definition);
+      syncClosureProps(getValue(valueId), definition);
+      return valueId;
     }
 
     if (/^"[^"]*"$/.test(expr) || /^'[^']*'$/.test(expr)) {
@@ -10428,17 +10457,31 @@ function parsePlayground(code) {
     const callMatch = expr.match(/^([A-Za-z_$][\w$]*)\((.*)\)$/);
     if (callMatch) {
       const [, name, argsSource] = callMatch;
-      const fn = functions.get(name);
+      let functionValue;
+      try {
+        functionValue = getValue(readVariable(name, locals));
+      } catch {
+        functionValue = null;
+      }
+      const fn = functionValue?.raw?.definition;
       if (!fn) return makePlaceholderValue(expr);
       const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
-      const nextLocals = new Map();
+      const nextLocals = createScope(fn.closure);
       fn.params.forEach((param, index) => setBinding(nextLocals, param, "param", argIds[index]));
       if (fn.bodyKind === "statements") {
-        splitStatements(fn.body).forEach((child) => executeStatement(child, nextLocals));
+        for (const child of splitStatements(fn.body)) {
+          const completion = executeStatement(child, nextLocals);
+          if (completion?.type === "return") {
+            if (functionValue) syncClosureProps(functionValue, fn);
+            return completion.valueId;
+          }
+        }
+        if (functionValue) syncClosureProps(functionValue, fn);
         return addValue({ ...makePrimitiveValue(undefined), raw: undefined });
       }
-
-      return evaluateExpression(fn.body, nextLocals);
+      const resultId = evaluateExpression(fn.body, nextLocals);
+      if (functionValue) syncClosureProps(functionValue, fn);
+      return resultId;
     }
 
     const operatorMatch =
@@ -10463,16 +10506,28 @@ function parsePlayground(code) {
     executeStatement = (statement, locals = null) => {
       if (/^(type|interface|import|export)\b/.test(statement)) return;
 
+      const returnStatement = statement.match(/^return(?:\s+([\s\S]+))?$/);
+      if (returnStatement) {
+        const expression = returnStatement[1]?.replace(/;$/, "").trim();
+        return {
+          type: "return",
+          valueId: expression
+            ? evaluateExpression(expression, locals)
+            : addValue({ ...makePrimitiveValue(undefined), raw: undefined }),
+        };
+      }
+
       const functionDeclaration = statement.match(/^function\s+([A-Za-z_$][\w$]*)(?:<[^>]+>)?\s*\(([^)]*)\)\s*(?::\s*[^{]+)?\{([\s\S]*)\}$/);
       if (functionDeclaration) {
         const [, name, params, body] = functionDeclaration;
         const returnOnly = body.trim().match(/^return\s+([\s\S]+?);?$/);
-        functions.set(name, {
+        const definition = {
           params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
           body: returnOnly ? returnOnly[1].trim() : body.trim(),
           bodyKind: returnOnly ? "expression" : "statements",
-        });
-        setBinding(locals || variables, name, "function", addValue({ type: "function", label: "fn", raw: { kind: "function" } }));
+          closure: locals,
+        };
+        setBinding(locals || variables, name, "function", makeFunctionValue(definition));
         return;
       }
 
@@ -10488,8 +10543,8 @@ function parsePlayground(code) {
         const [, kind, name, expression] = declaration;
         const arrowFunction = parseArrowFunction(expression);
         if (arrowFunction) {
-          functions.set(name, arrowFunction);
-          setBinding(locals || variables, name, kind, addValue({ type: "function", label: "=> fn", raw: { kind: "function" } }));
+          const definition = { ...arrowFunction, closure: locals };
+          setBinding(locals || variables, name, kind, makeFunctionValue(definition, "=> fn"));
           return;
         }
 
@@ -10497,12 +10552,13 @@ function parsePlayground(code) {
         if (functionExpression) {
           const [, params, body] = functionExpression;
           const returnOnly = body.trim().match(/^return\s+([\s\S]+?);?$/);
-          functions.set(name, {
+          const definition = {
             params: params.split(",").map((param) => param.trim().replace(/:.+$/, "")).filter(Boolean),
             body: returnOnly ? returnOnly[1].trim() : body.trim(),
             bodyKind: returnOnly ? "expression" : "statements",
-          });
-          setBinding(locals || variables, name, kind, addValue({ type: "function", label: "fn", raw: { kind: "function" } }));
+            closure: locals,
+          };
+          setBinding(locals || variables, name, kind, makeFunctionValue(definition));
           return;
         }
 
@@ -10571,7 +10627,7 @@ function parsePlayground(code) {
       const increment = statement.match(/^([A-Za-z_$][\w$]*)\+\+$/);
       if (increment) {
         const [, name] = increment;
-        const target = locals?.has(name) ? locals : variables;
+        const target = findBindingScope(locals, name) || variables;
         if (!target.has(name)) throw new Error(`${name} has not been created yet.`);
         const binding = target.get(name);
         const value = Number(getRawValue(readVariable(name, locals || new Map()))) + 1;
@@ -10599,7 +10655,7 @@ function parsePlayground(code) {
       const assignment = statement.match(/^([A-Za-z_$][\w$]*)\s*=\s*(.+)$/);
       if (assignment) {
         const [, name, expression] = assignment;
-        const target = locals?.has(name) ? locals : variables;
+        const target = findBindingScope(locals, name) || variables;
         if (!target.has(name)) throw new Error(`${name} must be created with let or const first.`);
         const binding = target.get(name);
         const kind = typeof binding === "string" ? "let" : binding.kind;

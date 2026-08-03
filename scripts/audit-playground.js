@@ -62,6 +62,13 @@ const snippets = [
     expectedLabels: ["add", "fn", "result", "7"],
   },
   {
+    name: "returned function keeps and updates closure state",
+    code: "function makeCounter() {\n  let count = 0;\n  return function next() {\n    count = count + 1;\n    return count;\n  };\n}\nlet next = makeCounter();\nlet current = next();",
+    expectedLabels: ["makeCounter", "next", "fn", "current", "1"],
+    expectedWireLabels: ["remembers count"],
+    missingLabels: ["undefined", "next()"],
+  },
+  {
     name: "multiple function calls stay in view",
     code: "function double(number) { return number * 2; }\nconst add = function(a, b) { return a + b; };\nconst multiply = (a, b) => a * b;\nlet doubled = double(4);\nlet added = add(3, 4);\nlet multiplied = multiply(3, 4);",
     expectedLabels: ["double", "add", "multiply", "doubled", "added", "multiplied", "8", "7", "12"],
@@ -111,6 +118,12 @@ snippets.forEach((snippet) => {
     const gap = Math.abs(first.y - second.y);
     if (gap < minGap) {
       problems.push(`${snippet.name}: expected at least ${minGap} layout units between ${firstLabel} and ${secondLabel}, got ${gap}.`);
+    }
+  });
+
+  (snippet.expectedWireLabels || []).forEach((label) => {
+    if (!diagram.wires.some((wire) => wire.label === label)) {
+      problems.push(`${snippet.name}: expected wire label ${label} in playground diagram.`);
     }
   });
 
