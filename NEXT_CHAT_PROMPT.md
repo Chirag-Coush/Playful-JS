@@ -20,6 +20,12 @@ Important rules:
 - Do not skip states if skipping would teach a false mental model.
 - Assignment should show: create/identify the left side, evaluate the right side, then point the left-side wire to the resulting value.
 - Function calls should show: evaluate function, evaluate arguments, create parameters, return a value, then store the returned value.
+- Wires are conceptual notation for bindings and properties holding values. They are not claims about physical engine memory addresses.
+- Primitive values are immutable and do not have observable object identity. Objects and functions do have identity and can be shared through multiple bindings.
+- Host/runtime machinery and specification internal slots must be labelled explicitly. Do not draw timers, listener registries, Promise queues, or internal slots as ordinary JavaScript properties.
+- Every visible binding, object, and call must come from the displayed code, or be identified as browser/runtime-provided state.
+- `&&` and `||` return one of their operand values. A callback's return value is not automatically returned by the function that calls it.
+- Top-level `await` must be identified as module code or placed inside an async function.
 - Visible variable boxes and primitive values must have full white backgrounds, never opacity-based dimming.
 - Future-step nodes should be hidden, not ghosted.
 - Use Tailwind defaults and reusable CSS where possible. Avoid arbitrary custom values unless necessary.
@@ -46,8 +52,8 @@ npm run serve
 npm run screenshots:chapter -- 22
 ```
 
-`npm run check` runs JavaScript syntax validation, Tailwind build, and lesson data audit.
-The lesson audit catches missing/hidden diagram nodes, hidden wire endpoints, duplicate visible chapter titles, and likely label overflow.
+`npm run check` runs JavaScript syntax validation, the Tailwind build, structural and semantic lesson audits, and the guided playground audit.
+These checks catch missing/hidden diagram nodes, hidden wire endpoints, duplicate visible chapter titles, likely label overflow, known misleading explanations, unsupported snippets, and playground nodes outside the canvas.
 
 For visual checks, keep the local server running and capture every walkthrough state plus the guided playground for new/dense chapters, for example:
 

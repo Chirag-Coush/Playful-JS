@@ -338,10 +338,10 @@ const practicalLessons = [
     legend: ["variable", "object", "value", "wire"],
     nodes: {
       math: { label: "Math", kind: "variable-wide", x: 18, y: 18 },
-      randomValue: { label: "0.7", kind: "value", x: 62, y: 18 },
+      randomValue: { label: "0.72", kind: "value", x: 62, y: 18 },
       random: { label: "random", kind: "variable-wide", x: 18, y: 34 },
       scaled: { label: "scaled", kind: "variable-wide", x: 18, y: 50 },
-      scaledValue: { label: "4.3", kind: "value", x: 62, y: 48 },
+      scaledValue: { label: "4.32", kind: "value", x: 62, y: 48 },
       roundedDown: { label: "roundedDown", kind: "variable-wide", x: 18, y: 64 },
       roundedUp: { label: "roundedUp", kind: "variable-wide", x: 18, y: 78 },
       four: { label: "4", kind: "value", x: 62, y: 64 },
@@ -370,7 +370,7 @@ const practicalLessons = [
       },
       {
         title: "Round down",
-        description: "Math.floor(4.3) creates the number 4. For dice, this gives us a whole number from 0 to 5.",
+        description: "For this illustrated sample, Math.floor(4.32) creates 4. For dice, floor gives a whole number from 0 to 5.",
         line: 2,
         visible: ["math", "random", "randomValue", "scaled", "scaledValue", "roundedDown", "four"],
         wires: [
@@ -382,7 +382,7 @@ const practicalLessons = [
       },
       {
         title: "Round up when needed",
-        description: "Math.ceil(4.3) creates the number 5. Use ceil when any leftover fraction should move to the next whole number.",
+        description: "For this sample, Math.ceil(4.32) creates 5. Use ceil when any fraction should move to the next whole number.",
         line: 3,
         visible: ["math", "random", "randomValue", "scaled", "scaledValue", "roundedDown", "four", "roundedUp", "five"],
         wires: [
@@ -409,7 +409,7 @@ const practicalLessons = [
       },
     ],
     quiz: {
-      prompt: "Which helper rounds 4.3 up to 5?",
+      prompt: "Which helper rounds 4.32 up to 5?",
       options: ["Math.ceil", "Math.floor", "Math.random"],
       answer: "Math.ceil",
       correct: "Correct. ceil moves a fractional number up to the next whole number.",
@@ -492,7 +492,7 @@ const practicalLessons = [
     title: "Logical Operators",
     universeTitle: "Logical operators combine questions",
     intro:
-      "Logical operators combine or flip decisions. Real code uses &&, ||, and ! for permissions, filters, form errors, and fallback values.",
+      "Apps use logical operators for permissions and fallbacks. && and || short-circuit and return an operand; with these boolean operands they return booleans. ! always returns a boolean.",
     code: ["let loggedIn = true;", "let isAdmin = false;", "let canEdit = loggedIn && isAdmin;", "let canView = loggedIn || isAdmin;", "let blocked = !loggedIn;"],
     legend: ["variable", "value", "wire"],
     nodes: {
@@ -526,7 +526,7 @@ const practicalLessons = [
       },
       {
         title: "Combine with &&",
-        description: "&& only gives true when both sides are true. Here one side is false, so the expression creates false.",
+        description: "&& evaluates left to right. Because loggedIn is truthy, it evaluates and returns the second operand, false.",
         line: 2,
         visible: ["loggedIn", "trueValue", "isAdmin", "falseValue"],
         wires: [
@@ -549,7 +549,7 @@ const practicalLessons = [
       },
       {
         title: "Try ||",
-        description: "|| gives true when at least one side is true. loggedIn is true, so loggedIn || isAdmin creates true.",
+        description: "|| evaluates left to right. Because loggedIn is truthy, it short-circuits and returns that first operand, true.",
         line: 3,
         visible: ["loggedIn", "trueValue", "isAdmin", "falseValue", "canEdit"],
         wires: [
@@ -588,7 +588,7 @@ const practicalLessons = [
       },
     ],
     quiz: {
-      prompt: "Which operator gives true when at least one side is true?",
+      prompt: "With boolean operands, which operator returns true when at least one side is true?",
       options: ["||", "&&", "!"],
       answer: "||",
       correct: "Correct. || only needs one side to be true.",
@@ -2808,7 +2808,7 @@ const practicalLessons = [
     universeTitle: "Unions narrow after checks",
     intro:
       "A union type says a value may have one of several allowed types or object shapes. A check such as state.status === \"success\" narrows the possibilities, letting TypeScript know which shape the following code has. This is common in loading and error state.",
-    code: ["type State = { status: 'loading' } | { status: 'success'; name: string };", "if (state.status === 'success') {", "  show(state.name);", "}"],
+    code: ["type State = { status: 'loading' } | { status: 'success'; name: string };", "let state: State = { status: 'success', name: 'Ada' };", "if (state.status === 'success') {", "  show(state.name);", "}"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       state: { label: "state", kind: "variable-wide", x: 14, y: 42 },
@@ -2822,7 +2822,7 @@ const practicalLessons = [
         title: "State points to one shape",
         description:
           'At runtime, state points to one object. This object has status "success" and a name property.',
-        line: 0,
+        line: 1,
         visible: ["state", "stateObj", "success", "ada"],
         wires: [
           { id: "state-stateObj", from: "state", to: "stateObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2836,7 +2836,7 @@ const practicalLessons = [
         title: "Check the status property",
         description:
           'state.status === "success" reads the status property and narrows the type for the if block.',
-        line: 1,
+        line: 2,
         visible: ["state", "stateObj", "success", "ada"],
         wires: [
           { id: "state-stateObj", from: "state", to: "stateObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2849,7 +2849,7 @@ const practicalLessons = [
         title: "Narrowed code can read name",
         description:
           "Inside the success branch, TypeScript allows state.name because that shape includes the name property.",
-        line: 2,
+        line: 3,
         visible: ["stateObj", "success", "ada", "result"],
         wires: [
           { id: "stateObj-success", from: "stateObj", to: "success", label: "status", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
@@ -5835,7 +5835,7 @@ const conceptLessons = [
       {
         title: "Call user.sayHi",
         description:
-          "Because the function is called through user, JavaScript creates a local this wire pointing to the user object.",
+          "Because the function is called through user, the call supplies the user object as the special this value. this is not a written parameter.",
         line: 4,
         visible: ["user", "userObj", "ada", "fn", "thisVar"],
         wires: [
@@ -6329,70 +6329,85 @@ const conceptLessons = [
     title: "Arrow Functions",
     universeTitle: "Arrows do not create their own this",
     intro:
-      "Arrow functions are functions, but they do not get a fresh this when called. They use this from the surrounding scope.",
+      "Arrow functions are functions, but a call does not give them a new this value. An arrow created inside a method keeps the this from that method call, which is useful for callbacks.",
     code: [
-      "function makeGreeter() {",
-      '  let name = "Ada";',
-      "  return () => name;",
-      "}",
-      "let greet = makeGreeter();",
-      "greet();",
+      'let user = { name: "Ada",',
+      "  makeGreeter() { return () => this.name; }",
+      "};",
+      "let greet = user.makeGreeter();",
+      "let message = greet();",
     ],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
-      makeGreeter: { label: "makeGreeter", kind: "variable-wide", x: 16, y: 30 },
-      makerFn: { label: "fn", kind: "object", x: 44, y: 30 },
-      name: { label: "name", kind: "variable-wide", x: 28, y: 58 },
-      ada: { label: '"Ada"', kind: "string", x: 58, y: 58 },
-      arrowFn: { label: "fn", kind: "object", x: 78, y: 42 },
-      greet: { label: "greet", kind: "variable-wide", x: 28, y: 82 },
+      user: { label: "user", kind: "variable-wide", x: 14, y: 30 },
+      userObj: { label: "{ }", kind: "object", x: 40, y: 30 },
+      ada: { label: '"Ada"', kind: "string", x: 72, y: 22 },
+      methodFn: { label: "fn", kind: "object", x: 72, y: 42 },
+      thisBox: { label: "this", kind: "variable-wide", x: 40, y: 62 },
+      arrowFn: { label: "=>", kind: "object", x: 72, y: 60 },
+      greet: { label: "greet", kind: "variable-wide", x: 14, y: 76 },
+      message: { label: "message", kind: "variable-wide", x: 48, y: 82 },
     },
     steps: [
       {
-        title: "Create makeGreeter",
-        description: "makeGreeter points to a function value.",
+        title: "Create user and its method",
+        description: "user points to an object with name data and a makeGreeter method value.",
         line: 0,
-        visible: ["makeGreeter", "makerFn"],
-        wires: [{ id: "makeGreeter-makerFn", from: "makeGreeter", to: "makerFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } }],
-        active: ["makeGreeter", "makerFn"],
+        visible: ["user", "userObj", "ada", "methodFn"],
+        wires: [
+          { id: "user-userObj", from: "user", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "cyan", fromAnchor: { side: "right", offset: -10 }, toAnchor: { side: "left" } },
+          { id: "userObj-method", from: "userObj", to: "methodFn", label: "makeGreeter", tone: "cyan", fromAnchor: { side: "right", offset: 10 }, toAnchor: { side: "left" } },
+        ],
+        active: ["user", "userObj"],
       },
       {
-        title: "Create a local name",
-        description:
-          'Calling makeGreeter creates a local variable name pointing to "Ada".',
+        title: "Call the method",
+        description: "In user.makeGreeter(), the method call supplies user as the special this value.",
+        line: 3,
+        visible: ["user", "userObj", "thisBox"],
+        wires: [
+          { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "this-userObj", from: "thisBox", to: "userObj", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["thisBox", "userObj"],
+      },
+      {
+        title: "Create an arrow using that this",
+        description: "The arrow does not create its own this. It closes over the method call's this value, which is user.",
         line: 1,
-        visible: ["makeGreeter", "makerFn", "name", "ada"],
+        visible: ["userObj", "thisBox", "arrowFn"],
         wires: [
-          { id: "makeGreeter-makerFn", from: "makeGreeter", to: "makerFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "name-ada", from: "name", to: "ada", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "this-userObj", from: "thisBox", to: "userObj", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "arrow-this", from: "arrowFn", to: "thisBox", label: "lexical this", tone: "orange", fromAnchor: { side: "left" }, toAnchor: { side: "right" } },
         ],
-        active: ["name", "ada"],
+        active: ["arrowFn", "thisBox"],
       },
       {
-        title: "Return an arrow function",
-        description:
-          "The arrow function closes over name. It can read name later without needing its own this.",
-        line: 2,
-        visible: ["makeGreeter", "makerFn", "name", "ada", "arrowFn"],
+        title: "Store the returned arrow",
+        description: "makeGreeter returns the arrow function. greet points to that function value after the method call finishes.",
+        line: 3,
+        visible: ["userObj", "thisBox", "arrowFn", "greet"],
         wires: [
-          { id: "makeGreeter-makerFn", from: "makeGreeter", to: "makerFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "name-ada", from: "name", to: "ada", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "arrow-name", from: "arrowFn", to: "name", label: "closes over", tone: "orange", fromAnchor: { side: "left" }, toAnchor: { side: "right", offset: 12 } },
-        ],
-        active: ["arrowFn", "name"],
-      },
-      {
-        title: "Store and call greet",
-        description:
-          'greet points to the returned arrow function. Calling greet() reads the closed-over name and returns "Ada".',
-        line: 5,
-        visible: ["name", "ada", "arrowFn", "greet"],
-        wires: [
-          { id: "name-ada", from: "name", to: "ada", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "greet-arrow", from: "greet", to: "arrowFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "arrow-name", from: "arrowFn", to: "name", label: "closure", tone: "slate", fromAnchor: { side: "left" }, toAnchor: { side: "right", offset: 12 } },
+          { id: "arrow-this", from: "arrowFn", to: "thisBox", label: "lexical this", tone: "slate", fromAnchor: { side: "left" }, toAnchor: { side: "right" } },
+          { id: "this-userObj", from: "thisBox", to: "userObj", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
-        active: ["greet", "arrowFn", "ada"],
+        active: ["greet", "arrowFn"],
+      },
+      {
+        title: "Call the detached arrow",
+        description: 'greet() still reads user.name through its lexical this and returns "Ada", so message points to that string.',
+        line: 4,
+        visible: ["userObj", "ada", "thisBox", "arrowFn", "greet", "message"],
+        wires: [
+          { id: "greet-arrow", from: "greet", to: "arrowFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "arrow-this", from: "arrowFn", to: "thisBox", label: "lexical this", tone: "slate", fromAnchor: { side: "left" }, toAnchor: { side: "right" } },
+          { id: "this-userObj", from: "thisBox", to: "userObj", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "message-ada", from: "message", to: "ada", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 10 } },
+        ],
+        active: ["message", "ada"],
       },
     ],
     quiz: {
@@ -6412,10 +6427,10 @@ const conceptLessons = [
       "A callback is a function value passed into another function for later use. In function run(callback), run is the function name and callback is a parameter. In run(logReady), logReady is the argument expression; it evaluates to the function value received by callback. Button clicks and timers use this pattern.",
     code: [
       "function run(callback) {",
-      "  callback();",
+      "  return callback();",
       "}",
       'function logReady() { return "Ready"; }',
-      "run(logReady);",
+      "let result = run(logReady);",
     ],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -6425,6 +6440,7 @@ const conceptLessons = [
       callbackFn: { label: "fn", kind: "object", x: 38, y: 60 },
       callback: { label: "callback", kind: "variable-wide", x: 58, y: 74 },
       ready: { label: '"Ready"', kind: "string", x: 82, y: 74 },
+      result: { label: "result", kind: "variable-wide", x: 58, y: 90 },
     },
     steps: [
       {
@@ -6467,7 +6483,7 @@ const conceptLessons = [
       {
         title: "run calls callback",
         description:
-          'callback() calls the function value and returns "Ready". The important part is that functions can move through variables.',
+          'callback() calls logReady. logReady returns "Ready", and run explicitly returns that same value to its caller.',
         line: 1,
         visible: ["logReady", "callbackFn", "callback", "ready"],
         wires: [
@@ -6476,6 +6492,17 @@ const conceptLessons = [
           { id: "callbackFn-ready", from: "callbackFn", to: "ready", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["callbackFn", "ready"],
+      },
+      {
+        title: "Store run's return value",
+        description:
+          'Only after run returns does result point to "Ready". Without return callback(), run would return undefined.',
+        line: 4,
+        visible: ["result", "ready"],
+        wires: [
+          { id: "result-ready", from: "result", to: "ready", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["result", "ready"],
       },
     ],
     quiz: {
@@ -6576,26 +6603,28 @@ const conceptLessons = [
     title: "Promises",
     universeTitle: "Promises hold future results",
     intro:
-      "A Promise is an object representing work that will finish later. It starts pending, then either resolves with a value or rejects with an error. Fetch calls and other APIs return Promises, and then stores a callback for a resolved value.",
+      "Fetch and other APIs return Promises for later results. A Promise starts pending, then fulfills, often called resolves, or rejects. then registers a callback and returns a new Promise for its result.",
     code: [
-      "let promise = fetchUser();",
-      "promise.then(user => user.name);",
+      "let userPromise = fetchUser();",
+      "let namePromise = userPromise.then(user => user.name);",
       '// later: { name: "Ada" }',
     ],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
-      promiseVar: { label: "promise", kind: "variable-wide", x: 16, y: 38 },
+      promiseVar: { label: "userPromise", kind: "variable-wide", x: 16, y: 38 },
       promiseObj: { label: "P", kind: "object", x: 44, y: 38 },
       callback: { label: "fn", kind: "object", x: 44, y: 68 },
       userObj: { label: "{ }", kind: "object", x: 70, y: 42 },
       ada: { label: '"Ada"', kind: "string", x: 88, y: 42 },
       nameResult: { label: '"Ada"', kind: "string", x: 70, y: 78 },
+      namePromiseVar: { label: "namePromise", kind: "variable-wide", x: 16, y: 88 },
+      namePromiseObj: { label: "P", kind: "object", x: 44, y: 88 },
     },
     steps: [
       {
         title: "Create a Promise",
         description:
-          "fetchUser() returns a Promise object. promise points to that object before the user value exists.",
+          "fetchUser() returns a Promise object. userPromise points to it before the user value exists.",
         line: 0,
         visible: ["promiseVar", "promiseObj"],
         wires: [{ id: "promise-promiseObj", from: "promiseVar", to: "promiseObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } }],
@@ -6604,12 +6633,13 @@ const conceptLessons = [
       {
         title: "Register a callback",
         description:
-          "then stores a callback to run later. The callback is a function value waiting for the future user.",
+          "then registers a callback and immediately returns a different Promise. namePromise points to that new Promise.",
         line: 1,
-        visible: ["promiseVar", "promiseObj", "callback"],
+        visible: ["promiseVar", "promiseObj", "callback", "namePromiseVar", "namePromiseObj"],
         wires: [
           { id: "promise-promiseObj", from: "promiseVar", to: "promiseObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "promise-callback", from: "promiseObj", to: "callback", label: "then", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+          { id: "namePromise-namePromiseObj", from: "namePromiseVar", to: "namePromiseObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["promiseObj", "callback"],
       },
@@ -6629,16 +6659,18 @@ const conceptLessons = [
       {
         title: "The callback receives user",
         description:
-          'The then callback runs with the resolved user value and returns user.name, which is "Ada".',
+          'The callback receives the fulfilled user and returns "Ada". That return value fulfills namePromise; it does not replace userPromise.',
         line: 1,
-        visible: ["promiseObj", "callback", "userObj", "ada", "nameResult"],
+        visible: ["promiseObj", "callback", "userObj", "ada", "nameResult", "namePromiseVar", "namePromiseObj"],
         wires: [
           { id: "promise-callback", from: "promiseObj", to: "callback", label: "calls", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
           { id: "callback-user", from: "callback", to: "userObj", label: "user", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "user-name", from: "userObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "callback-result", from: "callback", to: "nameResult", label: "returns", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "left" } },
+          { id: "namePromise-namePromiseObj", from: "namePromiseVar", to: "namePromiseObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "namePromiseObj-result", from: "namePromiseObj", to: "nameResult", label: "fulfills", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
-        active: ["callback", "nameResult"],
+        active: ["callback", "namePromiseObj", "nameResult"],
       },
     ],
     quiz: {
@@ -6661,6 +6693,7 @@ const conceptLessons = [
       "  let user = await fetchUser();",
       "  return user.name;",
       "}",
+      "let namePromise = loadName();",
     ],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -6671,6 +6704,7 @@ const conceptLessons = [
       userObj: { label: "{ }", kind: "object", x: 40, y: 76 },
       ada: { label: '"Ada"', kind: "string", x: 70, y: 76 },
       outerPromise: { label: "P", kind: "object", x: 70, y: 34 },
+      namePromise: { label: "namePromise", kind: "variable-wide", x: 72, y: 18 },
     },
     steps: [
       {
@@ -6687,12 +6721,13 @@ const conceptLessons = [
       {
         title: "The async function returns a Promise",
         description:
-          "Even before the body finishes, calling an async function gives the caller a Promise.",
-        line: 0,
-        visible: ["loadName", "asyncFn", "outerPromise"],
+          "loadName() starts the body and immediately gives its caller a Promise. namePromise stores that Promise.",
+        line: 4,
+        visible: ["loadName", "asyncFn", "namePromise", "outerPromise"],
         wires: [
           { id: "loadName-asyncFn", from: "loadName", to: "asyncFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "asyncFn-outerPromise", from: "asyncFn", to: "outerPromise", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "namePromise-outerPromise", from: "namePromise", to: "outerPromise", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
         ],
         active: ["asyncFn", "outerPromise"],
       },
@@ -6909,7 +6944,7 @@ const conceptLessons = [
     title: "Event Listeners",
     universeTitle: "Events call callbacks later",
     intro:
-      "addEventListener stores a callback on a DOM object. The browser calls that callback later when the event happens.",
+      "addEventListener registers a callback in browser-managed listener state associated with a DOM object. The callback is not an ordinary property; the browser calls it when the event happens.",
     code: [
       'let button = document.querySelector("button");',
       "let count = 0;",
@@ -7084,7 +7119,7 @@ const conceptLessons = [
     title: "Fetch and JSON",
     universeTitle: "Network data arrives through Promises",
     intro:
-      "fetch starts a network request and immediately returns a Promise for the response. response.json() reads the response body and returns another Promise for ordinary JavaScript data. Apps use this to load API data.",
+      "This is module code, where top-level await is allowed. fetch starts a request and returns a Promise for a Response. response.json() reads the body and returns another Promise for parsed JavaScript data.",
     code: ["let response = await fetch('/user.json');", "let user = await response.json();", "user.name;"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -7353,7 +7388,7 @@ const conceptLessons = [
           { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "userObj-proto", from: "userObj", to: "proto", label: "__proto__", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "userObj-proto", from: "userObj", to: "proto", label: "[[Prototype]]", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
         active: ["userVar", "userObj"],
       },
@@ -7366,7 +7401,7 @@ const conceptLessons = [
         wires: [
           { id: "proto-greet", from: "proto", to: "greet", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
           { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "userObj-proto", from: "userObj", to: "proto", label: "__proto__", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "userObj-proto", from: "userObj", to: "proto", label: "[[Prototype]]", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
         active: ["userObj", "proto"],
       },
@@ -7474,7 +7509,7 @@ const conceptLessons = [
     universeTitle: "extends links prototypes",
     intro:
       "Inheritance lets one class reuse methods from another. It works by linking their prototype objects, so JavaScript can continue looking in the parent prototype when a method is missing from the child. You may see it in custom errors and older libraries.",
-    code: ["class Admin extends User {", "  deletePost(post) {", "    post.remove();", "  }", "}", "let sam = new Admin();"],
+    code: ["class User { greet() { return 'Hi'; } }", "class Admin extends User {", "  deletePost(post) {", "    post.remove();", "  }", "}", "let sam = new Admin();"],
     legend: ["variable", "object", "property", "wire"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 16, y: 30 },
@@ -7503,7 +7538,7 @@ const conceptLessons = [
         title: "Admin has its own prototype",
         description:
           "Admin gets its own prototype object with methods like deletePost.",
-        line: 1,
+        line: 2,
         visible: ["User", "userProto", "Admin", "adminProto", "deletePost"],
         wires: [
           { id: "User-userProto", from: "User", to: "userProto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -7521,7 +7556,7 @@ const conceptLessons = [
         wires: [
           { id: "userProto-greet", from: "userProto", to: "greet", label: "greet", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "adminProto-deletePost", from: "adminProto", to: "deletePost", label: "deletePost", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "adminProto-userProto", from: "adminProto", to: "userProto", label: "__proto__", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "adminProto-userProto", from: "adminProto", to: "userProto", label: "[[Prototype]]", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
         active: ["adminProto", "userProto"],
       },
@@ -7529,12 +7564,12 @@ const conceptLessons = [
         title: "new Admin creates an instance",
         description:
           "sam points to a new Admin instance. The instance links to Admin.prototype, which links to User.prototype.",
-        line: 5,
+        line: 6,
         visible: ["userProto", "adminProto", "sam", "samObj"],
         wires: [
-          { id: "adminProto-userProto", from: "adminProto", to: "userProto", label: "__proto__", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "adminProto-userProto", from: "adminProto", to: "userProto", label: "[[Prototype]]", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
           { id: "sam-samObj", from: "sam", to: "samObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "samObj-adminProto", from: "samObj", to: "adminProto", label: "__proto__", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "samObj-adminProto", from: "samObj", to: "adminProto", label: "[[Prototype]]", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
         active: ["sam", "samObj"],
       },
@@ -7553,7 +7588,7 @@ const conceptLessons = [
     title: "Async Errors",
     universeTitle: "await can throw into catch",
     intro:
-      "await unwraps a resolved Promise, but a rejected Promise behaves like a throw at that line. This matters in fetch, saving data, login flows, and any async app code that can fail.",
+      "This is module code, where top-level await is allowed. A rejected awaited Promise throws at that line, so catch can handle failures from fetch, saving, or login work.",
     code: ['let status = "loading";', "try {", "  let user = await fetchUser();", "} catch (error) {", '  status = "Could not load";', "}"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -7639,7 +7674,8 @@ const conceptLessons = [
     universeTitle: "Data can create DOM nodes",
     intro:
       "A common app pattern is to keep data in arrays and render DOM objects from that data.",
-    code: ['let todos = ["Learn", "Build"];', "let nodes = todos.map(text => createItem(text));", "list.replaceChildren(...nodes);"],
+    code: ["let list = document.querySelector('ul');", "function createItem(text) {", "  let item = document.createElement('li'); item.textContent = text; return item;", "}", 'let todos = ["Learn", "Build"];', "let nodes = todos.map(text => createItem(text));", "list.replaceChildren(...nodes);"],
+    playgroundCode: ['let todos = ["Learn", "Build"];', 'let firstItem = { text: todos[0] };', 'let secondItem = { text: todos[1] };'],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       todos: { label: "todos", kind: "variable-wide", x: 14, y: 30 },
@@ -7658,7 +7694,7 @@ const conceptLessons = [
         title: "Start with data",
         description:
           "todos points to an array. The array points to string values.",
-        line: 0,
+        line: 4,
         visible: ["todos", "array", "learn", "build"],
         wires: [
           { id: "todos-array", from: "todos", to: "array", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -7671,7 +7707,7 @@ const conceptLessons = [
         title: "Map data to DOM nodes",
         description:
           "map calls createItem for each string and creates a new array of DOM node objects.",
-        line: 1,
+        line: 5,
         visible: ["array", "learn", "build", "nodesVar", "nodeArray", "li1", "li2"],
         wires: [
           { id: "nodesVar-nodeArray", from: "nodesVar", to: "nodeArray", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -7684,7 +7720,7 @@ const conceptLessons = [
         title: "list points to the parent DOM node",
         description:
           "The list variable points to the DOM object that will contain the rendered items.",
-        line: 2,
+        line: 0,
         visible: ["nodesVar", "nodeArray", "li1", "li2", "list", "ul"],
         wires: [
           { id: "nodesVar-nodeArray", from: "nodesVar", to: "nodeArray", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -7698,7 +7734,7 @@ const conceptLessons = [
         title: "Attach rendered nodes",
         description:
           "replaceChildren mutates the list DOM object so it points to the new child nodes.",
-        line: 2,
+        line: 6,
         visible: ["li1", "li2", "list", "ul"],
         wires: [
           { id: "list-ul", from: "list", to: "ul", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8026,14 +8062,14 @@ const conceptLessons = [
     universeTitle: "Debounce waits for noisy events to settle",
     intro:
       "Typing in a search box can trigger many events quickly. Debouncing cancels the previously scheduled call and schedules a fresh one, so expensive work runs only after the user pauses.",
-    code: ["let timer;", "function onInput(value) {", "  clearTimeout(timer);", "  timer = setTimeout(() => search(value), 300);", "}"],
+    code: ["function search(value) { return value; }", "let timer;", "function onInput(value) {", "  clearTimeout(timer);", "  timer = setTimeout(() => search(value), 300);", "}", 'onInput("a");', 'onInput("ab");'],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       inputEvent: { label: "input", kind: "string", x: 18, y: 30 },
       valueA: { label: '"a"', kind: "string", x: 46, y: 30 },
       timer: { label: "timer", kind: "variable-wide", x: 18, y: 62 },
-      oldTimeout: { label: "old", kind: "object", x: 46, y: 62 },
-      newTimeout: { label: "new", kind: "object", x: 58, y: 50 },
+      oldTimeout: { label: "1", kind: "value", x: 46, y: 62 },
+      newTimeout: { label: "2", kind: "value", x: 58, y: 50 },
       searchFn: { label: "search", kind: "variable-wide", x: 18, y: 78 },
       result: { label: "run later", kind: "string", x: 68, y: 78 },
     },
@@ -8042,7 +8078,7 @@ const conceptLessons = [
         title: "Input events arrive quickly",
         description:
           "Typing creates repeated input events. Running search on every event can be wasteful.",
-        line: 1,
+        line: 6,
         visible: ["inputEvent", "valueA"],
         wires: [
           { id: "inputEvent-valueA", from: "inputEvent", to: "valueA", label: "value", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8052,8 +8088,8 @@ const conceptLessons = [
       {
         title: "Existing timer is canceled",
         description:
-          "clearTimeout(timer) cancels the previous scheduled work, if there was one.",
-        line: 2,
+          "On the second call, timer contains the first numeric timer ID. clearTimeout(1) asks the browser to cancel that scheduled task.",
+        line: 3,
         visible: ["timer", "oldTimeout"],
         wires: [
           { id: "timer-oldTimeout", from: "timer", to: "oldTimeout", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8063,19 +8099,20 @@ const conceptLessons = [
       {
         title: "Schedule fresh work",
         description:
-          "setTimeout creates a new timer object. timer moves to point at the latest scheduled work.",
-        line: 3,
+          "In browsers, setTimeout returns a numeric timer ID, not a timer object. timer is reassigned from the first ID to the second ID.",
+        line: 4,
         visible: ["timer", "oldTimeout", "newTimeout"],
         wires: [
           { id: "timer-newTimeout", from: "timer", to: "newTimeout", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["timer", "newTimeout"],
+        notes: [{ text: "The scheduled task lives in browser-managed timer state", x: 60, y: 34 }],
       },
       {
         title: "Only the final timer runs",
         description:
-          "If the user stops typing, the latest timer calls search once with the latest value.",
-        line: 3,
+          "If no newer input cancels ID 2, the browser later queues its callback, which calls search with the latest value.",
+        line: 4,
         visible: ["newTimeout", "searchFn", "result"],
         wires: [
           { id: "newTimeout-result", from: "newTimeout", to: "result", label: "after 300ms", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
@@ -8327,7 +8364,7 @@ const conceptLessons = [
     title: "Microtasks",
     universeTitle: "Promise callbacks run before timer tasks",
     intro:
-      "A microtask is queued follow-up work with higher priority than a timer task. Promise callbacks use the microtask queue, so after the current call stack finishes they run before callbacks scheduled by setTimeout.",
+      "Apps encounter microtasks through Promises. At each microtask checkpoint, JavaScript drains eligible microtasks before taking the next task, so a Promise callback runs before a ready setTimeout callback here.",
     code: ['setTimeout(() => log("timer"), 0);', 'Promise.resolve().then(() => log("promise"));', 'log("sync");'],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -8407,7 +8444,7 @@ const conceptLessons = [
     universeTitle: "Old async results can arrive last",
     intro:
       "A race condition happens when the order in which async work finishes changes the result. In search UI, an older request can finish after a newer one and overwrite the screen with outdated data.",
-    code: ['search("a");', 'search("ab");', "// old response arrives last"],
+    code: ['let currentQuery = "a";', "let oldRequest = search(currentQuery);", 'currentQuery = "ab";', "let newRequest = search(currentQuery);", "// newRequest fulfills first and updates the screen", "// oldRequest fulfills later and can overwrite it"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       currentQuery: { label: "query", kind: "variable-wide", x: 16, y: 34 },
@@ -8424,7 +8461,7 @@ const conceptLessons = [
         title: "Start the first search",
         description:
           'The first request is for "a".',
-        line: 0,
+        line: 1,
         visible: ["currentQuery", "a", "oldReq"],
         wires: [
           { id: "currentQuery-a", from: "currentQuery", to: "a", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8436,7 +8473,7 @@ const conceptLessons = [
         title: "User types a newer query",
         description:
           'query moves to "ab", and a newer request starts.',
-        line: 1,
+        line: 3,
         visible: ["currentQuery", "a", "ab", "oldReq", "newReq"],
         wires: [
           { id: "currentQuery-ab", from: "currentQuery", to: "ab", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8449,7 +8486,7 @@ const conceptLessons = [
         title: "New request finishes first",
         description:
           "The newer response correctly updates the screen with AB results.",
-        line: 1,
+        line: 4,
         visible: ["currentQuery", "ab", "newReq", "newResult", "screen"],
         wires: [
           { id: "currentQuery-ab", from: "currentQuery", to: "ab", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8462,7 +8499,7 @@ const conceptLessons = [
         title: "Old request arrives late",
         description:
           "If old results are still allowed to update the screen, they can overwrite the newer results. Debounce or AbortController helps prevent this.",
-        line: 2,
+        line: 5,
         visible: ["currentQuery", "ab", "oldReq", "oldResult", "screen", "newResult"],
         wires: [
           { id: "currentQuery-ab", from: "currentQuery", to: "ab", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8487,7 +8524,7 @@ const conceptLessons = [
     universeTitle: "Tests compare expected and actual values",
     intro:
       "Tests are production tools for confidence. A test calls code with known inputs and checks whether the actual output matches the expected value.",
-    code: ["function slugify(text) {", "  return text.toLowerCase().replaceAll(' ', '-');", "}", 'expect(slugify("Hello JS")).toBe("hello-js");'],
+    code: ["function slugify(text) {", "  return text.toLowerCase().replaceAll(' ', '-');", "}", 'let actual = slugify("Hello JS");', 'let expected = "hello-js";', "expect(actual).toBe(expected);"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       slugify: { label: "slugify", kind: "variable-wide", x: 16, y: 34 },
@@ -8537,7 +8574,7 @@ const conceptLessons = [
         title: "Compare to expected output",
         description:
           "The test passes because actual and expected point to equal string values.",
-        line: 3,
+        line: 5,
         visible: ["actual", "actualValue", "expected", "expectedValue"],
         wires: [
           { id: "actual-actualValue", from: "actual", to: "actualValue", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -8649,14 +8686,14 @@ const conceptLessons = [
     universeTitle: "Failed number conversion produces NaN",
     intro:
       "NaN means Not-a-Number. It is a number value used when numeric work fails, so production code checks for it.",
-    code: ['let input = "abc";', "let amount = Number(input);", "Number.isNaN(amount);"],
+    code: ['let input = "abc";', "let amount = Number(input);", "let invalid = Number.isNaN(amount);"],
     legend: ["variable", "wire", "value"],
     nodes: {
       input: { label: "input", kind: "variable-wide", x: 16, y: 34 },
       abc: { label: '"abc"', kind: "string", x: 48, y: 34 },
       amount: { label: "amount", kind: "variable-wide", x: 16, y: 66 },
       nan: { label: "NaN", kind: "value", x: 48, y: 66 },
-      check: { label: "isNaN", kind: "variable-wide", x: 16, y: 88 },
+      check: { label: "invalid", kind: "variable-wide", x: 16, y: 88 },
       trueValue: { label: "true", kind: "string", x: 70, y: 88 },
     },
     steps: [
@@ -8686,7 +8723,7 @@ const conceptLessons = [
       {
         title: "Check before using",
         description:
-          "Number.isNaN(amount) lets code detect the failed conversion before doing more work.",
+          "Number.isNaN(amount) returns true, then invalid stores that boolean before more work continues.",
         line: 2,
         visible: ["amount", "nan", "check", "trueValue"],
         wires: [
@@ -9033,11 +9070,12 @@ const conceptLessons = [
     universeTitle: "Regular expressions match patterns in strings",
     intro:
       "A regular expression is a pattern object for finding or testing text. The /@/ syntax creates a pattern that looks for @, which can support simple validation or extraction when kept readable.",
-    code: ['let email = "ada@example.com";', "let ok = /@/.test(email);"],
+    code: ['let email = "ada@example.com";', "let pattern = /@/;", "let ok = pattern.test(email);"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       email: { label: "email", kind: "variable-wide", x: 16, y: 34 },
       emailText: { label: '"ada@example.com"', kind: "string", x: 58, y: 34 },
+      pattern: { label: "pattern", kind: "variable-wide", x: 16, y: 62 },
       regex: { label: "/@/", kind: "object", x: 42, y: 62 },
       ok: { label: "ok", kind: "variable-wide", x: 16, y: 88 },
       trueValue: { label: "true", kind: "string", x: 58, y: 88 },
@@ -9059,20 +9097,21 @@ const conceptLessons = [
         description:
           "/@/ is a regular expression object that checks for an @ character.",
         line: 1,
-        visible: ["email", "emailText", "regex"],
+        visible: ["email", "emailText", "pattern", "regex"],
         wires: [
           { id: "email-emailText", from: "email", to: "emailText", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "regex-emailText", from: "regex", to: "emailText", label: "test", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "pattern-regex", from: "pattern", to: "regex", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
-        active: ["regex"],
+        active: ["pattern", "regex"],
       },
       {
         title: "test returns a boolean",
         description:
           "The string contains @, so ok points to true.",
-        line: 1,
-        visible: ["regex", "emailText", "ok", "trueValue"],
+        line: 2,
+        visible: ["pattern", "regex", "emailText", "ok", "trueValue"],
         wires: [
+          { id: "pattern-regex", from: "pattern", to: "regex", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "ok-trueValue", from: "ok", to: "trueValue", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["ok", "trueValue"],
@@ -9098,7 +9137,6 @@ const conceptLessons = [
     nodes: {
       created: { label: "created", kind: "variable-wide", x: 16, y: 42 },
       dateObj: { label: "dt", kind: "object", x: 46, y: 42 },
-      timestamp: { label: "time", kind: "string", x: 72, y: 42 },
       year: { label: "2026", kind: "value", x: 72, y: 74 },
     },
     steps: [
@@ -9116,14 +9154,14 @@ const conceptLessons = [
       {
         title: "Date stores time internally",
         description:
-          "The Date object represents a point in time, not a plain formatted string.",
+          "The Date object has an internal [[DateValue]] number. It is engine state, not a normal property you can read with created.DateValue.",
         line: 0,
-        visible: ["created", "dateObj", "timestamp"],
+        visible: ["created", "dateObj"],
         wires: [
           { id: "created-dateObj", from: "created", to: "dateObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "dateObj-timestamp", from: "dateObj", to: "timestamp", label: "wraps", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["dateObj"],
+        notes: [{ text: "Internal slot, not an ordinary property", x: 72, y: 58 }],
       },
       {
         title: "Methods compute parts",
@@ -9345,21 +9383,20 @@ const conceptLessons = [
     universeTitle: "Private fields hide object internals",
     intro:
       "A private field is a class property whose name starts with #. Only code inside that class can read or change it directly, which is useful for protecting internal state behind public methods.",
-    code: ["class Counter {", "  #count = 0;", "  increment() { this.#count++; }", "}"],
+    code: ["class Counter {", "  #count = 0;", "  increment() { this.#count++; }", "}", "let counter = new Counter();", "counter.increment();", "// counter.#count would be a syntax error here"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       counter: { label: "counter", kind: "variable-wide", x: 16, y: 42 },
       obj: { label: "{ }", kind: "object", x: 44, y: 42 },
       zero: { label: "0", kind: "value", x: 72, y: 42 },
       one: { label: "1", kind: "value", x: 72, y: 72 },
-      outside: { label: "outside", kind: "variable-wide", x: 16, y: 82 },
     },
     steps: [
       {
         title: "Instance has private state",
         description:
           "counter points to an object. The object has a private #count field.",
-        line: 1,
+        line: 4,
         visible: ["counter", "obj", "zero"],
         wires: [
           { id: "counter-obj", from: "counter", to: "obj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -9371,7 +9408,7 @@ const conceptLessons = [
         title: "Method can access it",
         description:
           "Class methods can read and update #count.",
-        line: 2,
+        line: 5,
         visible: ["counter", "obj", "zero", "one"],
         wires: [
           { id: "counter-obj", from: "counter", to: "obj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -9380,15 +9417,16 @@ const conceptLessons = [
         active: ["obj", "one"],
       },
       {
-        title: "Outside code cannot wire to it directly",
+        title: "Outside code cannot name it directly",
         description:
           "Private fields are intentionally hidden from outside code. Use methods to interact with them.",
-        line: 1,
-        visible: ["outside", "obj", "one"],
+        line: 6,
+        visible: ["counter", "obj", "one"],
         wires: [
+          { id: "counter-obj", from: "counter", to: "obj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "obj-one", from: "obj", to: "one", label: "#count", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
-        active: ["outside"],
+        active: ["counter"],
       },
     ],
     quiz: {
@@ -9405,7 +9443,7 @@ const conceptLessons = [
     title: "Dynamic Import",
     universeTitle: "import() loads modules later",
     intro:
-      "Dynamic import uses import(...) like a function to start loading a module at runtime. It returns a Promise for the module object, letting apps delay heavy settings or chart code until it is needed.",
+      "This is module code, where top-level await is allowed. import(...) starts loading at runtime and returns a Promise for a module namespace object, so apps can delay heavy code until needed.",
     code: ['let toolsPromise = import("./tools.js");', "let tools = await toolsPromise;", "tools.format();"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -9855,7 +9893,7 @@ function setMode(mode) {
 
   if (isPlayground) {
     if (!wasPlayground) {
-      dom.playgroundEditor.value = currentLesson().code.join("\n");
+      dom.playgroundEditor.value = (currentLesson().playgroundCode || currentLesson().code).join("\n");
       savePlaygroundCode();
     }
     renderPlayground();
@@ -11333,7 +11371,7 @@ function goToChapter(lessonIndex) {
   closeChapterMenu();
 
   if (state.mode === "playground") {
-    dom.playgroundEditor.value = currentLesson().code.join("\n");
+    dom.playgroundEditor.value = (currentLesson().playgroundCode || currentLesson().code).join("\n");
     saveProgress();
     syncProgressUrl();
     renderPlayground();

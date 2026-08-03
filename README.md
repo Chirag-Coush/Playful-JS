@@ -40,6 +40,11 @@ Variables are shown as labeled boxes, primitive values are shown as floating
 values, and assignment is shown as a wire that can move from one value to
 another.
 
+The diagrams are learning models, not pictures of an engine's physical memory.
+Wires show which value a binding or property currently holds. Browser-managed
+state and JavaScript specification internals are labelled when they appear, so
+they are not mistaken for normal object properties you can read in code.
+
 Current learning path:
 
 - Core model: values, variables, wires, assignment, object identity, and mutation.
@@ -121,10 +126,11 @@ Run the project checks before handing work off:
 npm run check
 ```
 
-This checks JavaScript syntax, rebuilds Tailwind CSS, and audits lesson data for
-missing nodes, hidden wire endpoints, invisible active nodes, and likely label
-overflow. It also checks that intros stay concise and practical, steps stay
-focused, and beginner-sensitive terms are introduced before being relied on.
+This checks JavaScript syntax, rebuilds Tailwind CSS, and runs structural,
+semantic, and guided-playground audits. The checks cover missing nodes, hidden
+wire endpoints, invisible active nodes, likely label overflow, known
+truth-sensitive explanations, unsupported playground snippets, and diagrams
+that extend outside the interactive canvas.
 
 To capture every visual state for a chapter, keep the local server running and
 pass the visible chapter number:

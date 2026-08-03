@@ -44,6 +44,12 @@ At this point the project has 95 chapters total.
 - Primitive values are circles or pills.
 - Objects and functions are object-like values.
 - Wires represent references to values.
+- Wires are a conceptual notation for bindings/properties holding values, not a diagram of an engine's physical memory addresses.
+- Primitive values are immutable and have no observable object identity. Objects and functions do have identity and can be shared through several bindings.
+- Host/runtime machinery and specification internal slots must be labelled as such. Do not present timer records, listener lists, Promise queues, or internal slots as ordinary JavaScript properties.
+- Every visible program binding, object, and call must be established by the displayed code. Anything supplied by the browser or runtime must be identified explicitly.
+- `&&` and `||` return an operand value; they are not boolean-only operators. A callback return is not automatically returned by its caller.
+- Top-level `await` examples must be identified as module code or wrapped in an async function.
 - Visible variable boxes and primitive value nodes must use full white backgrounds. Do not use opacity-based dimming for visible nodes.
 - Future-step nodes should be hidden, not ghosted.
 - Lesson text must be beginner-friendly while staying technically accurate.
@@ -98,6 +104,8 @@ This runs:
 node --check app.js
 npm run build:css
 npm run audit:lessons
+npm run audit:semantics
+npm run audit:playground
 ```
 
 The audit checks lesson data for:
@@ -116,6 +124,11 @@ The playground audit parses every chapter's code as well. It must pass before a
 chapter is considered tested, and it rejects parser errors, missing wire endpoints,
 and nodes placed outside the interactive canvas. Chapter work is not complete when
 only the walkthrough passes; verify the walkthrough and its guided playground view.
+
+The semantic audit protects known truth-sensitive rules: logical operators, timer
+IDs, Promise chaining, complete executed snippets, module-only syntax, and the
+difference between ordinary properties and host/internal state. Extend this audit
+whenever a correction reveals a reusable failure pattern.
 
 ## Screenshot Verification
 

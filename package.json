@@ -1,9 +1,10 @@
 {
   "scripts": {
     "audit:lessons": "node scripts/audit-lessons.js",
+    "audit:semantics": "node scripts/audit-semantics.js",
     "audit:playground": "node scripts/audit-playground.js",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
-    "check": "node --check app.js && npm run build:css && npm run audit:lessons && npm run audit:playground",
+    "check": "node --check app.js && npm run build:css && npm run audit:lessons && npm run audit:semantics && npm run audit:playground",
     "screenshots:chapter": "node scripts/screenshot-chapter.js",
     "watch:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
     "serve": "python3 -m http.server 8080 --bind 127.0.0.1",
