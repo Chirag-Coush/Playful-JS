@@ -42,7 +42,7 @@ lesson.steps.forEach((_, stepIndex) => {
     outputDir,
     `chapter-${String(chapterNumber).padStart(2, "0")}-step-${String(stepIndex + 1).padStart(2, "0")}.png`,
   );
-  const url = `${baseUrl}?chapter=${lessonIndex}&step=${stepIndex}`;
+  const url = `${baseUrl}?chapter=${lessonIndex}&step=${stepIndex}&capture=1`;
   const result = spawnSync(chromePath, [
     "--headless",
     "--disable-gpu",

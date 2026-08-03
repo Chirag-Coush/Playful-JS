@@ -1454,7 +1454,7 @@ const practicalLessons = [
     title: "map",
     universeTitle: "map transforms each item into a new array",
     intro:
-      "map calls a callback once for each array item and puts every returned value into a new array. Use it to turn prices into taxed prices, users into names, or data into UI items.",
+      "map calls a callback once for each array item. The callback produces a returned value, and map puts each returned value into a new array. Use it to turn prices into taxed prices, users into names, or data into UI items.",
     code: ["let prices = [10, 20];", "let withTax = prices.map(price => price * 1.2);"],
     legend: ["variable", "object", "value", "wire"],
     nodes: {
@@ -1494,8 +1494,8 @@ const practicalLessons = [
         active: ["callback"],
       },
       {
-        title: "Create transformed values",
-        description: "The callback runs once for each item and returns 12 and 24.",
+        title: "Create returned values",
+        description: "The callback calculates and returns new number values: 12 for 10, then 24 for 20.",
         line: 1,
         visible: ["prices", "source", "ten", "twenty", "callback", "twelve", "twentyFour"],
         wires: [
@@ -1507,7 +1507,7 @@ const practicalLessons = [
       },
       {
         title: "Store the new array",
-        description: "map returns a new array. withTax points to that new array, while prices still points to the original array.",
+        description: "map returns a new array that points to the calculated 12 and 24 values. prices still points to the original array and its 10 and 20 values.",
         line: 1,
         visible: ["prices", "source", "ten", "twenty", "withTax", "resultArray", "twelve", "twentyFour"],
         wires: [
@@ -1534,9 +1534,9 @@ const practicalLessons = [
     section: "Arrays and lists",
     number: "Practical 21",
     title: "filter",
-    universeTitle: "filter keeps items that pass a test",
+    universeTitle: "filter puts passing values into a new array",
     intro:
-      "filter calls a callback that answers true or false for each array item. It returns a new array containing only the items that produced true, which is useful for search results and completed todos.",
+      "filter calls a callback that answers true or false for each array item. It creates a new array, but it does not create replacement values: the new array points to the existing items that passed. This is useful for search results and completed todos.",
     code: ["let scores = [45, 80, 95];", "let passed = scores.filter(score => score >= 60);"],
     legend: ["variable", "object", "value", "wire"],
     nodes: {
@@ -1564,8 +1564,8 @@ const practicalLessons = [
         active: ["scores", "source"],
       },
       {
-        title: "Run the test",
-        description: "filter calls the callback for each score. 45 fails the >= 60 test; 80 and 95 pass.",
+        title: "Test each existing value",
+        description: "filter calls the callback for each score. The test creates booleans: false for 45, then true for 80 and 95.",
         line: 1,
         visible: ["scores", "source", "fortyFive", "eighty", "ninetyFive", "callback"],
         wires: [
@@ -1577,8 +1577,8 @@ const practicalLessons = [
         active: ["callback", "eighty", "ninetyFive"],
       },
       {
-        title: "Build a filtered array",
-        description: "filter returns a new array containing only the values that passed the test.",
+        title: "Point the new array to kept values",
+        description: "passed points to a new array object. Its entries point to the same existing 80 and 95 values; only 45 is left out.",
         line: 1,
         visible: ["scores", "source", "fortyFive", "eighty", "ninetyFive", "passed", "resultArray"],
         wires: [
@@ -1594,11 +1594,11 @@ const practicalLessons = [
       },
     ],
     quiz: {
-      prompt: "Which value is removed by filter?",
-      options: ["45", "80", "95"],
-      answer: "45",
-      correct: "Correct. 45 does not pass score >= 60.",
-      wrong: "Not quite. filter keeps only values where the callback returns true.",
+      prompt: "Why do both arrays point to 80 and 95?",
+      options: ["filter reuses passing values", "filter mutates scores", "both variables share one array"],
+      answer: "filter reuses passing values",
+      correct: "Correct. filter creates a new array object whose entries reference the values that passed.",
+      wrong: "Not quite. The arrays are different objects, but filter places the existing passing values into the new array.",
     },
   },
   {
@@ -11169,6 +11169,7 @@ renderLessonShell();
 setTheme(getTheme(), { persist: false });
 render();
 
-if (!hasDismissedHelp()) {
+const isAutomatedCapture = new URLSearchParams(window.location.search).get("capture") === "1";
+if (!isAutomatedCapture && !hasDismissedHelp()) {
   openHelpModal();
 }
