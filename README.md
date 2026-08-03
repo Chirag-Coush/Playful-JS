@@ -123,7 +123,8 @@ npm run check
 
 This checks JavaScript syntax, rebuilds Tailwind CSS, and audits lesson data for
 missing nodes, hidden wire endpoints, invisible active nodes, and likely label
-overflow.
+overflow. It also checks that intros stay concise and practical, steps stay
+focused, and beginner-sensitive terms are introduced before being relied on.
 
 To capture every visual state for a chapter, keep the local server running and
 pass the visible chapter number:

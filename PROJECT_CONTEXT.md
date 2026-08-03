@@ -107,7 +107,10 @@ The audit checks lesson data for:
 - active nodes that are not visible,
 - wires whose endpoints are missing or hidden,
 - duplicate visible chapter titles,
-- likely label overflow for node shapes.
+- likely label overflow for node shapes,
+- intros without practical context or with more than 50 words,
+- step descriptions with more than 32 words,
+- missing plain-language definitions for selected beginner-sensitive terms.
 
 ## Screenshot Verification
 

@@ -7,5 +7,8 @@ Playful JS course design notes
 - Keep visual conventions consistent across chapters: variables are boxes, primitive values are circles/pills, objects/functions are object-like values, and wires represent references to values.
 - Visible variable boxes and primitive value nodes must use a full white background, never opacity-based dimming. Hidden future-step nodes should be fully hidden, not ghosted.
 - Every chapter should be understandable to a beginner learning JavaScript for the first time, while still being accurate enough not to create misconceptions.
+- Introduce a new technical term in plain language before relying on it. Do not assume that words such as callback, accumulator, prototype, compile-time, Promise, DOM, task, or microtask are already understood.
+- Keep function-call vocabulary precise: a function name is a binding used to find a function value, a parameter is a local binding declared by the function, and an argument is the expression or value supplied at the call site. A callback is a function value used as an argument so other code can call it.
+- Prefer one execution change per lesson step. If a sentence needs to describe several calls, assignments, or state changes, split it unless the combined view is explicitly a recap.
 - Visible chapter titles should be unique. If two nearby chapters teach the same underlying idea, rename, repurpose, merge, or reorder them so each chapter has a clear reason to exist.
 - Before adding a chapter, search both practical and concept lessons for duplicate topics. Add a chapter only when it teaches a distinct everyday skill or a necessary mental model.

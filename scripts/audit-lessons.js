@@ -29,6 +29,24 @@ const problems = [];
 const warnings = [];
 const seenTitles = new Map();
 const practicalIntroPattern = /\b(real|project|projects|app|apps|code|browser|UI|form|forms|API|APIs|React|DOM|timer|timers|button|buttons|search|data|useful|common|shows up|used|when)\b/i;
+const maxIntroWords = 50;
+const maxStepDescriptionWords = 32;
+const requiredIntroTerms = {
+  callbacks: ["function name", "parameter", "argument"],
+  "classes-and-instances": ["instance", "prototype"],
+  "typescript-annotations": ["compile-time", "runtime"],
+  promises: ["pending", "resolves", "rejects"],
+  "dom-selection": ["document object model"],
+  "call-stack": ["frame"],
+  "event-loop-tasks": ["task"],
+  microtasks: ["microtask"],
+  "intl-formatting": ["locale"],
+  "dynamic-import": ["promise"],
+};
+
+function wordCount(text) {
+  return String(text || "").trim().split(/\s+/).filter(Boolean).length;
+}
 
 function location(lessonIndex, lesson, stepIndex) {
   return `Chapter ${lessonIndex + 1} (${lesson.title}), step ${stepIndex + 1}`;
@@ -43,6 +61,20 @@ sandbox.lessons.forEach((lesson, lessonIndex) => {
   } else if (!practicalIntroPattern.test(intro)) {
     problems.push(`Chapter ${lessonIndex + 1} (${lesson.title}): intro should include a practical use or real-world context.`);
   }
+
+  if (wordCount(intro) > maxIntroWords) {
+    problems.push(
+      `Chapter ${lessonIndex + 1} (${lesson.title}): intro has ${wordCount(intro)} words; keep it at ${maxIntroWords} or fewer.`
+    );
+  }
+
+  (requiredIntroTerms[lesson.id] || []).forEach((term) => {
+    if (!intro.toLowerCase().includes(term)) {
+      problems.push(
+        `Chapter ${lessonIndex + 1} (${lesson.title}): intro should explain "${term}" before using it.`
+      );
+    }
+  });
 
   if (!normalizedTitle) {
     problems.push(`Chapter ${lessonIndex + 1}: lesson needs a visible title.`);
@@ -73,6 +105,12 @@ sandbox.lessons.forEach((lesson, lessonIndex) => {
 
   lesson.steps.forEach((step, stepIndex) => {
     const visible = new Set(step.visible || []);
+
+    if (wordCount(step.description) > maxStepDescriptionWords) {
+      problems.push(
+        `${location(lessonIndex, lesson, stepIndex)}: description has ${wordCount(step.description)} words; keep it at ${maxStepDescriptionWords} or fewer or split the step.`
+      );
+    }
 
     (step.visible || []).forEach((id) => {
       if (!nodeIds.has(id)) {
