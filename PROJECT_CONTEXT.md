@@ -112,6 +112,11 @@ The audit checks lesson data for:
 - step descriptions with more than 32 words,
 - missing plain-language definitions for selected beginner-sensitive terms.
 
+The playground audit parses every chapter's code as well. It must pass before a
+chapter is considered tested, and it rejects parser errors, missing wire endpoints,
+and nodes placed outside the interactive canvas. Chapter work is not complete when
+only the walkthrough passes; verify the walkthrough and its guided playground view.
+
 ## Screenshot Verification
 
 Use Chrome headless for spot checks:
@@ -138,9 +143,14 @@ running and use:
 npm run screenshots:chapter -- 22
 ```
 
-This writes every step for Chapter 22 to `/private/tmp/playful-js-screenshots`.
+This writes every walkthrough step and one guided playground view for Chapter 22
+to `/private/tmp/playful-js-screenshots`.
 Use this before calling a visual chapter "checked" so state-to-state issues are
 reviewed, not only the first or final frame.
+
+After the walkthrough states, also open the guided playground for that chapter and
+check its complete diagram. In playground mode, use `Shift + Up Arrow` and
+`Shift + Down Arrow` to load adjacent chapter snippets for manual testing.
 
 ## Recent Important Fixes
 

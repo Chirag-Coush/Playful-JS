@@ -57,5 +57,23 @@ lesson.steps.forEach((_, stepIndex) => {
   }
 });
 
-console.log(`Captured ${lesson.steps.length} states for Chapter ${chapterNumber}: ${lesson.title}`);
+const playgroundFile = path.join(
+  outputDir,
+  `chapter-${String(chapterNumber).padStart(2, "0")}-playground.png`,
+);
+const playgroundUrl = `${baseUrl}?chapter=${lessonIndex}&step=0&mode=playground&capture=1`;
+const playgroundResult = spawnSync(chromePath, [
+  "--headless",
+  "--disable-gpu",
+  "--hide-scrollbars",
+  "--window-size=1600,1000",
+  `--screenshot=${playgroundFile}`,
+  playgroundUrl,
+], { stdio: "inherit" });
+
+if (playgroundResult.status !== 0) {
+  process.exit(playgroundResult.status || 1);
+}
+
+console.log(`Captured ${lesson.steps.length} walkthrough states and the playground for Chapter ${chapterNumber}: ${lesson.title}`);
 console.log(outputDir);

@@ -9397,6 +9397,7 @@ const dom = {
   themeToggle: document.querySelector("#theme-toggle"),
   playgroundToggle: document.querySelector("#playground-toggle"),
   playgroundPanel: document.querySelector("#playground-panel"),
+  playgroundChapterTitle: document.querySelector("#playground-chapter-title"),
   playgroundEditor: document.querySelector("#playground-editor"),
   playgroundStatus: document.querySelector("#playground-status"),
   playgroundChips: document.querySelector("#playground-chips"),
@@ -9506,7 +9507,11 @@ function getInitialState() {
       ? stepParam
       : 0;
 
-  return { lessonIndex, step };
+  return {
+    lessonIndex,
+    step,
+    mode: params.get("mode") === "playground" ? "playground" : "lesson",
+  };
 }
 
 function isValidLessonIndex(index) {
@@ -9616,6 +9621,7 @@ function setMode(mode) {
   dom.playgroundPanel.classList.toggle("hidden", !isPlayground);
   dom.playgroundToggle.setAttribute("aria-pressed", String(isPlayground));
   dom.playgroundToggle.setAttribute("aria-label", isPlayground ? "Return to lesson mode" : "Open guided playground");
+  syncProgressUrl();
 
   if (isPlayground) {
     if (!wasPlayground) {
@@ -9639,6 +9645,11 @@ function syncProgressUrl() {
   const params = new URLSearchParams(window.location.search);
   params.set("chapter", String(state.lessonIndex));
   params.set("step", String(state.step));
+  if (state.mode === "playground") {
+    params.set("mode", "playground");
+  } else {
+    params.delete("mode");
+  }
 
   const nextUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
   if (nextUrl !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
@@ -10920,6 +10931,13 @@ function buildPlaygroundDiagram(variables, values) {
   const wires = [];
   const valuePositions = new Map();
   const rows = Array.from(variables.entries()).slice(0, 8);
+  const maxDepth = rows.reduce(
+    (deepest, [, binding]) => Math.max(deepest, getPlaygroundValueDepth(binding.valueId, values)),
+    0,
+  );
+  const rootValueX = maxDepth > 0 ? 44 : 50;
+  const rightEdge = 86;
+  const childXStep = maxDepth > 0 ? (rightEdge - rootValueX) / maxDepth : 0;
   const firstRowY = rows.length > 4 ? 12 : 24;
   const lastRowY = rows.length > 4 ? 88 : Math.min(76, firstRowY + (rows.length - 1) * 24);
   const rowGap = rows.length > 1 ? (lastRowY - firstRowY) / (rows.length - 1) : 0;
@@ -10927,7 +10945,7 @@ function buildPlaygroundDiagram(variables, values) {
   rows.forEach(([name, binding], index) => {
     const y = firstRowY + index * rowGap;
     nodes[`var-${name}`] = { label: name, kind: "variable-wide", x: 16, y };
-    placePlaygroundValue(binding.valueId, 50, y, nodes, wires, values, valuePositions);
+    placePlaygroundValue(binding.valueId, rootValueX, y, nodes, wires, values, valuePositions, childXStep, rightEdge);
     wires.push({ id: `wire-${name}`, from: `var-${name}`, to: `value-${binding.valueId}`, tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } });
   });
 
@@ -10939,11 +10957,21 @@ function buildPlaygroundDiagram(variables, values) {
   };
 }
 
+function getPlaygroundValueDepth(valueId, values, visiting = new Set()) {
+  if (visiting.has(valueId)) return 0;
+  const value = values.find((item) => item.id === valueId);
+  if (!value?.props?.length) return 0;
+
+  const nextVisiting = new Set(visiting);
+  nextVisiting.add(valueId);
+  return 1 + Math.max(...value.props.slice(0, 6).map(([, childId]) => getPlaygroundValueDepth(childId, values, nextVisiting)));
+}
+
 function clampPlaygroundPosition(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions) {
+function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions, childXStep, rightEdge) {
   if (positions.has(valueId)) return;
   const value = values.find((item) => item.id === valueId);
   if (!value) return;
@@ -10961,7 +10989,8 @@ function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions) {
   visibleProps.forEach(([property, childId], index) => {
     const childY = clampPlaygroundPosition(firstChildY + index * childSpacing, 12, 88);
     const offset = clampPlaygroundPosition(childY - y, -26, 26);
-    placePlaygroundValue(childId, x + 36, childY, nodes, wires, values, positions);
+    const childX = Math.min(rightEdge, x + childXStep);
+    placePlaygroundValue(childId, childX, childY, nodes, wires, values, positions, childXStep, rightEdge);
     wires.push({
       id: `prop-${valueId}-${property}`,
       from: `value-${valueId}`,
@@ -10976,8 +11005,8 @@ function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions) {
 
 function renderPlayground() {
   savePlaygroundCode();
-  syncSvgViewport();
   const diagram = parsePlayground(dom.playgroundEditor.value);
+  dom.playgroundChapterTitle.textContent = `Chapter ${state.lessonIndex + 1}: ${currentLesson().title}`;
   dom.universeTitle.textContent = "Guided playground visualisation";
   dom.legend.innerHTML = diagram.legend
     .map(
@@ -11004,6 +11033,9 @@ function renderPlayground() {
     setNodePosition(getNodeElement(id), node);
   });
 
+  // The chapter heading and status can change the left column height. Measure
+  // after they render so the canvas, nodes, and SVG wire coordinates agree.
+  syncSvgViewport();
   dom.wireLayer.innerHTML = diagram.wires.map(drawWire).join("");
   dom.wireLabelLayer.innerHTML = diagram.wires.map(drawWireLabel).join("");
   renderNotes(diagram.error ? [{ text: diagram.error, x: 52, y: 18 }] : []);
@@ -11063,9 +11095,22 @@ function goToStep(step) {
 }
 
 function goToChapter(lessonIndex) {
-  state.lessonIndex = Math.max(0, Math.min(lessons.length - 1, lessonIndex));
+  const nextLessonIndex = Math.max(0, Math.min(lessons.length - 1, lessonIndex));
+  if (state.mode === "playground" && nextLessonIndex === state.lessonIndex) return;
+
+  state.lessonIndex = nextLessonIndex;
   state.step = 0;
   closeChapterMenu();
+
+  if (state.mode === "playground") {
+    dom.playgroundEditor.value = currentLesson().code.join("\n");
+    saveProgress();
+    syncProgressUrl();
+    renderPlayground();
+    dom.playgroundEditor.focus();
+    return;
+  }
+
   renderLessonShell();
   render();
 }
@@ -11183,6 +11228,12 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
+  if (state.mode === "playground" && event.shiftKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+    event.preventDefault();
+    goToChapter(state.lessonIndex + (event.key === "ArrowUp" ? -1 : 1));
+    return;
+  }
+
   if (isTypingTarget(event.target)) return;
 
   if (event.key === "Escape") {
@@ -11219,7 +11270,11 @@ renderPlaygroundChips();
 dom.playgroundEditor.value = readSavedPlaygroundCode();
 renderLessonShell();
 setTheme(getTheme(), { persist: false });
-render();
+if (initialState.mode === "playground") {
+  setMode("playground");
+} else {
+  render();
+}
 
 const isAutomatedCapture = new URLSearchParams(window.location.search).get("capture") === "1";
 if (!isAutomatedCapture && !hasDismissedHelp()) {

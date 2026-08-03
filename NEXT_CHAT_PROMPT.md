@@ -24,6 +24,7 @@ Important rules:
 - Future-step nodes should be hidden, not ghosted.
 - Use Tailwind defaults and reusable CSS where possible. Avoid arbitrary custom values unless necessary.
 - Screenshot every state for dense visual chapters, not just the first or final state.
+- Test both modes for every changed chapter: the walkthrough and the guided playground. Playground nodes and wires must remain fully inside the canvas.
 
 Current state:
 
@@ -48,7 +49,7 @@ npm run screenshots:chapter -- 22
 `npm run check` runs JavaScript syntax validation, Tailwind build, and lesson data audit.
 The lesson audit catches missing/hidden diagram nodes, hidden wire endpoints, duplicate visible chapter titles, and likely label overflow.
 
-For visual checks, keep the local server running and capture every state for new/dense chapters, for example:
+For visual checks, keep the local server running and capture every walkthrough state plus the guided playground for new/dense chapters, for example:
 
 ```sh
 npm run screenshots:chapter -- 34 http://127.0.0.1:8080 /private/tmp/playful-js-ch34-all
@@ -74,7 +75,7 @@ Next recommended work:
    - keep diagrams behaviorally accurate,
    - run `npm run check`,
    - run `npm run screenshots:chapter -- <chapter-number>` for dense chapters,
-   - inspect screenshots and fix layout issues before committing.
+   - inspect every walkthrough state and the chapter's guided playground diagram before committing.
 5. Browser/app JavaScript, async, storage, testing, production patterns, and the beginner TypeScript bridge are already represented in the practical track or mental-model library. Prefer improving weak existing chapters over adding duplicates.
 6. Continue only where it supports confidence with React, Next.js, and real projects:
    - component/data-flow mental models before creating a separate React track,

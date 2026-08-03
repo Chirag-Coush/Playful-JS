@@ -84,6 +84,7 @@ const snippets = [
 ];
 
 const problems = [];
+const canvasBounds = { minX: 8, maxX: 92, minY: 8, maxY: 92 };
 
 snippets.forEach((snippet) => {
   const diagram = sandbox.parsePlayground(snippet.code);
@@ -98,6 +99,26 @@ snippets.forEach((snippet) => {
   }
 
   const labels = Object.values(diagram.nodes).map((node) => node.label);
+
+  const outsideCanvas = Object.entries(diagram.nodes).filter(([, node]) =>
+    node.x < canvasBounds.minX || node.x > canvasBounds.maxX || node.y < canvasBounds.minY || node.y > canvasBounds.maxY
+  );
+  if (outsideCanvas.length) {
+    problems.push(
+      `${snippet.name}: playground nodes outside canvas bounds: ${outsideCanvas.map(([id, node]) => `${id} at ${node.x},${node.y}`).join(", ")}.`
+    );
+  }
+
+  diagram.wires.forEach((wire) => {
+    if (!diagram.nodes[wire.from] || !diagram.nodes[wire.to]) {
+      problems.push(`${snippet.name}: playground wire ${wire.id} has a missing endpoint.`);
+      return;
+    }
+
+    if (wire.id.startsWith("prop-") && diagram.nodes[wire.to].x - diagram.nodes[wire.from].x < 12) {
+      problems.push(`${snippet.name}: playground property wire ${wire.id} needs more horizontal spacing.`);
+    }
+  });
   snippet.expectedLabels.forEach((label) => {
     if (!labels.includes(label)) {
       problems.push(`${snippet.name}: expected label ${label} in playground diagram.`);
