@@ -9320,8 +9320,6 @@ const state = {
   lessonIndex: initialState.lessonIndex,
   step: initialState.step,
   mode: "lesson",
-  isPlaying: false,
-  timer: null,
   focusedChapterIndex: initialState.lessonIndex,
 };
 
@@ -9345,8 +9343,6 @@ const dom = {
   stepDescription: document.querySelector("#step-description"),
   prevButton: document.querySelector("#prev-step"),
   nextButton: document.querySelector("#next-step"),
-  playButton: document.querySelector("#play-step"),
-  resetButton: document.querySelector("#reset-step"),
   helpToggle: document.querySelector("#help-toggle"),
   helpModal: document.querySelector("#help-modal"),
   helpClose: document.querySelector("#help-close"),
@@ -9566,7 +9562,6 @@ function closeHelpModal({ remember = true } = {}) {
 function setMode(mode) {
   const wasPlayground = state.mode === "playground";
   state.mode = mode;
-  stopPlayback({ renderAfterStop: false });
   closeChapterMenu();
 
   const isPlayground = mode === "playground";
@@ -9685,7 +9680,6 @@ function moveFocusedChapter(direction) {
 function selectFocusedChapter() {
   if (!isValidLessonIndex(state.focusedChapterIndex)) return;
 
-  stopPlayback();
   goToChapter(state.focusedChapterIndex);
   closeChapterMenu();
 }
@@ -9726,7 +9720,6 @@ function renderChapterSelect() {
 
   dom.chapterOptions.querySelectorAll("[data-lesson-index]").forEach((button) => {
     button.addEventListener("click", () => {
-      stopPlayback();
       goToChapter(Number(button.dataset.lessonIndex));
       closeChapterMenu();
     });
@@ -10951,8 +10944,6 @@ function render() {
 
   dom.prevButton.disabled = state.step === 0;
   dom.nextButton.disabled = state.step === lesson.steps.length - 1;
-  dom.resetButton.disabled = state.step === 0;
-  dom.playButton.textContent = state.isPlaying ? "Pause" : "Play";
 
   if (state.step !== lesson.steps.length - 1) {
     resetQuiz();
@@ -10977,32 +10968,6 @@ function isTypingTarget(target) {
   return ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName) || target?.isContentEditable;
 }
 
-function stopPlayback({ renderAfterStop = true } = {}) {
-  state.isPlaying = false;
-  window.clearInterval(state.timer);
-  state.timer = null;
-  if (renderAfterStop) render();
-}
-
-function togglePlayback() {
-  if (state.isPlaying) {
-    stopPlayback();
-    return;
-  }
-
-  state.isPlaying = true;
-  render();
-  state.timer = window.setInterval(() => {
-    if (state.step >= currentLesson().steps.length - 1) {
-      stopPlayback();
-      return;
-    }
-
-    state.step += 1;
-    render();
-  }, 1600);
-}
-
 function resetQuiz() {
   dom.quizFeedback.textContent = "";
   dom.quizOptions.querySelectorAll("[data-answer]").forEach((button) => {
@@ -11020,20 +10985,11 @@ function escapeHtml(value) {
 }
 
 dom.prevButton.addEventListener("click", () => {
-  stopPlayback();
   goToStep(state.step - 1);
 });
 
 dom.nextButton.addEventListener("click", () => {
-  stopPlayback();
   goToStep(state.step + 1);
-});
-
-dom.playButton.addEventListener("click", togglePlayback);
-
-dom.resetButton.addEventListener("click", () => {
-  stopPlayback();
-  goToStep(0);
 });
 
 dom.helpToggle.addEventListener("click", () => {
@@ -11130,7 +11086,6 @@ document.addEventListener("keydown", (event) => {
 
   if (event.key === "ArrowUp") {
     event.preventDefault();
-    stopPlayback();
     if (event.shiftKey) {
       goToChapter(state.lessonIndex - 1);
       return;
@@ -11142,7 +11097,6 @@ document.addEventListener("keydown", (event) => {
 
   if (event.key === "ArrowDown") {
     event.preventDefault();
-    stopPlayback();
     if (event.shiftKey) {
       goToChapter(state.lessonIndex + 1);
       return;

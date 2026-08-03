@@ -376,11 +376,6 @@
   .filter {
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
-  .max-sm\:col-span-full {
-    @media (width < 40rem) {
-      grid-column: 1 / -1;
-    }
-  }
   .max-sm\:block {
     @media (width < 40rem) {
       display: block;
@@ -951,11 +946,8 @@
   }
   .controls {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: calc(var(--spacing) * 2);
-    @media (width < 40rem) {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
   }
   .control-button {
     min-height: calc(var(--spacing) * 11);

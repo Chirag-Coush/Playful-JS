@@ -192,7 +192,7 @@
   }
 
   .controls {
-    @apply grid grid-cols-4 gap-2 max-sm:grid-cols-3;
+    @apply grid grid-cols-2 gap-2;
   }
 
   .control-button {
