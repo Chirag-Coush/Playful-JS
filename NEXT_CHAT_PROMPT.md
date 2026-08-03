@@ -27,7 +27,7 @@ Important rules:
 
 Current state:
 
-- The app has 97 chapters.
+- The app has 95 chapters.
 - Lesson data is split between `practicalLessons` and `conceptLessons`, but the visible course path is controlled by explicit `lessonOrder`.
 - Mental-model chapters are now interleaved where beginners need them before the next practical topic.
 - Recent practical sections already added:

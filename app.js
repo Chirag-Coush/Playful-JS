@@ -9193,7 +9193,7 @@ const conceptLessons = [
       wrong: "Not quite. import() loads asynchronously and returns a Promise.",
     },
   },
-];
+].filter((lesson) => !["array-map", "reduce"].includes(lesson.id));
 
 const lessonOrder = [
   "values-and-wires",
@@ -9226,10 +9226,8 @@ const lessonOrder = [
   "callbacks",
   "callbacks-practical",
   "foreach-practical",
-  "array-map",
   "map-practical",
   "filter-practical",
-  "reduce",
   "reduce-practical",
   "objects-and-properties",
   "objects-practical",
@@ -9363,12 +9361,12 @@ const lessonModeContent = Array.from(document.querySelectorAll(".lesson-mode-con
 
 const chapterGroups = [
   { label: "Foundations and decisions", from: 1, to: 14 },
-  { label: "Strings, loops, and lists", from: 15, to: 35 },
-  { label: "Objects, this, and classes", from: 36, to: 52 },
-  { label: "TypeScript bridge", from: 53, to: 56 },
-  { label: "Modern JavaScript patterns", from: 57, to: 73 },
-  { label: "Apps, state, and async work", from: 74, to: 85 },
-  { label: "Production tools and built-ins", from: 86, to: 97 },
+  { label: "Strings, loops, and lists", from: 15, to: 33 },
+  { label: "Objects, this, and classes", from: 34, to: 50 },
+  { label: "TypeScript bridge", from: 51, to: 54 },
+  { label: "Modern JavaScript patterns", from: 55, to: 71 },
+  { label: "Apps, state, and async work", from: 72, to: 83 },
+  { label: "Production tools and built-ins", from: 84, to: 95 },
 ];
 
 const toneClasses = {
