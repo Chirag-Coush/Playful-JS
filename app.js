@@ -2123,79 +2123,150 @@ const practicalLessons = [
     id: "this-practical",
     section: "Objects and app data",
     number: "Practical 27",
-    title: "What is this?",
-    universeTitle: "this points to the object receiving the method call",
+    title: "The Call Chooses this",
+    universeTitle: "The receiver of each method call becomes this",
     intro:
-      "this lets a method read or change data on the object that received the call. It shows up in profile objects, class instances, UI components, and browser APIs.",
-    code: ['let user = { name: "Ada", greet() { return this.name; } };', "let result = user.greet();"],
+      "The same function can be stored on several objects. Each method call supplies its own receiving object as this. Apps and libraries use this in class methods so one function can work with different instances.",
+    code: [
+      "function greet() { return this.name; }",
+      'let ada = { name: "Ada", greet: greet };',
+      'let grace = { name: "Grace", greet: greet };',
+      "let first = ada.greet();",
+      "let second = grace.greet();",
+    ],
+    playgroundCode: [
+      'let ada = { name: "Ada", greet() { return this.name; } };',
+      'let grace = { name: "Grace", greet: ada.greet };',
+      "let first = ada.greet();",
+      "let second = grace.greet();",
+    ],
     legend: ["variable", "object", "property", "value"],
     nodes: {
-      user: { label: "user", kind: "variable-wide", x: 14, y: 40 },
-      userObj: { label: "{ }", kind: "object", x: 38, y: 40 },
-      ada: { label: '"Ada"', kind: "string", x: 70, y: 28 },
-      greetFn: { label: "fn", kind: "object", x: 70, y: 52 },
-      thisVar: { label: "this", kind: "variable-wide", x: 38, y: 76 },
-      result: { label: "result", kind: "variable-wide", x: 14, y: 88 },
+      greet: { label: "greet", kind: "variable-wide", x: 10, y: 12 },
+      greetFn: { label: "fn", kind: "object", x: 52, y: 48 },
+      ada: { label: "ada", kind: "variable-wide", x: 10, y: 36 },
+      adaObj: { label: "{ }", kind: "object", x: 30, y: 36 },
+      adaText: { label: '"Ada"', kind: "string", x: 80, y: 28 },
+      grace: { label: "grace", kind: "variable-wide", x: 10, y: 70 },
+      graceObj: { label: "{ }", kind: "object", x: 30, y: 70 },
+      graceText: { label: '"Grace"', kind: "string", x: 80, y: 66 },
+      thisVar: { label: "this", kind: "variable-wide", x: 52, y: 82 },
+      first: { label: "first", kind: "variable-wide", x: 80, y: 10 },
+      second: { label: "second", kind: "variable-wide", x: 80, y: 78 },
     },
     steps: [
       {
-        title: "Create object with a method",
-        description: "user points to an object with a name property and a greet method.",
+        title: "Create one function value",
+        description: "The greet declaration creates one function value. The greet binding points to it.",
         line: 0,
-        visible: ["user", "userObj", "ada", "greetFn"],
+        visible: ["greet", "greetFn"],
         wires: [
-          { id: "user-userObj", from: "user", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "cyan", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
-          { id: "userObj-greetFn", from: "userObj", to: "greetFn", label: "greet", tone: "cyan", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "greet-greetFn", from: "greet", to: "greetFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "top" } },
         ],
-        active: ["user", "userObj"],
+        active: ["greet", "greetFn"],
       },
       {
-        title: "Call as user.greet()",
-        description: "Because the call is user.greet(), this points to the user object during the method call.",
+        title: "Give Ada the function",
+        description: "ada points to an object. Its greet property points to the existing function value.",
         line: 1,
-        visible: ["user", "userObj", "ada", "greetFn", "thisVar"],
+        visible: ["greet", "greetFn", "ada", "adaObj", "adaText"],
         wires: [
-          { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
-          { id: "userObj-greetFn", from: "userObj", to: "greetFn", label: "greet", tone: "orange", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
-          { id: "thisVar-userObj", from: "thisVar", to: "userObj", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "greet-greetFn", from: "greet", to: "greetFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "top" } },
+          { id: "ada-adaObj", from: "ada", to: "adaObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adaObj-adaText", from: "adaObj", to: "adaText", label: "name", tone: "cyan", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "adaObj-greetFn", from: "adaObj", to: "greetFn", label: "greet", tone: "cyan", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left", offset: -12 } },
         ],
-        active: ["thisVar", "userObj"],
+        active: ["ada", "adaObj", "greetFn"],
       },
       {
-        title: "Read this.name",
-        description: 'this.name follows this to the user object, then follows name to "Ada".',
-        line: 0,
-        visible: ["user", "userObj", "ada", "greetFn", "thisVar"],
+        title: "Give Grace the same function",
+        description: "grace is a different object, but its greet property points to the same function value.",
+        line: 2,
+        visible: ["greet", "greetFn", "ada", "adaObj", "adaText", "grace", "graceObj", "graceText"],
         wires: [
-          { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "orange", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
-          { id: "userObj-greetFn", from: "userObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
-          { id: "thisVar-userObj", from: "thisVar", to: "userObj", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "greet-greetFn", from: "greet", to: "greetFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "top" } },
+          { id: "ada-adaObj", from: "ada", to: "adaObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adaObj-adaText", from: "adaObj", to: "adaText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "adaObj-greetFn", from: "adaObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left", offset: -12 } },
+          { id: "grace-graceObj", from: "grace", to: "graceObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "graceObj-graceText", from: "graceObj", to: "graceText", label: "name", tone: "cyan", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "graceObj-greetFn", from: "graceObj", to: "greetFn", label: "greet", tone: "cyan", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left", offset: 12 } },
         ],
-        active: ["thisVar", "ada"],
+        active: ["grace", "graceObj", "greetFn"],
       },
       {
-        title: "Store result",
-        description: 'The method returns "Ada", so result points to that string.',
-        line: 1,
-        visible: ["user", "userObj", "ada", "greetFn", "result"],
+        title: "Call ada.greet()",
+        description: "The object before the dot is ada, so this points to the Ada object during this call.",
+        line: 3,
+        visible: ["greetFn", "ada", "adaObj", "adaText", "grace", "graceObj", "graceText", "thisVar"],
         wires: [
-          { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
-          { id: "userObj-greetFn", from: "userObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
-          { id: "result-ada", from: "result", to: "ada", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left", offset: 16 } },
+          { id: "ada-adaObj", from: "ada", to: "adaObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adaObj-adaText", from: "adaObj", to: "adaText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "adaObj-greetFn", from: "adaObj", to: "greetFn", label: "greet", tone: "orange", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left", offset: -12 } },
+          { id: "grace-graceObj", from: "grace", to: "graceObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "graceObj-graceText", from: "graceObj", to: "graceText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "graceObj-greetFn", from: "graceObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left", offset: 12 } },
+          { id: "this-adaObj", from: "thisVar", to: "adaObj", tone: "orange", fromAnchor: { side: "left" }, toAnchor: { side: "bottom" } },
         ],
-        active: ["result", "ada"],
+        active: ["thisVar", "adaObj"],
+      },
+      {
+        title: "Store Ada's result",
+        description: 'this.name returns "Ada", so first points to that string value.',
+        line: 3,
+        visible: ["greetFn", "ada", "adaObj", "adaText", "grace", "graceObj", "graceText", "first"],
+        wires: [
+          { id: "ada-adaObj", from: "ada", to: "adaObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adaObj-adaText", from: "adaObj", to: "adaText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "adaObj-greetFn", from: "adaObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left", offset: -12 } },
+          { id: "grace-graceObj", from: "grace", to: "graceObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "graceObj-graceText", from: "graceObj", to: "graceText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "graceObj-greetFn", from: "graceObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left", offset: 12 } },
+          { id: "first-adaText", from: "first", to: "adaText", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+        ],
+        active: ["first", "adaText"],
+      },
+      {
+        title: "Call grace.greet()",
+        description: "The same function runs, but grace is before the dot, so this now points to the Grace object.",
+        line: 4,
+        visible: ["greetFn", "ada", "adaObj", "adaText", "grace", "graceObj", "graceText", "first", "thisVar"],
+        wires: [
+          { id: "ada-adaObj", from: "ada", to: "adaObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adaObj-adaText", from: "adaObj", to: "adaText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "adaObj-greetFn", from: "adaObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left", offset: -12 } },
+          { id: "grace-graceObj", from: "grace", to: "graceObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "graceObj-graceText", from: "graceObj", to: "graceText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "graceObj-greetFn", from: "graceObj", to: "greetFn", label: "greet", tone: "orange", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left", offset: 12 } },
+          { id: "first-adaText", from: "first", to: "adaText", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+          { id: "this-graceObj", from: "thisVar", to: "graceObj", tone: "orange", fromAnchor: { side: "left" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["thisVar", "graceObj"],
+      },
+      {
+        title: "Store Grace's result",
+        description: 'this.name now returns "Grace", so second points to that string value.',
+        line: 4,
+        visible: ["greetFn", "ada", "adaObj", "adaText", "grace", "graceObj", "graceText", "first", "second"],
+        wires: [
+          { id: "ada-adaObj", from: "ada", to: "adaObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adaObj-adaText", from: "adaObj", to: "adaText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "adaObj-greetFn", from: "adaObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left", offset: -12 } },
+          { id: "grace-graceObj", from: "grace", to: "graceObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "graceObj-graceText", from: "graceObj", to: "graceText", label: "name", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "graceObj-greetFn", from: "graceObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left", offset: 12 } },
+          { id: "first-adaText", from: "first", to: "adaText", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+          { id: "second-graceText", from: "second", to: "graceText", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["second", "graceText"],
       },
     ],
     quiz: {
-      prompt: "During user.greet(), what does this point to?",
-      options: ["the user object", "the string Ada", "the result variable"],
-      answer: "the user object",
-      correct: "Correct. In user.greet(), this points to the object before the dot.",
-      wrong: "Not quite. For a method call, this points to the object receiving the call.",
+      prompt: "During grace.greet(), what does this point to?",
+      options: ["the Grace object", "the greet function", "the Ada object"],
+      answer: "the Grace object",
+      correct: "Correct. The object receiving this call is grace.",
+      wrong: "Not quite. For this method call, the object before the dot is grace.",
     },
   },
   {
@@ -10581,8 +10652,18 @@ function parsePlayground(code) {
           return spreadValue?.props || [];
         }
 
-        const method = entry.match(/^(?:get\s+)?([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{[\s\S]*\}$/);
-        if (method) return [[method[1], addValue({ type: "function", label: method[0].startsWith("get ") ? "get" : "fn", raw: { kind: "function" } })]];
+        const method = entry.match(/^(get\s+)?([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{([\s\S]*)\}$/);
+        if (method) {
+          const [, getter, name, params, body] = method;
+          const returnOnly = body.trim().match(/^return\s+([\s\S]+?);?$/);
+          const definition = {
+            params: params.split(",").map((param) => param.trim()).filter(Boolean),
+            body: returnOnly ? returnOnly[1].trim() : body.trim(),
+            bodyKind: returnOnly ? "expression" : "statements",
+            closure: locals,
+          };
+          return [[name, makeFunctionValue(definition, getter ? "get" : "fn")]];
+        }
 
         const [keyPart, valuePart] = splitObjectEntry(entry);
         if (!keyPart || !valuePart) throw new Error("Object entries need key: value pairs.");
@@ -10757,6 +10838,38 @@ function parsePlayground(code) {
     if (pushMatch) {
       const [, arrayName, argsSource] = pushMatch;
       return pushArrayItems(arrayName, argsSource, locals);
+    }
+
+    const methodCallMatch = expr.match(/^([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\((.*)\)$/);
+    if (methodCallMatch) {
+      const [, objectName, methodName, argsSource] = methodCallMatch;
+      let receiverId;
+      try {
+        receiverId = readVariable(objectName, locals);
+      } catch {
+        receiverId = null;
+      }
+      const receiver = getValue(receiverId);
+      const functionId = receiver?.props?.find(([key]) => key === methodName)?.[1];
+      const functionValue = getValue(functionId);
+      const fn = functionValue?.raw?.definition;
+
+      if (fn) {
+        const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
+        const nextLocals = createScope(fn.closure);
+        setBinding(nextLocals, "this", "this", receiverId);
+        fn.params.forEach((param, index) => setBinding(nextLocals, param, "param", argIds[index]));
+
+        if (fn.bodyKind === "statements") {
+          for (const child of splitStatements(fn.body)) {
+            const completion = executeStatement(child, nextLocals);
+            if (completion?.type === "return") return completion.valueId;
+          }
+          return addValue({ ...makePrimitiveValue(undefined), raw: undefined });
+        }
+
+        return evaluateExpression(fn.body, nextLocals);
+      }
     }
 
     const propertyMatch = expr.match(/^([A-Za-z_$][\w$]*)(\.[A-Za-z_$][\w$]*)+$/);

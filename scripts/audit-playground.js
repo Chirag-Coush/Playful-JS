@@ -62,6 +62,12 @@ const snippets = [
     expectedLabels: ["add", "fn", "result", "7"],
   },
   {
+    name: "shared method receives a different this for each call",
+    code: 'let ada = { name: "Ada", greet() { return this.name; } };\nlet grace = { name: "Grace", greet: ada.greet };\nlet first = ada.greet();\nlet second = grace.greet();',
+    expectedLabels: ["ada", "grace", "first", "second", '"Ada"', '"Grace"'],
+    missingLabels: ["ada.greet()", "grace.greet()"],
+  },
+  {
     name: "returned function keeps and updates closure state",
     code: "function makeCounter() {\n  let count = 0;\n  return function next() {\n    count = count + 1;\n    return count;\n  };\n}\nlet next = makeCounter();\nlet current = next();",
     expectedLabels: ["makeCounter", "next", "fn", "current", "1"],
