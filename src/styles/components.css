@@ -293,6 +293,12 @@
     background-color: white !important;
   }
 
+  .value-wide-node {
+    @apply min-h-20 min-w-32 rounded-full px-5 text-4xl max-sm:min-h-16 max-sm:min-w-28 max-sm:px-4 max-sm:text-3xl;
+    width: fit-content;
+    background-color: white !important;
+  }
+
   .object-node {
     @apply size-24 rounded-full bg-slate-800 text-4xl text-white max-sm:size-20 max-sm:text-3xl;
   }
@@ -313,10 +319,14 @@
   }
 
   .object-node .node-text,
-  .object-large-node .node-text,
   .value-node .node-text {
     @apply overflow-hidden text-ellipsis;
     max-width: 85%;
+  }
+
+  .object-large-node .node-text,
+  .value-wide-node .node-text {
+    max-width: none;
   }
 
   .wire {

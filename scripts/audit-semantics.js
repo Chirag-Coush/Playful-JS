@@ -51,7 +51,11 @@ requirePattern("methods-and-this", /"Hi, " \+ this\.name/, "must demonstrate beh
 requirePattern("this-practical", /ada\.greet\(\).*grace\.greet\(\)/s, "must teach that each method-call receiver supplies its own this value.");
 requirePattern("this-practical", /same function/i, "must distinguish shared function identity from the receiving objects.");
 requirePattern("inheritance", /class User/, "must define the parent class used by extends.");
+requirePattern("inheritance", /let message = sam\.greet\(\)/, "must execute and store the inherited method result.");
+requirePattern("static-methods-practical", /fromInput.*trim\(\)/s, "must show why a class-level helper is useful before constructing an instance.");
 requirePattern("typescript-unions", /let state: State =/, "must create the runtime state object shown in the diagram.");
+requirePattern("typescript-unions", /let message = "".*message = state\.name/s, "must show the narrowed branch producing an observable result.");
+requirePattern("typescript-object-types", /let canEdit = user\.admin \?\? false/, "must store the optional-property fallback result.");
 requirePattern("rendering-from-data", /let list = document\.querySelector/, "must create the list binding shown in the diagram.");
 requirePattern("rendering-from-data", /function createItem/, "must define the helper that map calls.");
 requirePattern("debouncing", /onInput\("a"\).*onInput\("ab"\)/s, "must execute the input calls shown in the walkthrough.");
@@ -63,7 +67,12 @@ requirePattern("testing-functions", /let expected =/, "must create the expected 
 requirePattern("nan", /let invalid = Number\.isNaN/, "must store the boolean result shown in the diagram.");
 requirePattern("regular-expressions", /let pattern = \/@\//, "must create the RegExp binding shown in the diagram.");
 requirePattern("dates", /internal \[\[DateValue\]\]/i, "must distinguish Date's internal slot from an ordinary property.");
+requirePattern("dates", /let year = created\.getUTCFullYear\(\)/, "must store the Date method result shown in the diagram.");
 rejectPattern("dates", /label: "wraps"/i, "must not draw Date internal state as an ordinary property wire.");
+requirePattern("bind-this", /let message = bound\(\)/, "must store the bound function's result.");
+requirePattern("fetch-and-json", /let name = user\.name/, "must show parsed network data being read into an application binding.");
+requirePattern("map-collection", /let cachedName = cache\.get\(user\)/, "must store the value retrieved by object identity.");
+requirePattern("set-collection", /let tagCount = tags\.size/, "must make the Set's uniqueness observable.");
 requirePattern("private-fields", /new Counter\(\)/, "must create the instance shown in the diagram.");
 requirePattern("private-fields", /counter\.increment\(\)/, "must execute the mutation shown in the diagram.");
 requirePattern("event-listeners", /browser-managed listener state/i, "must distinguish listener registration from an ordinary object property.");

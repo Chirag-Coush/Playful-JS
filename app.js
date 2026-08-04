@@ -2425,8 +2425,8 @@ const practicalLessons = [
     title: "Static Methods",
     universeTitle: "Static helpers live on the class",
     intro:
-      "Static methods are useful for helpers related to a class, such as parsing, formatting, or validation.",
-    code: ["class User {", "  constructor(name) { this.name = name; }", "  static fromName(name) { return new User(name); }", "}", 'let ada = User.fromName("Ada");'],
+      "Static methods are useful for class-related work that does not belong to one existing instance. Here the class cleans external text before it creates a User, a common pattern for parsing form or API data.",
+    code: ["class User {", "  constructor(name) { this.name = name; }", "  static fromInput(input) { return new User(input.trim()); }", "}", 'let ada = User.fromInput("  Ada  ");'],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 14, y: 38 },
@@ -2439,34 +2439,34 @@ const practicalLessons = [
     steps: [
       {
         title: "Class has a static property",
-        description: "The static method is a property on the class value, not on each user instance.",
+        description: "fromInput is a property on the class value, not on each user instance.",
         line: 2,
         visible: ["User", "classObj", "fromName"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromName", tone: "cyan", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromInput", tone: "cyan", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["classObj", "fromName"],
       },
       {
-        title: "Call User.fromName",
-        description: 'User.fromName("Ada") follows the static property and calls that function.',
+        title: "Call User.fromInput",
+        description: 'User.fromInput("  Ada  ") follows the static property and passes the untrusted input string.',
         line: 4,
         visible: ["User", "classObj", "fromName", "adaText"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromName", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromInput", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["fromName", "adaText"],
       },
       {
         title: "Helper returns an instance",
-        description: 'The helper calls new User(name). The constructor creates a User instance whose name property points to "Ada".',
+        description: 'input.trim() first creates the clean string "Ada". The helper then passes that result to new User, which creates the instance.',
         line: 2,
         visible: ["User", "classObj", "fromName", "adaText", "instance"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromName", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromInput", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "instance-adaText", from: "instance", to: "adaText", label: "name", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["instance", "adaText"],
@@ -2478,7 +2478,7 @@ const practicalLessons = [
         visible: ["User", "classObj", "fromName", "adaText", "instance", "ada"],
         wires: [
           { id: "User-classObj", from: "User", to: "classObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromName", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "classObj-fromName", from: "classObj", to: "fromName", label: "fromInput", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "instance-adaText", from: "instance", to: "adaText", label: "name", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "ada-instance", from: "ada", to: "instance", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "bottom" } },
         ],
@@ -2809,7 +2809,7 @@ const practicalLessons = [
     universeTitle: "Object types describe expected property wires",
     intro:
       "An object type describes the properties TypeScript expects an object to have. This description is checked before runtime; it does not create the JavaScript object. Apps use object types for props, form data, and API records.",
-    code: ["type User = { name: string; admin?: boolean };", 'let user: User = { name: "Ada" };', "user.admin ?? false;"],
+    code: ["type User = { name: string; admin?: boolean };", 'let user: User = { name: "Ada" };', "let canEdit = user.admin ?? false;"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       user: { label: "user", kind: "variable-wide", x: 16, y: 38 },
@@ -2817,6 +2817,7 @@ const practicalLessons = [
       ada: { label: '"Ada"', kind: "string", x: 72, y: 38 },
       missing: { label: "undefined", kind: "string", x: 44, y: 70 },
       falseValue: { label: "false", kind: "string", x: 72, y: 70 },
+      canEdit: { label: "canEdit", kind: "variable-wide", x: 16, y: 78 },
     },
     steps: [
       {
@@ -2858,9 +2859,11 @@ const practicalLessons = [
         description:
           "Because user.admin is undefined, ?? chooses false. The object itself did not gain an admin property.",
         line: 2,
-        visible: ["userObj", "missing", "falseValue"],
-        wires: [],
-        active: ["falseValue"],
+        visible: ["userObj", "missing", "falseValue", "canEdit"],
+        wires: [
+          { id: "canEdit-falseValue", from: "canEdit", to: "falseValue", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["canEdit", "falseValue"],
       },
     ],
     quiz: {
@@ -2879,14 +2882,15 @@ const practicalLessons = [
     universeTitle: "Unions narrow after checks",
     intro:
       "A union type says a value may have one of several allowed types or object shapes. A check such as state.status === \"success\" narrows the possibilities, letting TypeScript know which shape the following code has. This is common in loading and error state.",
-    code: ["type State = { status: 'loading' } | { status: 'success'; name: string };", "let state: State = { status: 'success', name: 'Ada' };", "if (state.status === 'success') {", "  show(state.name);", "}"],
+    code: ["type State = { status: 'loading' } | { status: 'success'; name: string };", "let state: State = { status: 'success', name: 'Ada' };", 'let message = "";', "if (state.status === 'success') {", "  message = state.name;", "}"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       state: { label: "state", kind: "variable-wide", x: 14, y: 42 },
       stateObj: { label: "{ }", kind: "object", x: 40, y: 42 },
       success: { label: '"success"', kind: "string", x: 70, y: 30 },
       ada: { label: '"Ada"', kind: "string", x: 70, y: 54 },
-      result: { label: "show()", kind: "variable-wide", x: 40, y: 82 },
+      result: { label: "message", kind: "variable-wide", x: 40, y: 82 },
+      empty: { label: '""', kind: "string", x: 70, y: 82 },
     },
     steps: [
       {
@@ -2904,10 +2908,24 @@ const practicalLessons = [
         notes: [{ text: "TypeScript knows State can be loading or success", x: 50, y: 16 }],
       },
       {
+        title: "Create the output variable",
+        description:
+          "message starts as an empty string. The success branch will reassign it only after the status check proves that name exists.",
+        line: 2,
+        visible: ["state", "stateObj", "success", "ada", "result", "empty"],
+        wires: [
+          { id: "state-stateObj", from: "state", to: "stateObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "stateObj-success", from: "stateObj", to: "success", label: "status", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
+          { id: "stateObj-ada", from: "stateObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right", offset: 12 }, toAnchor: { side: "left" } },
+          { id: "result-empty", from: "result", to: "empty", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["result", "empty"],
+      },
+      {
         title: "Check the status property",
         description:
           'state.status === "success" reads the status property and narrows the type for the if block.',
-        line: 2,
+        line: 3,
         visible: ["state", "stateObj", "success", "ada"],
         wires: [
           { id: "state-stateObj", from: "state", to: "stateObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -2920,7 +2938,7 @@ const practicalLessons = [
         title: "Narrowed code can read name",
         description:
           "Inside the success branch, TypeScript allows state.name because that shape includes the name property.",
-        line: 3,
+        line: 4,
         visible: ["stateObj", "success", "ada", "result"],
         wires: [
           { id: "stateObj-success", from: "stateObj", to: "success", label: "status", tone: "slate", fromAnchor: { side: "right", offset: -12 }, toAnchor: { side: "left" } },
@@ -6362,7 +6380,7 @@ const conceptLessons = [
       "let user = { name: \"Ada\" };",
       "function sayHi() { return this.name; }",
       "let bound = sayHi.bind(user);",
-      "bound();",
+      "let message = bound();",
     ],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
@@ -6374,6 +6392,7 @@ const conceptLessons = [
       bound: { label: "bound", kind: "variable-wide", x: 14, y: 82 },
       boundFn: { label: "fn", kind: "object", x: 42, y: 82 },
       result: { label: '"Ada"', kind: "string", x: 72, y: 82 },
+      message: { label: "message", kind: "variable-wide", x: 72, y: 62 },
     },
     steps: [
       {
@@ -6421,15 +6440,15 @@ const conceptLessons = [
         description:
           'bound() can be called without an object. It still uses user as this, so it returns "Ada".',
         line: 3,
-        visible: ["user", "userObj", "ada", "bound", "boundFn", "result"],
+        visible: ["user", "userObj", "ada", "bound", "boundFn", "message", "result"],
         wires: [
           { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "name-ada", from: "userObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "bound-boundFn", from: "bound", to: "boundFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "boundFn-userObj", from: "boundFn", to: "userObj", label: "this", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
-          { id: "bound-result", from: "boundFn", to: "result", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "message-result", from: "message", to: "result", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
         ],
-        active: ["boundFn", "result"],
+        active: ["boundFn", "message", "result"],
       },
     ],
     quiz: {
@@ -7236,8 +7255,8 @@ const conceptLessons = [
     title: "Fetch and JSON",
     universeTitle: "Network data arrives through Promises",
     intro:
-      "This is module code, where top-level await is allowed. fetch starts a request and returns a Promise for a Response. response.json() reads the body and returns another Promise for parsed JavaScript data.",
-    code: ["let response = await fetch('/user.json');", "let user = await response.json();", "user.name;"],
+      'This is module code, where top-level await is allowed. fetch returns a Promise for a Response, and response.json() returns another Promise for parsed data. In this example, /user.json responds with { "name": "Ada" }.',
+    code: ["let response = await fetch('/user.json');", "let user = await response.json();", "let name = user.name;"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       fetchCall: { label: "fetch()", kind: "variable-wide", x: 16, y: 32 },
@@ -7248,6 +7267,7 @@ const conceptLessons = [
       user: { label: "user", kind: "variable-wide", x: 16, y: 82 },
       userObj: { label: "{ }", kind: "object", x: 42, y: 82 },
       ada: { label: '"Ada"', kind: "string", x: 70, y: 82 },
+      name: { label: "name", kind: "variable-wide", x: 16, y: 94 },
     },
     steps: [
       {
@@ -7295,6 +7315,19 @@ const conceptLessons = [
           { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["user", "userObj", "ada"],
+      },
+      {
+        title: "Read the data you need",
+        description:
+          'user.name reads the parsed object property, and name points to the returned string "Ada".',
+        line: 2,
+        visible: ["user", "userObj", "ada", "name"],
+        wires: [
+          { id: "user-userObj", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userObj-ada", from: "userObj", to: "ada", label: "name", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "name-ada", from: "name", to: "ada", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["name", "ada"],
       },
     ],
     quiz: {
@@ -7626,7 +7659,7 @@ const conceptLessons = [
     universeTitle: "extends links prototypes",
     intro:
       "Inheritance lets one class reuse methods from another. It works by linking their prototype objects, so JavaScript can continue looking in the parent prototype when a method is missing from the child. You may see it in custom errors and older libraries.",
-    code: ["class User { greet() { return 'Hi'; } }", "class Admin extends User {", "  deletePost(post) {", "    post.remove();", "  }", "}", "let sam = new Admin();"],
+    code: ["class User { greet() { return 'Hi'; } }", "class Admin extends User {", "  deletePost(post) {", "    post.remove();", "  }", "}", "let sam = new Admin();", "let message = sam.greet();"],
     legend: ["variable", "object", "property", "wire"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 16, y: 30 },
@@ -7635,8 +7668,10 @@ const conceptLessons = [
       Admin: { label: "Admin", kind: "variable-wide", x: 16, y: 58 },
       adminProto: { label: "P", kind: "object", x: 42, y: 58 },
       deletePost: { label: "deletePost", kind: "variable-wide", x: 72, y: 58 },
-      sam: { label: "sam", kind: "variable-wide", x: 16, y: 84 },
-      samObj: { label: "{ }", kind: "object", x: 42, y: 84 },
+      sam: { label: "sam", kind: "variable-wide", x: 16, y: 70 },
+      samObj: { label: "{ }", kind: "object", x: 58, y: 70 },
+      message: { label: "message", kind: "variable-wide", x: 32, y: 60 },
+      hi: { label: '"Hi"', kind: "string", x: 64, y: 60 },
     },
     steps: [
       {
@@ -7690,13 +7725,38 @@ const conceptLessons = [
         ],
         active: ["sam", "samObj"],
       },
+      {
+        title: "Look up the inherited method",
+        description:
+          "sam has no own greet property. JavaScript checks Admin.prototype, then follows its [[Prototype]] link to User.prototype and finds greet there.",
+        line: 7,
+        visible: ["userProto", "greet", "adminProto", "sam", "samObj"],
+        wires: [
+          { id: "userProto-greet", from: "userProto", to: "greet", label: "greet", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "adminProto-userProto", from: "adminProto", to: "userProto", label: "[[Prototype]]", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "sam-samObj", from: "sam", to: "samObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "samObj-adminProto", from: "samObj", to: "adminProto", label: "[[Prototype]]", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["samObj", "adminProto", "userProto", "greet"],
+      },
+      {
+        title: "Call and store the inherited result",
+        description:
+          'The inherited greet function runs with sam as this and returns "Hi". message points to that returned string.',
+        line: 7,
+        visible: ["message", "hi"],
+        wires: [
+          { id: "message-hi", from: "message", to: "hi", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["message", "hi"],
+      },
     ],
     quiz: {
-      prompt: "What does extends mainly connect?",
-      options: ["prototype objects", "two primitive strings", "CSS files"],
-      answer: "prototype objects",
-      correct: "Correct. extends sets up a prototype chain between classes.",
-      wrong: "Not quite. In JavaScript, inheritance is prototype linkage.",
+      prompt: "Where does sam.greet find greet?",
+      options: ["User.prototype", "sam's own properties", "the class name string"],
+      answer: "User.prototype",
+      correct: "Correct. Lookup follows the prototype chain and finds greet on User.prototype.",
+      wrong: "Not quite. sam has no own greet property, so lookup continues through the linked prototypes.",
     },
   },
   {
@@ -8985,14 +9045,15 @@ const conceptLessons = [
     universeTitle: "Map stores key-value wires",
     intro:
       "A Map collection stores key-value pairs. Unlike a plain object's property names, Map keys can be values such as objects. This is useful for caches that attach data to a particular object identity.",
-    code: ["let cache = new Map();", "let user = {};", 'cache.set(user, "Ada");', "cache.get(user);"],
+    code: ["let cache = new Map();", "let user = {};", 'cache.set(user, "Ada");', "let cachedName = cache.get(user);"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       cache: { label: "cache", kind: "variable-wide", x: 16, y: 34 },
-      mapObj: { label: "Map", kind: "object", x: 42, y: 34 },
+      mapObj: { label: "Map", kind: "object-large", x: 42, y: 34 },
       user: { label: "user", kind: "variable-wide", x: 16, y: 68 },
       userObj: { label: "{ }", kind: "object", x: 42, y: 68 },
       ada: { label: '"Ada"', kind: "string", x: 72, y: 50 },
+      cachedName: { label: "cachedName", kind: "variable-wide", x: 72, y: 78 },
     },
     steps: [
       {
@@ -9035,12 +9096,13 @@ const conceptLessons = [
         description:
           "cache.get(user) finds the entry by the same object identity and returns the stored value.",
         line: 3,
-        visible: ["mapObj", "userObj", "ada"],
+        visible: ["mapObj", "userObj", "ada", "cachedName"],
         wires: [
           { id: "mapObj-userObj", from: "mapObj", to: "userObj", label: "key", tone: "cyan", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
-          { id: "mapObj-ada", from: "mapObj", to: "ada", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "mapObj-ada", from: "mapObj", to: "ada", label: "value", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "cachedName-ada", from: "cachedName", to: "ada", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
-        active: ["ada"],
+        active: ["cachedName", "ada"],
       },
     ],
     quiz: {
@@ -9058,13 +9120,15 @@ const conceptLessons = [
     universeTitle: "Set keeps unique values",
     intro:
       "A Set collection stores each value only once. Use it when you care whether a value is present, such as unique tags or selected IDs, rather than where it appears in an array.",
-    code: ["let tags = new Set();", 'tags.add("js");', 'tags.add("js");'],
+    code: ["let tags = new Set();", 'tags.add("js");', 'tags.add("js");', "let tagCount = tags.size;"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       tags: { label: "tags", kind: "variable-wide", x: 16, y: 42 },
       setObj: { label: "Set", kind: "object", x: 42, y: 42 },
       js: { label: '"js"', kind: "string", x: 72, y: 42 },
       duplicate: { label: "same value", kind: "string", x: 72, y: 72 },
+      tagCount: { label: "tagCount", kind: "variable-wide", x: 16, y: 82 },
+      one: { label: "1", kind: "value", x: 46, y: 82 },
     },
     steps: [
       {
@@ -9100,6 +9164,19 @@ const conceptLessons = [
           { id: "setObj-js", from: "setObj", to: "js", label: "has", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
         active: ["js"],
+      },
+      {
+        title: "Read the unique count",
+        description:
+          "tags.size returns 1 because adding the same value twice did not create a second entry.",
+        line: 3,
+        visible: ["tags", "setObj", "js", "tagCount", "one"],
+        wires: [
+          { id: "tags-setObj", from: "tags", to: "setObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "setObj-js", from: "setObj", to: "js", label: "has", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "tagCount-one", from: "tagCount", to: "one", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["tagCount", "one"],
       },
     ],
     quiz: {
@@ -9249,12 +9326,13 @@ const conceptLessons = [
     universeTitle: "Date objects wrap a point in time",
     intro:
       "A Date object represents one point in time as a stored timestamp. Methods calculate year, month, or other parts for a chosen timezone. Apps use dates for created times, schedules, and deadlines.",
-    code: ['let created = new Date("2026-01-01T00:00:00Z");', "created.getUTCFullYear();"],
+    code: ['let created = new Date("2026-01-01T00:00:00Z");', "let year = created.getUTCFullYear();"],
     legend: ["variable", "object", "wire", "value"],
     nodes: {
       created: { label: "created", kind: "variable-wide", x: 16, y: 42 },
       dateObj: { label: "dt", kind: "object", x: 46, y: 42 },
-      year: { label: "2026", kind: "value", x: 72, y: 74 },
+      year: { label: "2026", kind: "value-wide", x: 72, y: 74 },
+      yearVar: { label: "year", kind: "variable-wide", x: 16, y: 82 },
     },
     steps: [
       {
@@ -9285,12 +9363,12 @@ const conceptLessons = [
         description:
           "getUTCFullYear reads the Date object and returns the number 2026.",
         line: 1,
-        visible: ["created", "dateObj", "year"],
+        visible: ["created", "dateObj", "year", "yearVar"],
         wires: [
           { id: "created-dateObj", from: "created", to: "dateObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "dateObj-year", from: "dateObj", to: "year", label: "returns", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "yearVar-year", from: "yearVar", to: "year", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
         ],
-        active: ["year"],
+        active: ["yearVar", "year"],
       },
     ],
     quiz: {
@@ -10571,6 +10649,36 @@ function parsePlayground(code) {
   const makeFunctionValue = (definition, label = "fn") =>
     addValue({ type: "function", label, raw: { kind: "function", definition } });
 
+  const parseClassMethods = (body, closure) => {
+    const methods = new Map();
+    const pattern = /(static\s+)?(get\s+)?([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{([^{}]*)\}/g;
+    let match;
+    while ((match = pattern.exec(body))) {
+      const [, staticKeyword, getterKeyword, name, params, methodBody] = match;
+      const returnOnly = methodBody.trim().match(/^return\s+([\s\S]+?);?$/);
+      methods.set(name, {
+        name,
+        static: Boolean(staticKeyword),
+        getter: Boolean(getterKeyword),
+        params: params.split(",").map((param) => param.trim()).filter(Boolean),
+        body: returnOnly ? returnOnly[1].trim() : methodBody.trim(),
+        bodyKind: returnOnly ? "expression" : "statements",
+        closure,
+      });
+    }
+    return methods;
+  };
+
+  const findClassMethod = (classDefinition, name) => {
+    let current = classDefinition;
+    while (current) {
+      const method = current.methods?.get(name);
+      if (method && !method.static) return method;
+      current = current.parent;
+    }
+    return null;
+  };
+
   const syncClosureProps = (value, definition) => {
     if (!definition?.closure) return;
     const props = [];
@@ -10610,6 +10718,45 @@ function parsePlayground(code) {
   const evaluateExpression = (expression, locals = new Map()) => {
     const expr = expression.trim();
 
+    if (expr.startsWith("await ")) {
+      return evaluateExpression(expr.slice(6), locals);
+    }
+
+    const newExpression = expr.match(/^new\s+([A-Za-z_$][\w$]*)\s*\((.*)\)$/);
+    if (newExpression) {
+      const [, className, argsSource] = newExpression;
+      if (className === "Set") {
+        return addValue({ type: "object", label: "Set", raw: { kind: "set", itemIds: [] }, props: [] });
+      }
+      if (className === "Map") {
+        return addValue({ type: "object", label: "Map", raw: { kind: "map", entries: [] }, props: [] });
+      }
+      if (className === "Date") {
+        const argId = argsSource.trim() ? evaluateExpression(argsSource, locals) : null;
+        const dateValue = new Date(argId ? getRawValue(argId) : undefined);
+        return addValue({ type: "object", label: "dt", raw: { kind: "date", dateValue }, props: [] });
+      }
+      let classValue;
+      try {
+        classValue = getValue(readVariable(className, locals));
+      } catch {
+        return makePlaceholderValue(expr);
+      }
+      const classDefinition = classValue?.raw?.classDefinition;
+      if (!classDefinition) return makePlaceholderValue(expr);
+
+      const instanceId = addValue({ type: "object", label: "{ }", raw: { classDefinition }, props: [] });
+      const constructorDefinition = findClassMethod(classDefinition, "constructor");
+      if (constructorDefinition) {
+        const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
+        const constructorLocals = createScope(constructorDefinition.closure);
+        setBinding(constructorLocals, "this", "this", instanceId);
+        constructorDefinition.params.forEach((param, index) => setBinding(constructorLocals, param, "param", argIds[index]));
+        splitStatements(constructorDefinition.body).forEach((child) => executeStatement(child, constructorLocals));
+      }
+      return instanceId;
+    }
+
     const functionExpression = expr.match(/^function\s*(?:[A-Za-z_$][\w$]*)?\s*\(([^)]*)\)\s*\{([\s\S]*)\}$/);
     if (functionExpression) {
       const [, params, body] = functionExpression;
@@ -10646,6 +10793,21 @@ function parsePlayground(code) {
       return addValue({ ...makePrimitiveValue(undefined), raw: undefined });
     }
 
+    const fetchMatch = expr.match(/^fetch\((.*)\)$/);
+    if (fetchMatch) {
+      const [urlSource] = splitTopLevel(fetchMatch[1]);
+      const urlId = evaluateExpression(urlSource, locals);
+      const isUserFixture = getRawValue(urlId) === "/user.json";
+      const nameId = isUserFixture ? addValue({ ...makePrimitiveValue("Ada"), raw: "Ada" }) : null;
+      const bodyId = addValue({
+        type: "object",
+        label: "{ }",
+        raw: isUserFixture ? { name: "Ada" } : {},
+        props: isUserFixture ? [["name", nameId]] : [],
+      });
+      return addValue({ type: "object", label: "Response", raw: { kind: "response", bodyId }, props: [] });
+    }
+
     if (locals.has(expr)) return readVariable(expr, locals);
 
     const ternaryMatch = findTopLevelTernary(expr);
@@ -10661,6 +10823,15 @@ function parsePlayground(code) {
     if (logicalOr) {
       const leftId = evaluateExpression(expr.slice(0, logicalOr.index), locals);
       return getRawValue(leftId) ? leftId : evaluateExpression(expr.slice(logicalOr.index + 2), locals);
+    }
+
+    const nullishCoalescing = findTopLevelOperator(expr, ["??"]);
+    if (nullishCoalescing) {
+      const leftId = evaluateExpression(expr.slice(0, nullishCoalescing.index), locals);
+      const left = getRawValue(leftId);
+      return left === null || left === undefined
+        ? evaluateExpression(expr.slice(nullishCoalescing.index + 2), locals)
+        : leftId;
     }
 
     const logicalAnd = findTopLevelOperator(expr, ["&&"]);
@@ -10896,9 +11067,43 @@ function parsePlayground(code) {
         receiverId = null;
       }
       const receiver = getValue(receiverId);
+      if (receiver?.raw?.kind === "set" && methodName === "add") {
+        const itemId = evaluateExpression(argsSource, locals);
+        if (!receiver.raw.itemIds.some((id) => Object.is(getRawValue(id), getRawValue(itemId)))) {
+          receiver.raw.itemIds.push(itemId);
+          receiver.props = receiver.raw.itemIds.map((id, index) => [String(index), id]);
+        }
+        return receiverId;
+      }
+      if (receiver?.raw?.kind === "map" && methodName === "set") {
+        const [keySource, valueSource] = splitTopLevel(argsSource);
+        const keyId = evaluateExpression(keySource, locals);
+        const valueId = evaluateExpression(valueSource, locals);
+        const existing = receiver.raw.entries.find((entry) => entry.keyId === keyId);
+        if (existing) existing.valueId = valueId;
+        else receiver.raw.entries.push({ keyId, valueId });
+        receiver.props = receiver.raw.entries.flatMap((entry, index) => [[`key ${index}`, entry.keyId], [`value ${index}`, entry.valueId]]);
+        return receiverId;
+      }
+      if (receiver?.raw?.kind === "map" && methodName === "get") {
+        const keyId = evaluateExpression(argsSource, locals);
+        return receiver.raw.entries.find((entry) => entry.keyId === keyId)?.valueId || addValue({ ...makePrimitiveValue(undefined), raw: undefined });
+      }
+      if (receiver?.raw?.kind === "date" && methodName === "getUTCFullYear") {
+        const year = receiver.raw.dateValue.getUTCFullYear();
+        return addValue({ ...makePrimitiveValue(year), raw: year });
+      }
+      if (receiver?.raw?.kind === "response" && methodName === "json") {
+        return receiver.raw.bodyId;
+      }
+      if (receiver?.type === "function" && methodName === "bind") {
+        const boundThisId = evaluateExpression(argsSource, locals);
+        const definition = receiver.raw.definition;
+        return makeFunctionValue({ ...definition, boundThisId });
+      }
       const functionId = receiver?.props?.find(([key]) => key === methodName)?.[1];
       const functionValue = getValue(functionId);
-      const fn = functionValue?.raw?.definition;
+      const fn = functionValue?.raw?.definition || findClassMethod(receiver?.raw?.classDefinition, methodName);
 
       if (fn) {
         const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
@@ -10929,9 +11134,13 @@ function parsePlayground(code) {
       }
       properties.forEach((property) => {
         const objectValue = getValue(currentId);
+        if (objectValue?.raw?.kind === "set" && property === "size") {
+          currentId = addValue({ ...makePrimitiveValue(objectValue.raw.itemIds.length), raw: objectValue.raw.itemIds.length });
+          return;
+        }
         const target = objectValue?.props?.find(([key]) => key === property)?.[1];
         if (!target) {
-          currentId = makePlaceholderValue(expr);
+          currentId = addValue({ ...makePrimitiveValue(undefined), raw: undefined });
           return;
         }
         currentId = target;
@@ -10952,6 +11161,7 @@ function parsePlayground(code) {
       if (!fn) return makePlaceholderValue(expr);
       const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
       const nextLocals = createScope(fn.closure);
+      if (fn.boundThisId) setBinding(nextLocals, "this", "this", fn.boundThisId);
       fn.params.forEach((param, index) => setBinding(nextLocals, param, "param", argIds[index]));
       if (fn.bodyKind === "statements") {
         for (const child of splitStatements(fn.body)) {
@@ -10990,6 +11200,24 @@ function parsePlayground(code) {
   try {
     executeStatement = (statement, locals = null) => {
       if (/^(type|interface|import|export)\b/.test(statement)) return;
+
+      const classDeclaration = statement.match(/^class\s+([A-Za-z_$][\w$]*)(?:\s+extends\s+([A-Za-z_$][\w$]*))?\s*\{([\s\S]*)\}$/);
+      if (classDeclaration) {
+        const [, name, parentName, body] = classDeclaration;
+        let parent = null;
+        if (parentName) {
+          const parentValue = getValue(readVariable(parentName, locals || new Map()));
+          parent = parentValue?.raw?.classDefinition || null;
+        }
+        const classDefinition = { name, parent, methods: parseClassMethods(body, locals) };
+        const classId = addValue({ type: "class", label: "class", raw: { kind: "class", classDefinition }, props: [] });
+        const classValue = getValue(classId);
+        classDefinition.methods.forEach((method, methodName) => {
+          if (method.static) classValue.props.push([methodName, makeFunctionValue(method)]);
+        });
+        setBinding(locals || variables, name, "class", classId);
+        return;
+      }
 
       const returnStatement = statement.match(/^return(?:\s+([\s\S]+))?$/);
       if (returnStatement) {
@@ -11365,8 +11593,8 @@ function buildPlaygroundDiagram(variables, values) {
   const rootValueX = maxDepth > 0 ? 44 : 50;
   const rightEdge = 86;
   const childXStep = maxDepth > 0 ? (rightEdge - rootValueX) / maxDepth : 0;
-  const firstRowY = rows.length > 4 ? 12 : 24;
-  const lastRowY = rows.length > 4 ? 88 : Math.min(76, firstRowY + (rows.length - 1) * 24);
+  const firstRowY = rows.length > 4 ? 10 : 22;
+  const lastRowY = rows.length > 4 ? 76 : Math.min(60, firstRowY + (rows.length - 1) * 20);
   const rowGap = rows.length > 1 ? (lastRowY - firstRowY) / (rows.length - 1) : 0;
 
   rows.forEach(([name, binding], index) => {
@@ -11403,7 +11631,16 @@ function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions, ch
   const value = values.find((item) => item.id === valueId);
   if (!value) return;
 
-  const kind = value.type === "array" || value.type === "object" || value.type === "function" ? "object" : value.type === "string" || value.type === "boolean" || value.type === "undefined" ? "string" : "value";
+  const kind =
+    value.type === "class" || value.raw?.kind === "map" || value.raw?.kind === "response"
+      ? "object-large"
+      : value.type === "array" || value.type === "object" || value.type === "function"
+        ? "object"
+        : value.type === "string" || value.type === "boolean" || value.type === "undefined"
+          ? "string"
+          : String(value.label).length > 3
+            ? "value-wide"
+            : "value";
   nodes[`value-${valueId}`] = { label: value.label, kind, x, y };
   positions.set(valueId, { x, y });
 
@@ -11414,7 +11651,7 @@ function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions, ch
   const firstChildY = y - ((visibleProps.length - 1) * childSpacing) / 2;
 
   visibleProps.forEach(([property, childId], index) => {
-    const childY = clampPlaygroundPosition(firstChildY + index * childSpacing, 12, 88);
+    const childY = clampPlaygroundPosition(firstChildY + index * childSpacing, 10, 78);
     const offset = clampPlaygroundPosition(childY - y, -26, 26);
     const childX = Math.min(rightEdge, x + childXStep);
     placePlaygroundValue(childId, childX, childY, nodes, wires, values, positions, childXStep, rightEdge);

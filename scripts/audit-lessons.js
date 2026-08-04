@@ -18,6 +18,7 @@ vm.runInContext(dataSource, sandbox);
 
 const maxLabelLengthByKind = {
   value: 8,
+  "value-wide": 14,
   string: 22,
   object: 10,
   "object-large": 14,

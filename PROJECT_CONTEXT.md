@@ -126,9 +126,10 @@ and nodes placed outside the interactive canvas. Chapter work is not complete wh
 only the walkthrough passes; verify the walkthrough and its guided playground view.
 
 The semantic audit protects known truth-sensitive rules: logical operators, timer
-IDs, Promise chaining, complete executed snippets, module-only syntax, and the
-difference between ordinary properties and host/internal state. Extend this audit
-whenever a correction reveals a reusable failure pattern.
+IDs, Promise chaining, complete executed snippets, module-only syntax, the
+difference between ordinary properties and host/internal state, and lessons whose
+distinct benefit must produce an observable result. Extend this audit whenever a
+correction reveals a reusable failure pattern.
 
 ## Screenshot Verification
 

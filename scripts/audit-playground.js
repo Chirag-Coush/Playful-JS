@@ -81,6 +81,60 @@ const snippets = [
     missingLabels: ["undefined", "next()"],
   },
   {
+    name: "class constructor creates a real instance",
+    code: 'class User { constructor(name) { this.name = name; } }\nlet ada = new User("Ada");',
+    expectedLabels: ["User", "class", "ada", "{ }", '"Ada"'],
+    missingLabels: ['new User("Ada")'],
+  },
+  {
+    name: "static factory cleans input before construction",
+    code: 'class User { constructor(name) { this.name = name; } static fromInput(input) { return new User(input.trim()); } }\nlet ada = User.fromInput("  Ada  ");',
+    expectedLabels: ["User", "class", "ada", "{ }", '"Ada"'],
+    missingLabels: ['User.fromInput("  Ada  ")'],
+  },
+  {
+    name: "inherited method lookup returns a real value",
+    code: "class User { greet() { return 'Hi'; } }\nclass Admin extends User {}\nlet sam = new Admin();\nlet message = sam.greet();",
+    expectedLabels: ["User", "Admin", "sam", "message", "{ }", '"Hi"'],
+    missingLabels: ["new Admin()", "sam.greet()"],
+  },
+  {
+    name: "Map stores and retrieves by object identity",
+    code: 'let cache = new Map();\nlet user = {};\ncache.set(user, "Ada");\nlet cachedName = cache.get(user);',
+    expectedLabels: ["cache", "Map", "user", "cachedName", '"Ada"'],
+    missingLabels: ["new Map()", "cache.get(user)"],
+  },
+  {
+    name: "Set exposes an observable unique count",
+    code: 'let tags = new Set();\ntags.add("js");\ntags.add("js");\nlet tagCount = tags.size;',
+    expectedLabels: ["tags", "Set", "tagCount", '"js"', "1"],
+    missingLabels: ["new Set()", "tags.size"],
+  },
+  {
+    name: "Date method returns a stored year",
+    code: 'let created = new Date("2026-01-01T00:00:00Z");\nlet year = created.getUTCFullYear();',
+    expectedLabels: ["created", "dt", "year", "2026"],
+    missingLabels: ["created.getUTCFullYear()"],
+  },
+  {
+    name: "optional object property uses a real fallback value",
+    code: 'type User = { name: string; admin?: boolean };\nlet user: User = { name: "Ada" };\nlet canEdit = user.admin ?? false;',
+    expectedLabels: ["user", "canEdit", '"Ada"', "false"],
+    missingLabels: ["user.admin ?? false"],
+  },
+  {
+    name: "bound function call uses the stored receiver",
+    code: 'let user = { name: "Ada" };\nfunction sayHi() { return this.name; }\nlet bound = sayHi.bind(user);\nlet message = bound();',
+    expectedLabels: ["user", "sayHi", "bound", "message", '"Ada"', "fn"],
+    missingLabels: ["sayHi.bind(user)", "bound()"],
+  },
+  {
+    name: "fetch fixture exposes parsed JSON data",
+    code: "let response = await fetch('/user.json');\nlet user = await response.json();\nlet name = user.name;",
+    expectedLabels: ["response", "Response", "user", "name", "{ }", '"Ada"'],
+    missingLabels: ["await fetch('/user.json')", "await response.json()", "user.name"],
+  },
+  {
     name: "multiple function calls stay in view",
     code: "function double(number) { return number * 2; }\nconst add = function(a, b) { return a + b; };\nconst multiply = (a, b) => a * b;\nlet doubled = double(4);\nlet added = add(3, 4);\nlet multiplied = multiply(3, 4);",
     expectedLabels: ["double", "add", "multiply", "doubled", "added", "multiplied", "8", "7", "12"],
@@ -96,7 +150,7 @@ const snippets = [
 ];
 
 const problems = [];
-const canvasBounds = { minX: 8, maxX: 92, minY: 8, maxY: 92 };
+const canvasBounds = { minX: 8, maxX: 92, minY: 8, maxY: 80 };
 
 snippets.forEach((snippet) => {
   const diagram = sandbox.parsePlayground(snippet.code);
