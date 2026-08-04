@@ -52,6 +52,7 @@ requirePattern("this-practical", /ada\.greet\(\).*grace\.greet\(\)/s, "must teac
 requirePattern("this-practical", /same function/i, "must distinguish shared function identity from the receiving objects.");
 requirePattern("inheritance", /class User/, "must define the parent class used by extends.");
 requirePattern("inheritance", /let message = sam\.greet\(\)/, "must execute and store the inherited method result.");
+requirePattern("classes-and-instances", /let message = user\.greet\(\)/, "must execute and store a method found through the instance prototype link.");
 requirePattern("static-methods-practical", /fromInput.*trim\(\)/s, "must show why a class-level helper is useful before constructing an instance.");
 requirePattern("typescript-unions", /let state: State =/, "must create the runtime state object shown in the diagram.");
 requirePattern("typescript-unions", /let message = "".*message = state\.name/s, "must show the narrowed branch producing an observable result.");

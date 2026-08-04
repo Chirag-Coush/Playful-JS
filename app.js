@@ -7490,18 +7490,20 @@ const conceptLessons = [
     id: "classes-and-instances",
     number: "Chapter 31",
     title: "Classes and Instances",
-    universeTitle: "new creates objects linked to methods",
+    universeTitle: "new creates an instance linked to shared methods",
     intro:
-      "A class is a recipe used with new to create objects. Each created object is called an instance, and instances can share methods through another object called the prototype. Classes appear in data models and browser APIs.",
-    code: ["class User {", '  greet() { return "Hi"; }', "}", "let user = new User();"],
+      "A class declaration creates a class value that describes object setup and shared methods. new User() creates an object, links it to User.prototype, runs the constructor with this, and returns the object. That object is an instance. Apps use instances for models that share behaviour.",
+    code: ["class User {", '  greet() { return "Hi"; }', "}", "let user = new User();", "let message = user.greet();"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 16, y: 34 },
-      classFn: { label: "Cls", kind: "object", x: 42, y: 34 },
+      classFn: { label: "class", kind: "object-large", x: 42, y: 34 },
       proto: { label: "P", kind: "object", x: 70, y: 34 },
       greet: { label: "greet", kind: "variable-wide", x: 70, y: 56 },
-      userVar: { label: "user", kind: "variable-wide", x: 16, y: 82 },
-      userObj: { label: "{ }", kind: "object", x: 42, y: 82 },
+      userVar: { label: "user", kind: "variable-wide", x: 16, y: 72 },
+      userObj: { label: "{ }", kind: "object", x: 42, y: 72 },
+      message: { label: "message", kind: "variable-wide", x: 68, y: 72 },
+      hi: { label: '"Hi"', kind: "string", x: 88, y: 72 },
     },
     steps: [
       {
@@ -7543,17 +7545,35 @@ const conceptLessons = [
         active: ["userVar", "userObj"],
       },
       {
-        title: "Instance reuses shared methods",
+        title: "Look up the shared method",
         description:
-          "The instance can reach greet through its prototype link. The method is not copied into the object.",
-        line: 3,
-        visible: ["proto", "greet", "userVar", "userObj"],
+          "user.greet() does not find greet on the instance, so lookup follows [[Prototype]] to User.prototype. The method is shared, not copied into the instance.",
+        line: 4,
+        visible: ["User", "classFn", "proto", "greet", "userVar", "userObj"],
         wires: [
+          { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "proto-greet", from: "proto", to: "greet", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
           { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "userObj-proto", from: "userObj", to: "proto", label: "[[Prototype]]", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
         active: ["userObj", "proto"],
+      },
+      {
+        title: "Call and store the result",
+        description:
+          'The shared greet function runs with user as this and returns "Hi". message points to that returned string value.',
+        line: 4,
+        visible: ["User", "classFn", "proto", "greet", "userVar", "userObj", "message", "hi"],
+        wires: [
+          { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "proto-greet", from: "proto", to: "greet", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+          { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "userObj-proto", from: "userObj", to: "proto", label: "[[Prototype]]", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "message-hi", from: "message", to: "hi", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["message", "hi"],
       },
     ],
     quiz: {
@@ -7561,7 +7581,7 @@ const conceptLessons = [
       options: ["the prototype", "each variable box", "localStorage"],
       answer: "the prototype",
       correct: "Correct. Class methods are shared through the prototype.",
-      wrong: "Not quite. Instances link to a prototype where shared methods live.",
+      wrong: "Not quite. Instances reach shared class methods through their prototype link.",
     },
   },
   {
