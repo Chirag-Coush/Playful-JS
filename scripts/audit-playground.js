@@ -68,6 +68,12 @@ const snippets = [
     missingLabels: ["ada.greet()", "grace.greet()"],
   },
   {
+    name: "method combines data from its receiving object",
+    code: 'let user = { name: "Ada", sayHi() { return "Hi, " + this.name; } };\nlet result = user.sayHi();',
+    expectedLabels: ["user", "result", '"Ada"', '"Hi, Ada"'],
+    missingLabels: ["user.sayHi()"],
+  },
+  {
     name: "returned function keeps and updates closure state",
     code: "function makeCounter() {\n  let count = 0;\n  return function next() {\n    count = count + 1;\n    return count;\n  };\n}\nlet next = makeCounter();\nlet current = next();",
     expectedLabels: ["makeCounter", "next", "fn", "current", "1"],

@@ -47,6 +47,7 @@ requirePattern("promises", /let namePromise = .*\.then/, "must show that then re
 requirePattern("promises", /different Promise/i, "must explain that then returns a different Promise.");
 requirePattern("async-await", /loadName\(\)/, "must visibly call the async function whose body is visualized.");
 requirePattern("arrow-functions", /this\.name/, "must demonstrate the lexical-this behavior named by the chapter.");
+requirePattern("methods-and-this", /"Hi, " \+ this\.name/, "must demonstrate behavior that does more than directly read a property.");
 requirePattern("this-practical", /ada\.greet\(\).*grace\.greet\(\)/s, "must teach that each method-call receiver supplies its own this value.");
 requirePattern("this-practical", /same function/i, "must distinguish shared function identity from the receiving objects.");
 requirePattern("inheritance", /class User/, "must define the parent class used by extends.");

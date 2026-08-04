@@ -5804,11 +5804,11 @@ const conceptLessons = [
     title: "Methods and this",
     universeTitle: "Method calls provide this",
     intro:
-      "A method is a function stored in an object property. In user.sayHi(), user is the object receiving the call, so this points to user while the method runs. This pattern appears in models, browser APIs, and class instances.",
+      "Use user.name when you only need stored data. Use a method when an object should perform behavior with its data. Here sayHi builds a greeting, and this lets the same behavior use the object receiving the call.",
     code: [
       "let user = {",
       '  name: "Ada",',
-      "  sayHi() { return this.name; }",
+      '  sayHi() { return "Hi, " + this.name; }',
       "};",
       "let result = user.sayHi();",
     ],
@@ -5820,6 +5820,8 @@ const conceptLessons = [
       fn: { label: "fn", kind: "object", x: 68, y: 52 },
       thisVar: { label: "this", kind: "variable-wide", x: 36, y: 72 },
       result: { label: "result", kind: "variable-wide", x: 14, y: 82 },
+      greetingStart: { label: '"Hi, "', kind: "string", x: 84, y: 64 },
+      greeting: { label: '"Hi, Ada"', kind: "string", x: 72, y: 82 },
     },
     steps: [
       {
@@ -5992,11 +5994,11 @@ const conceptLessons = [
         active: ["thisVar", "ada"],
       },
       {
-        title: "Store the returned value",
+        title: "Build the greeting",
         description:
-          'sayHi returns "Ada". The result variable points to that returned value.',
-        line: 4,
-        visible: ["user", "userObj", "ada", "fn", "result"],
+          'JavaScript evaluates "Hi, " and this.name, then + creates the new string "Hi, Ada".',
+        line: 2,
+        visible: ["user", "userObj", "ada", "fn", "thisVar", "greetingStart", "greeting"],
         wires: [
           {
             id: "user-userObj",
@@ -6025,15 +6027,59 @@ const conceptLessons = [
             toAnchor: { side: "left" },
           },
           {
-            id: "result-ada",
-            from: "result",
-            to: "ada",
-            tone: "orange",
+            id: "this-userObj",
+            from: "thisVar",
+            to: "userObj",
+            tone: "slate",
             fromAnchor: { side: "right" },
-            toAnchor: { side: "left", offset: 12 },
+            toAnchor: { side: "bottom" },
           },
         ],
-        active: ["result", "ada"],
+        active: ["greetingStart", "ada", "greeting"],
+      },
+      {
+        title: "Store the returned value",
+        description:
+          'sayHi returns "Hi, Ada". The result variable points to that newly created string.',
+        line: 4,
+        visible: ["user", "userObj", "ada", "fn", "result", "greeting"],
+        wires: [
+          {
+            id: "user-userObj",
+            from: "user",
+            to: "userObj",
+            tone: "slate",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "name-ada",
+            from: "userObj",
+            to: "ada",
+            label: "name",
+            tone: "slate",
+            fromAnchor: { side: "right", offset: -16 },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "sayHi-fn",
+            from: "userObj",
+            to: "fn",
+            label: "sayHi",
+            tone: "slate",
+            fromAnchor: { side: "right", offset: 16 },
+            toAnchor: { side: "left" },
+          },
+          {
+            id: "result-greeting",
+            from: "result",
+            to: "greeting",
+            tone: "orange",
+            fromAnchor: { side: "right" },
+            toAnchor: { side: "left" },
+          },
+        ],
+        active: ["result", "greeting"],
       },
     ],
     quiz: {
