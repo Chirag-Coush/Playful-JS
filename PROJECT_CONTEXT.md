@@ -23,7 +23,9 @@ Lesson data in `app.js`:
 - `conceptLessons`: mental-model library lessons.
 - `lessonOrder`: the visible learning path. This deliberately mixes practical lessons and conceptual lessons when a concept is needed before the next practical topic.
 
-At this point the project has 95 chapters total.
+At this point the project has 96 chapters total.
+
+Prototype lookup is introduced before classes and instances. Class lessons may rely on method and prototype vocabulary only after those ideas have been defined and visualised on ordinary objects.
 
 ## Non-Negotiable Teaching Rules
 

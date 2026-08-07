@@ -48,8 +48,11 @@ requirePattern("promises", /different Promise/i, "must explain that then returns
 requirePattern("async-await", /loadName\(\)/, "must visibly call the async function whose body is visualized.");
 requirePattern("arrow-functions", /this\.name/, "must demonstrate the lexical-this behavior named by the chapter.");
 requirePattern("methods-and-this", /"Hi, " \+ this\.name/, "must demonstrate behavior that does more than directly read a property.");
+requirePattern("methods-and-this", /A method is a function stored in an object property/, "must define method before relying on the term.");
 requirePattern("this-practical", /ada\.greet\(\).*grace\.greet\(\)/s, "must teach that each method-call receiver supplies its own this value.");
 requirePattern("this-practical", /same function/i, "must distinguish shared function identity from the receiving objects.");
+requirePattern("prototypes", /Object\.create\(shared\)/, "must create an object with an explicit prototype link.");
+requirePattern("prototypes", /hidden link/i, "must define a prototype in beginner language before class lessons use it.");
 requirePattern("inheritance", /class User/, "must define the parent class used by extends.");
 requirePattern("inheritance", /let message = sam\.greet\(\)/, "must execute and store the inherited method result.");
 requirePattern("classes-and-instances", /let message = user\.greet\(\)/, "must execute and store a method found through the instance prototype link.");

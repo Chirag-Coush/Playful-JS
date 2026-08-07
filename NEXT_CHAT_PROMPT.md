@@ -34,9 +34,10 @@ Important rules:
 
 Current state:
 
-- The app has 95 chapters.
+- The app has 96 chapters.
 - Lesson data is split between `practicalLessons` and `conceptLessons`, but the visible course path is controlled by explicit `lessonOrder`.
 - Mental-model chapters are now interleaved where beginners need them before the next practical topic.
+- Prototype lookup now appears before classes and instances. Keep method, `[[Prototype]]`, `User.prototype`, class, and instance terminology distinct.
 - Recent practical sections already added:
   - basics, decisions, strings, loops, arrays,
   - functions/scope/callbacks/array methods,

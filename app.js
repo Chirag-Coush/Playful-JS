@@ -2274,7 +2274,7 @@ const practicalLessons = [
     section: "Objects and app data",
     number: "Practical 28",
     title: "Classes",
-    universeTitle: "A class is a recipe for object instances",
+    universeTitle: "new creates a fresh instance and runs its setup",
     intro:
       "Classes are common in app models, UI helpers, data wrappers, and framework code. A class can use a constructor method to set up each new object.",
     code: ["class User {", "  constructor(name) { this.name = name; }", "}", 'let ada = new User("Ada");'],
@@ -2290,7 +2290,7 @@ const practicalLessons = [
     steps: [
       {
         title: "Create the class value",
-        description: "The class declaration creates a class function value, and User points to it.",
+        description: "The class declaration creates a class value, and User points to it.",
         line: 0,
         visible: ["User", "classFn"],
         wires: [{ id: "User-classFn", from: "User", to: "classFn", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } }],
@@ -2345,7 +2345,7 @@ const practicalLessons = [
       options: ["a new object instance", "only a string", "the class itself"],
       answer: "a new object instance",
       correct: "Correct. new creates an instance object and runs the constructor.",
-      wrong: "Not quite. A class is a recipe; new creates an object from that recipe.",
+      wrong: "Not quite. new creates a fresh object, runs the class constructor with that object as this, and returns the instance.",
     },
   },
   {
@@ -5822,7 +5822,7 @@ const conceptLessons = [
     title: "Methods and this",
     universeTitle: "Method calls provide this",
     intro:
-      "Use user.name when you only need stored data. Use a method when an object should perform behavior with its data. Here sayHi builds a greeting, and this lets the same behavior use the object receiving the call.",
+      "A method is a function stored in an object property and called through that object. Here sayHi() creates a function under the sayHi property, while user.sayHi() calls it. Apps use methods to keep behaviour beside the object data it uses. During this call, this points to user.",
     code: [
       "let user = {",
       '  name: "Ada",',
@@ -5888,9 +5888,9 @@ const conceptLessons = [
         active: ["userObj", "ada"],
       },
       {
-        title: "Add the function property",
+        title: "Store a function under sayHi",
         description:
-          "sayHi is a property too. Its wire points to a function value.",
+          "sayHi is a property whose value is a function. When code calls that function as user.sayHi(), it is called a method of user.",
         line: 2,
         visible: ["user", "userObj", "ada", "fn"],
         wires: [
@@ -7487,19 +7487,121 @@ const conceptLessons = [
     },
   },
   {
+    id: "prototypes",
+    number: "Chapter 31",
+    title: "Prototype Lookup",
+    universeTitle: "A missing property can be found on a linked object",
+    intro:
+      "An object can have a hidden link to another object. That linked object is its prototype. If a property is missing, JavaScript follows the link and looks there. Apps, libraries, and classes use prototype lookup to share one function between many objects instead of copying it onto each object.",
+    code: [
+      "let shared = {",
+      '  greet() { return "Hi"; }',
+      "};",
+      "let user = Object.create(shared);",
+      "let message = user.greet();",
+    ],
+    legend: ["variable", "object", "property", "value"],
+    nodes: {
+      shared: { label: "shared", kind: "variable-wide", x: 14, y: 30 },
+      sharedObj: { label: "{ }", kind: "object", x: 40, y: 30 },
+      greetFn: { label: "fn", kind: "object", x: 72, y: 30 },
+      user: { label: "user", kind: "variable-wide", x: 14, y: 64 },
+      userObj: { label: "{ }", kind: "object", x: 40, y: 64 },
+      message: { label: "message", kind: "variable-wide", x: 64, y: 72 },
+      hi: { label: '"Hi"', kind: "string", x: 88, y: 72 },
+    },
+    steps: [
+      {
+        title: "Create the shared object",
+        description:
+          "shared points to an object. Its greet property points to a function value, so greet can be called as a method.",
+        line: 0,
+        visible: ["shared", "sharedObj", "greetFn"],
+        wires: [
+          { id: "shared-object", from: "shared", to: "sharedObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "shared-greet", from: "sharedObj", to: "greetFn", label: "greet", tone: "cyan", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["shared", "sharedObj", "greetFn"],
+      },
+      {
+        title: "Create a second object",
+        description:
+          "Object.create(shared) creates a new empty object. user points to this new object, not to shared.",
+        line: 3,
+        visible: ["shared", "sharedObj", "greetFn", "user", "userObj"],
+        wires: [
+          { id: "shared-object", from: "shared", to: "sharedObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "shared-greet", from: "sharedObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "user-object", from: "user", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["user", "userObj"],
+      },
+      {
+        title: "Link user to its prototype",
+        description:
+          "The new object's internal [[Prototype]] link points to shared. [[Prototype]] is JavaScript's name for this hidden link; it is not a normal property in the object.",
+        line: 3,
+        visible: ["shared", "sharedObj", "greetFn", "user", "userObj"],
+        wires: [
+          { id: "shared-object", from: "shared", to: "sharedObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "shared-greet", from: "sharedObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "user-object", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "user-prototype", from: "userObj", to: "sharedObj", label: "[[Prototype]]", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["userObj", "sharedObj"],
+      },
+      {
+        title: "Look for greet",
+        description:
+          "user has no own greet property. JavaScript follows [[Prototype]] to shared and finds the greet function there. This search is called prototype lookup.",
+        line: 4,
+        visible: ["shared", "sharedObj", "greetFn", "user", "userObj"],
+        wires: [
+          { id: "shared-object", from: "shared", to: "sharedObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "shared-greet", from: "sharedObj", to: "greetFn", label: "greet", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "user-object", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "user-prototype", from: "userObj", to: "sharedObj", label: "[[Prototype]]", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+        ],
+        active: ["userObj", "sharedObj", "greetFn"],
+      },
+      {
+        title: "Call the function and store its return",
+        description:
+          'user.greet() calls the function found through the prototype link. It returns "Hi", so message points to that string.',
+        line: 4,
+        visible: ["shared", "sharedObj", "greetFn", "user", "userObj", "message", "hi"],
+        wires: [
+          { id: "shared-object", from: "shared", to: "sharedObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "shared-greet", from: "sharedObj", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "user-object", from: "user", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "user-prototype", from: "userObj", to: "sharedObj", label: "[[Prototype]]", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
+          { id: "message-hi", from: "message", to: "hi", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+        ],
+        active: ["message", "hi"],
+      },
+    ],
+    quiz: {
+      prompt: "Where does user.greet find greet?",
+      options: ["on the linked prototype", "inside the user variable", "in localStorage"],
+      answer: "on the linked prototype",
+      correct: "Correct. JavaScript follows user's [[Prototype]] link and finds greet on shared.",
+      wrong: "Not quite. user has no own greet property, so lookup continues on its linked prototype.",
+    },
+  },
+  {
     id: "classes-and-instances",
     number: "Chapter 31",
     title: "Classes and Instances",
-    universeTitle: "new creates an instance linked to shared methods",
+    universeTitle: "A class creates objects that share behaviour",
     intro:
-      "A class declaration creates a class value that describes object setup and shared methods. new User() creates an object, links it to User.prototype, runs the constructor with this, and returns the object. That object is an instance. Apps use instances for models that share behaviour.",
+      "A class groups object setup and shared behaviour under one name. Inside a class, greet() defines a method: a function intended for its objects to call. new User() creates one of those objects, called an instance. Apps use classes for many similar users, products, messages, or UI components.",
     code: ["class User {", '  greet() { return "Hi"; }', "}", "let user = new User();", "let message = user.greet();"],
     legend: ["variable", "object", "property", "value"],
     nodes: {
       User: { label: "User", kind: "variable-wide", x: 16, y: 34 },
       classFn: { label: "class", kind: "object-large", x: 42, y: 34 },
-      proto: { label: "P", kind: "object", x: 70, y: 34 },
-      greet: { label: "greet", kind: "variable-wide", x: 70, y: 56 },
+      proto: { label: "{ }", kind: "object", x: 70, y: 34 },
+      greetFn: { label: "fn", kind: "object", x: 70, y: 56 },
       userVar: { label: "user", kind: "variable-wide", x: 16, y: 72 },
       userObj: { label: "{ }", kind: "object", x: 42, y: 72 },
       message: { label: "message", kind: "variable-wide", x: 68, y: 72 },
@@ -7507,9 +7609,9 @@ const conceptLessons = [
     },
     steps: [
       {
-        title: "Class name points to a class value",
+        title: "Create the class",
         description:
-          "A class declaration creates a binding. User points to the class value.",
+          "class User creates a class value and a binding named User. User points to that class value.",
         line: 0,
         visible: ["User", "classFn"],
         wires: [
@@ -7518,42 +7620,43 @@ const conceptLessons = [
         active: ["User", "classFn"],
       },
       {
-        title: "Methods live on the prototype",
+        title: "Define the greet method",
         description:
-          "The greet method is shared through the class prototype, not copied into every instance.",
+          "greet() { ... } creates a function. Because it is defined inside the class for instances to call, it is called a method. JavaScript stores it under the greet property of User.prototype.",
         line: 1,
-        visible: ["User", "classFn", "proto", "greet"],
+        visible: ["User", "classFn", "proto", "greetFn"],
         wires: [
           { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "proto-greet", from: "proto", to: "greet", label: "greet", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+          { id: "proto-greet", from: "proto", to: "greetFn", label: "greet", tone: "orange", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
         ],
-        active: ["proto", "greet"],
+        active: ["proto", "greetFn"],
       },
       {
         title: "new creates an instance",
         description:
-          "new User() creates a new object. user points to that instance object.",
+          "new User() creates a fresh object. An object created by a class is called an instance of that class. user points to this User instance.",
         line: 3,
-        visible: ["User", "classFn", "proto", "userVar", "userObj"],
+        visible: ["User", "classFn", "proto", "greetFn", "userVar", "userObj"],
         wires: [
           { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
+          { id: "proto-greet", from: "proto", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
           { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "userObj-proto", from: "userObj", to: "proto", label: "[[Prototype]]", tone: "cyan", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
         active: ["userVar", "userObj"],
       },
       {
-        title: "Look up the shared method",
+        title: "Connect the instance to shared methods",
         description:
-          "user.greet() does not find greet on the instance, so lookup follows [[Prototype]] to User.prototype. The method is shared, not copied into the instance.",
+          "The instance's hidden [[Prototype]] link points to User.prototype. user has no own greet property, so user.greet finds the shared function by following that link.",
         line: 4,
-        visible: ["User", "classFn", "proto", "greet", "userVar", "userObj"],
+        visible: ["User", "classFn", "proto", "greetFn", "userVar", "userObj"],
         wires: [
           { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "proto-greet", from: "proto", to: "greet", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+          { id: "proto-greet", from: "proto", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
           { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "userObj-proto", from: "userObj", to: "proto", label: "[[Prototype]]", tone: "orange", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
         ],
@@ -7562,13 +7665,13 @@ const conceptLessons = [
       {
         title: "Call and store the result",
         description:
-          'The shared greet function runs with user as this and returns "Hi". message points to that returned string value.',
+          'user.greet() calls the shared function with user as this. The function returns "Hi", and message points to that returned string.',
         line: 4,
-        visible: ["User", "classFn", "proto", "greet", "userVar", "userObj", "message", "hi"],
+        visible: ["User", "classFn", "proto", "greetFn", "userVar", "userObj", "message", "hi"],
         wires: [
           { id: "User-classFn", from: "User", to: "classFn", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "classFn-proto", from: "classFn", to: "proto", label: "prototype", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
-          { id: "proto-greet", from: "proto", to: "greet", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
+          { id: "proto-greet", from: "proto", to: "greetFn", label: "greet", tone: "slate", fromAnchor: { side: "bottom" }, toAnchor: { side: "top" } },
           { id: "userVar-userObj", from: "userVar", to: "userObj", tone: "slate", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
           { id: "userObj-proto", from: "userObj", to: "proto", label: "[[Prototype]]", tone: "slate", fromAnchor: { side: "top" }, toAnchor: { side: "bottom" } },
           { id: "message-hi", from: "message", to: "hi", tone: "orange", fromAnchor: { side: "right" }, toAnchor: { side: "left" } },
@@ -7577,11 +7680,11 @@ const conceptLessons = [
       },
     ],
     quiz: {
-      prompt: "Where are class methods usually shared from?",
-      options: ["the prototype", "each variable box", "localStorage"],
-      answer: "the prototype",
-      correct: "Correct. Class methods are shared through the prototype.",
-      wrong: "Not quite. Instances reach shared class methods through their prototype link.",
+      prompt: "What is user after new User() finishes?",
+      options: ["an instance of User", "the User class itself", "the greet function"],
+      answer: "an instance of User",
+      correct: "Correct. new User() creates a new object called an instance of User.",
+      wrong: "Not quite. user points to the new object created by the class, called an instance.",
     },
   },
   {
@@ -9769,6 +9872,7 @@ const lessonOrder = [
   "arrays-of-objects-practical",
   "methods-and-this",
   "this-practical",
+  "prototypes",
   "classes-and-instances",
   "constructors",
   "classes-practical",
@@ -10659,6 +10763,15 @@ function parsePlayground(code) {
 
   const getRawValue = (valueId) => values.find((value) => value.id === valueId)?.raw;
   const getValue = (valueId) => values.find((value) => value.id === valueId);
+  const findLinkedProperty = (value, property, visited = new Set()) => {
+    if (!value || visited.has(value.id)) return null;
+    visited.add(value.id);
+    const ownProperty = value.props?.find(([key]) => key === property)?.[1];
+    if (ownProperty) return ownProperty;
+    return value.raw?.prototypeId
+      ? findLinkedProperty(getValue(value.raw.prototypeId), property, visited)
+      : null;
+  };
   const setBinding = (target, name, kind, valueId) => target.set(name, { kind, valueId });
   const makePlaceholderValue = (expr) => {
     const label = expr.length > 24 ? `${expr.slice(0, 21)}...` : expr;
@@ -10742,6 +10855,17 @@ function parsePlayground(code) {
       return evaluateExpression(expr.slice(6), locals);
     }
 
+    const objectCreateMatch = expr.match(/^Object\.create\((.*)\)$/);
+    if (objectCreateMatch) {
+      const prototypeId = evaluateExpression(objectCreateMatch[1], locals);
+      return addValue({
+        type: "object",
+        label: "{ }",
+        raw: { kind: "object", prototypeId },
+        props: [],
+      });
+    }
+
     const newExpression = expr.match(/^new\s+([A-Za-z_$][\w$]*)\s*\((.*)\)$/);
     if (newExpression) {
       const [, className, argsSource] = newExpression;
@@ -10765,7 +10889,12 @@ function parsePlayground(code) {
       const classDefinition = classValue?.raw?.classDefinition;
       if (!classDefinition) return makePlaceholderValue(expr);
 
-      const instanceId = addValue({ type: "object", label: "{ }", raw: { classDefinition }, props: [] });
+      const instanceId = addValue({
+        type: "object",
+        label: "{ }",
+        raw: { classDefinition, prototypeId: classDefinition.prototypeId },
+        props: [],
+      });
       const constructorDefinition = findClassMethod(classDefinition, "constructor");
       if (constructorDefinition) {
         const argIds = splitTopLevel(argsSource).filter(Boolean).map((arg) => evaluateExpression(arg, locals));
@@ -11121,7 +11250,7 @@ function parsePlayground(code) {
         const definition = receiver.raw.definition;
         return makeFunctionValue({ ...definition, boundThisId });
       }
-      const functionId = receiver?.props?.find(([key]) => key === methodName)?.[1];
+      const functionId = findLinkedProperty(receiver, methodName);
       const functionValue = getValue(functionId);
       const fn = functionValue?.raw?.definition || findClassMethod(receiver?.raw?.classDefinition, methodName);
 
@@ -11158,7 +11287,7 @@ function parsePlayground(code) {
           currentId = addValue({ ...makePrimitiveValue(objectValue.raw.itemIds.length), raw: objectValue.raw.itemIds.length });
           return;
         }
-        const target = objectValue?.props?.find(([key]) => key === property)?.[1];
+        const target = findLinkedProperty(objectValue, property);
         if (!target) {
           currentId = addValue({ ...makePrimitiveValue(undefined), raw: undefined });
           return;
@@ -11229,11 +11358,24 @@ function parsePlayground(code) {
           const parentValue = getValue(readVariable(parentName, locals || new Map()));
           parent = parentValue?.raw?.classDefinition || null;
         }
-        const classDefinition = { name, parent, methods: parseClassMethods(body, locals) };
+        const classDefinition = { name, parent, methods: parseClassMethods(body, locals), prototypeId: null };
         const classId = addValue({ type: "class", label: "class", raw: { kind: "class", classDefinition }, props: [] });
         const classValue = getValue(classId);
+        const prototypeId = addValue({
+          type: "object",
+          label: "{ }",
+          raw: { kind: "object", prototypeId: parent?.prototypeId || null },
+          props: [],
+        });
+        const prototypeValue = getValue(prototypeId);
+        classDefinition.prototypeId = prototypeId;
+        classValue.props.push(["prototype", prototypeId]);
         classDefinition.methods.forEach((method, methodName) => {
-          if (method.static) classValue.props.push([methodName, makeFunctionValue(method)]);
+          if (method.static) {
+            classValue.props.push([methodName, makeFunctionValue(method)]);
+          } else if (methodName !== "constructor") {
+            prototypeValue.props.push([methodName, makeFunctionValue(method)]);
+          }
         });
         setBinding(locals || variables, name, "class", classId);
         return;
@@ -11635,11 +11777,15 @@ function buildPlaygroundDiagram(variables, values) {
 function getPlaygroundValueDepth(valueId, values, visiting = new Set()) {
   if (visiting.has(valueId)) return 0;
   const value = values.find((item) => item.id === valueId);
-  if (!value?.props?.length) return 0;
+  const linkedValues = [
+    ...(value?.props || []).slice(0, 6).map(([, childId]) => childId),
+    ...(value?.raw?.prototypeId ? [value.raw.prototypeId] : []),
+  ];
+  if (!linkedValues.length) return 0;
 
   const nextVisiting = new Set(visiting);
   nextVisiting.add(valueId);
-  return 1 + Math.max(...value.props.slice(0, 6).map(([, childId]) => getPlaygroundValueDepth(childId, values, nextVisiting)));
+  return 1 + Math.max(...linkedValues.map((childId) => getPlaygroundValueDepth(childId, values, nextVisiting)));
 }
 
 function clampPlaygroundPosition(value, min, max) {
@@ -11664,9 +11810,11 @@ function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions, ch
   nodes[`value-${valueId}`] = { label: value.label, kind, x, y };
   positions.set(valueId, { x, y });
 
-  if (!value.props?.length) return;
-
-  const visibleProps = value.props.slice(0, 6);
+  const visibleProps = [
+    ...(value.props || []).slice(0, 6),
+    ...(value.raw?.prototypeId ? [["[[Prototype]]", value.raw.prototypeId]] : []),
+  ];
+  if (!visibleProps.length) return;
   const childSpacing = value.type === "array" ? 16 : 14;
   const firstChildY = y - ((visibleProps.length - 1) * childSpacing) / 2;
 
@@ -11675,14 +11823,17 @@ function placePlaygroundValue(valueId, x, y, nodes, wires, values, positions, ch
     const offset = clampPlaygroundPosition(childY - y, -26, 26);
     const childX = Math.min(rightEdge, x + childXStep);
     placePlaygroundValue(childId, childX, childY, nodes, wires, values, positions, childXStep, rightEdge);
+    const isPrototypeLink = property === "[[Prototype]]";
+    const linkedPosition = positions.get(childId);
+    const useVerticalAnchors = isPrototypeLink && linkedPosition && Math.abs(linkedPosition.x - x) < 12;
     wires.push({
-      id: `prop-${valueId}-${property}`,
+      id: `${isPrototypeLink ? "prototype" : "prop"}-${valueId}-${property}`,
       from: `value-${valueId}`,
       to: `value-${childId}`,
       label: property,
       tone: "cyan",
-      fromAnchor: { side: "right", offset },
-      toAnchor: { side: "left" },
+      fromAnchor: useVerticalAnchors ? { side: "top" } : { side: "right", offset },
+      toAnchor: useVerticalAnchors ? { side: "bottom" } : { side: "left" },
     });
   });
 }

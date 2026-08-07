@@ -34,7 +34,8 @@ const maxIntroWords = 50;
 const maxStepDescriptionWords = 32;
 const requiredIntroTerms = {
   callbacks: ["function name", "parameter", "argument"],
-  "classes-and-instances": ["instance", "prototype"],
+  prototypes: ["prototype", "property"],
+  "classes-and-instances": ["class", "method", "instance"],
   "typescript-annotations": ["compile-time", "runtime"],
   promises: ["pending", "resolves", "rejects"],
   "dom-selection": ["document object model"],
